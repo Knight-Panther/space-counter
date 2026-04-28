@@ -2,16 +2,82 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Read(//c/Users/VM-Dev/Desktop/**)",
-      "WebFetch(domain:www.npmjs.com)",
-      "Bash(npm --version)",
-      "Bash(npm view *)",
-      "Bash(npm install *)",
-      "Bash(npx cap *)",
-      "Bash(npm run *)",
-      "Bash(git --version)",
-      "Bash(gh --version)",
-      "Bash(gh auth *)"
+      "WebFetch(domain:*)",
+      "Read(//c/Users/VM-Dev/**)",
+      "Edit(//c/Users/VM-Dev/Desktop/Space-counter/**)",
+      "Write(//c/Users/VM-Dev/Desktop/Space-counter/**)",
+
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git fetch*)",
+      "Bash(git pull*)",
+      "Bash(git push)",
+      "Bash(git push origin *)",
+      "Bash(git branch)",
+      "Bash(git branch -a*)",
+      "Bash(git branch -v*)",
+      "Bash(git branch -r*)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git stash*)",
+      "Bash(git tag*)",
+      "Bash(git init*)",
+      "Bash(git config *)",
+      "Bash(git remote*)",
+      "Bash(git show*)",
+      "Bash(git blame*)",
+      "Bash(git merge *)",
+
+      "Bash(gh *)",
+
+      "Bash(ls*)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(sort *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(where *)",
+      "Bash(pwd)",
+      "Bash(export *)",
+      "Bash(source *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(unzip *)",
+      "Bash(tar *)",
+
+      "Bash(java *)",
+      "Bash(sdkmanager *)",
+      "Bash(adb *)",
+      "Bash(tsc *)",
+
+      "PowerShell(*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\VM-Dev\\.claude"
     ]
-  }
+  },
+  "localSkillDirectories": [
+    "node_modules/phaser/skills"
+  ]
 }
