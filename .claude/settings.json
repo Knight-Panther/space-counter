@@ -76,8 +76,5 @@
     "additionalDirectories": [
       "C:\\Users\\VM-Dev\\.claude"
     ]
-  },
-  "localSkillDirectories": [
-    "node_modules/phaser/skills"
-  ]
+  }
 }
