@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Space Counter</string>
+    <string name="title_activity_main">Space Counter</string>
+    <string name="package_name">com.telo.spacecounter</string>
+    <string name="custom_url_scheme">com.telo.spacecounter</string>
+</resources>

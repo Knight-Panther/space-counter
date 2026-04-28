@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(//c/Users/VM-Dev/Desktop/**)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm --version)",
+      "Bash(npm view *)",
+      "Bash(npm install *)",
+      "Bash(npx cap *)",
+      "Bash(npm run *)",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
