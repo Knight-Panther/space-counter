@@ -12,6 +12,7 @@ export class HUDScene extends Phaser.Scene {
   private weaponBarFill!: Phaser.GameObjects.Graphics;
   private weaponLabel!:   Phaser.GameObjects.Text;
   private weaponBarVisible = false;
+  private muteLabel!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'HUDScene' });
@@ -53,6 +54,9 @@ export class HUDScene extends Phaser.Scene {
       const heart = this.add.image(width - 14 - i * 28, 20, 'heart').setOrigin(1, 0);
       this.hearts.push(heart);
     }
+
+    // Mute button — below hearts, top-right
+    this.buildMuteButton();
 
     // Weapon power-up timer bar — centered, above arsenal bar
     const { height } = this.scale;
@@ -152,6 +156,43 @@ export class HUDScene extends Phaser.Scene {
   private updateHearts(lives: number): void {
     this.hearts.forEach((heart, i) => {
       heart.setAlpha(i < lives ? 1 : 0.18);
+    });
+  }
+
+  private buildMuteButton(): void {
+    const { width } = this.scale;
+    const bx = width - 28;
+    const by = 62;
+    const r  = 16;
+
+    const bg = this.add.graphics();
+    const draw = (hover: boolean) => {
+      bg.clear();
+      bg.fillStyle(0x000000, hover ? 0.75 : 0.50);
+      bg.fillCircle(bx, by, r);
+      bg.lineStyle(1.5, 0x4488ff, hover ? 1 : 0.6);
+      bg.strokeCircle(bx, by, r);
+    };
+    draw(false);
+
+    const muted = !!this.game.registry.get('musicMuted');
+    this.muteLabel = this.add.text(bx, by, muted ? '🔇' : '🔊', {
+      fontSize: '16px',
+      fontFamily: 'Arial',
+    }).setOrigin(0.5, 0.5);
+
+    const zone = this.add.zone(bx, by, r * 2, r * 2).setInteractive();
+    zone.on('pointerover',  () => draw(true));
+    zone.on('pointerout',   () => draw(false));
+    zone.on('pointerdown',  () => {
+      const nowMuted = !this.game.registry.get('musicMuted');
+      this.game.registry.set('musicMuted', nowMuted);
+      this.muteLabel.setText(nowMuted ? '🔇' : '🔊');
+      for (const key of ['music-game', 'music-orbital']) {
+        const music = this.sound.get(key) as any;
+        if (music) music.setVolume(nowMuted ? 0 : 0.25);
+      }
+      draw(false);
     });
   }
 }

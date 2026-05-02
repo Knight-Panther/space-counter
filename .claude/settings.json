@@ -80,7 +80,9 @@
       "Bash(Select-Object FullName, Length)",
       "Bash(Format-Table -AutoSize)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Directory)",
-      "Bash(Select-Object -First 20 FullName)"
+      "Bash(Select-Object -First 20 FullName)",
+      "Bash(dir \"C:/Users/VM-Dev/Desktop/game/Muzzle_flashes/\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\dark_ambiences\\\\dark_ambiences\\\\ambience-5.wav\" \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\audio\\\\sfx-wave-up.wav\" -Force)"
     ],
     "deny": [
       "Bash(git push --force*)",
@@ -89,7 +91,9 @@
       "Bash(git clean -f*)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\VM-Dev\\.claude"
+      "C:\\Users\\VM-Dev\\.claude",
+      "C:\\Users\\VM-Dev\\Desktop\\game",
+      "C:\\Users\\VM-Dev\\Downloads"
     ]
   }
 }

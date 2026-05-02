@@ -171,11 +171,10 @@ export class StoryScene extends Phaser.Scene {
   // ─── Audio ────────────────────────────────────────────────────────────────────
 
   private duckMenuMusic(): void {
-    // Lower the looping menu music while voice plays
     const mgr = this.sound as unknown as { sounds: Phaser.Sound.BaseSound[] };
-    const menuTrack = mgr.sounds?.find(s => s.key === 'music-menu');
-    if (menuTrack) {
-      this.tweens.add({ targets: menuTrack, volume: 0.30, duration: 700 });
+    const track = mgr.sounds?.find(s => s.key === 'music-menu');
+    if (track) {
+      this.tweens.add({ targets: track, volume: 0.30, duration: 700 });
     }
   }
 

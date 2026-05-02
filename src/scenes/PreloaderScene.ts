@@ -110,6 +110,8 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.font('georgian', 'fonts/NotoSansGeorgian-Regular.ttf');
 
     // Background music
+    this.load.audio('music-game',     'audio/music-game.ogg');
+    this.load.audio('music-orbital',  'audio/Orbital Colossus.mp3');
     this.load.audio('music-menu',     'audio/MyVeryOwnDeadShip.ogg');
 
     // Story intro voice-overs
@@ -120,10 +122,21 @@ export class PreloaderScene extends Phaser.Scene {
 
     // Sound effects
     this.load.audio('sfx-laser',        'audio/sfx-laser.mp3');
-    this.load.audio('sfx-explosion',    'audio/sfx-explosion.mp3');
+    this.load.audio('sfx-explosion',      'audio/sfx-explosion.mp3');
+    this.load.audio('sfx-explosion-boss', 'audio/sfx-explosion-boss.mp3');
     this.load.audio('sfx-wrong',        'audio/sfx-wrong.mp3');
     this.load.audio('sfx-alien-appear', 'audio/sfx-alien-appear.mp3');
-    this.load.audio('sfx-wave-up',      'audio/sfx-wave-up.mp3');
+    this.load.audio('sfx-arsenal-deploy', 'audio/sfx-arsenal-deploy.ogg');
+    this.load.audio('sfx-arsenal-full',   'audio/sfx-arsenal-full.wav');
+    this.load.audio('sfx-damage',         'audio/sfx-damage.wav');
+    this.load.audio('sfx-arsenal-tap',    'audio/sfx-arsenal-tap.wav');
+    this.load.audio('sfx-boss-alarm',   'audio/sfx-boss-alarm.mp3');
+    this.load.audio('sfx-boss-engine',  'audio/sfx-boss-engine.mp3');
+    this.load.audio('sfx-boss-thrust',  'audio/sfx-boss-engine.wav');
+    this.load.audio('sfx-laser-plasma', 'audio/sfx-laser-plasma.mp3');
+    this.load.audio('sfx-laser-vulcan', 'audio/sfx-laser-vulcan.mp3');
+    this.load.audio('sfx-ship-engine',  'audio/sfx-ship-engine.mp3');
+    this.load.audio('sfx-wave-up',      'audio/sfx-wave-up.wav');
     this.load.audio('sfx-button',       'audio/sfx-button.mp3');
 
     // Georgian letter pronunciation clips

@@ -17,16 +17,16 @@ interface WaveCfg {
 }
 
 const WAVES: WaveCfg[] = [
-  { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.05, enemySpeed:  75, bossTier: 'b', bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.07, enemySpeed:  85, bossTier: 'b', bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.09, enemySpeed:  95, bossTier: 'b', bossScale: 1.0 },
-  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.10, enemySpeed: 105, bossTier: 'g', bossScale: 1.3 },
-  { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.11, enemySpeed: 115, bossTier: 'g', bossScale: 1.3 },
-  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.13, enemySpeed: 125, bossTier: 'g', bossScale: 1.3 },
-  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.14, enemySpeed: 140, bossTier: 'r', bossScale: 1.6 },
-  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.16, enemySpeed: 155, bossTier: 'r', bossScale: 1.6 },
-  { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.17, enemySpeed: 170, bossTier: 'r', bossScale: 1.6 },
-  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.19, enemySpeed: 185, bossTier: 'r', bossScale: 1.8 },
+  { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossTier: 'b', bossScale: 1.0 },
+  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossTier: 'b', bossScale: 1.0 },
+  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossTier: 'b', bossScale: 1.0 },
+  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossTier: 'g', bossScale: 1.3 },
+  { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.15, enemySpeed: 115, bossTier: 'g', bossScale: 1.3 },
+  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossTier: 'g', bossScale: 1.3 },
+  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossTier: 'r', bossScale: 1.6 },
+  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossTier: 'r', bossScale: 1.6 },
+  { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossTier: 'r', bossScale: 1.6 },
+  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossTier: 'r', bossScale: 1.8 },
 ];
 
 function waveCfg(wave: number): WaveCfg {
@@ -84,6 +84,7 @@ interface TokenObj {
 
 interface SlotUI {
   bg:        Phaser.GameObjects.Graphics;
+  glow:      Phaser.GameObjects.Graphics;
   charText:  Phaser.GameObjects.Text;
   latinText: Phaser.GameObjects.Text;
   zone:      Phaser.GameObjects.Zone;
@@ -91,6 +92,7 @@ interface SlotUI {
   slotY:     number;
   slotW:     number;
   slotH:     number;
+  idleTween: Phaser.Tweens.Tween | null;
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
@@ -131,7 +133,10 @@ export class GameScene extends Phaser.Scene {
   private bossHintLabel:  Phaser.GameObjects.Text | null = null;
   private bossRageLabel:  Phaser.GameObjects.Text | null = null;
   private bossRage        = 0;   // increments each time boss retreats unkilled; resets on kill
-  private bossBulletTimer: Phaser.Time.TimerEvent | null = null;
+  private bossBulletTimer:  Phaser.Time.TimerEvent | null = null;
+  private bossEngineSound:  Phaser.Sound.BaseSound  | null = null;
+  private shipEngineSound:  Phaser.Sound.BaseSound  | null = null;
+  private bossThrustSound:  Phaser.Sound.BaseSound  | null = null;
 
   // Timers
   private lastFireTime      = 0;
@@ -181,6 +186,8 @@ export class GameScene extends Phaser.Scene {
     this.activeWeapon   = 'plasma';
     this.weaponEndTime  = 0;
     this.weaponBarActive = false;
+    for (const ui of this.slotUIs) { ui.idleTween?.stop(); ui.idleTween = null; }
+    this.slotUIs  = [];
     this.bullets  = [];
     this.enemies  = [];
     this.tokens   = [];
@@ -193,6 +200,9 @@ export class GameScene extends Phaser.Scene {
     this.bossRageLabel   = null;
     this.bossRage        = 0;
     this.bossBulletTimer = null;
+    this.bossEngineSound = null;
+    this.bossThrustSound = null;
+    this.shipEngineSound = null;
     this.mistakeWeights.clear();
     this.arsenalAccentColor = this.mode === 'alphabet' ? 0x3355aa : 0x884400;
   }
@@ -200,7 +210,7 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
     this.sound.stopAll();
-    this.playMusic(`music-${this.mode}`);
+    this.playMusic('music-game');
     this.drawBackground(width, height);
     this.spawnShip(width, height);
     this.buildArsenalBar(width, height);
@@ -225,6 +235,11 @@ export class GameScene extends Phaser.Scene {
     if (!this.textures.exists('ship-m')) return;
     this.exhaust = this.add.sprite(sx, sy + 30, 'exhaust-1').setDepth(4);
     if (this.anims.exists('exhaust-loop')) this.exhaust.play('exhaust-loop');
+
+    if (this.cache.audio.has('sfx-ship-engine')) {
+      this.shipEngineSound = this.sound.add('sfx-ship-engine', { loop: true, volume: 0.30 });
+      this.shipEngineSound.play();
+    }
   }
 
   private updateShipBanking(): void {
@@ -281,7 +296,7 @@ export class GameScene extends Phaser.Scene {
       img = this.add.image(x, y, key).setDepth(6).setScale(0.7).setRotation(angleOffset);
     }
     this.bullets.push({ img, type: 'plasma', tweenDriven: false });
-    this.playSound('sfx-laser', 0.18);
+    this.playSound(this.cache.audio.has('sfx-laser-plasma') ? 'sfx-laser-plasma' : 'sfx-laser', 0.22);
   }
 
   private fireVulcan(): void {
@@ -294,19 +309,25 @@ export class GameScene extends Phaser.Scene {
       if (this.anims.exists('vulcan-fly')) spr.play('vulcan-fly');
       this.bullets.push({ img: spr, type: 'plasma', tweenDriven: false });
     }
-    this.playSound('sfx-laser', 0.22);
+    this.playSound(this.cache.audio.has('sfx-laser-vulcan') ? 'sfx-laser-vulcan' : 'sfx-laser', 0.22);
   }
 
   // ─── Arsenal tap → proton shot at boss ────────────────────────────────────
 
   private onArsenalTap(slotIndex: number): void {
-    if (!this.boss || this.bossRetreating) return;
-    if (this.bossRequired.length === 0) return;  // boss unkillable — arsenal was empty at spawn
     const item = this.arsenal[slotIndex];
     if (!item) return;
-    this.arsenal.splice(slotIndex, 1);
-    this.refreshArsenalUI();
-    this.fireProton(item);
+    this.playSound('sfx-arsenal-tap', 0.65);
+    this.animateSlotFire(slotIndex);
+    this.time.delayedCall(80, () => {
+      this.arsenal.splice(slotIndex, 1);
+      this.refreshArsenalUI();
+    });
+    if (this.boss && !this.bossRetreating && this.bossRequired.length > 0) {
+      this.fireProton(item);
+    } else {
+      this.fireProtonAtEnemy(item);
+    }
   }
 
   private fireProton(item: ItemData): void {
@@ -323,6 +344,7 @@ export class GameScene extends Phaser.Scene {
     const tx = this.boss.sprite.x;
     const ty = this.boss.sprite.y;
     img.setRotation(Phaser.Math.Angle.Between(img.x, img.y, tx, ty) + Math.PI / 2);
+    this.playSound('sfx-arsenal-deploy', 0.7);
     const bObj: BulletObj = { img, type: 'proton', tweenDriven: true };
     this.bullets.push(bObj);
     const dur = Math.max((Phaser.Math.Distance.Between(img.x, img.y, tx, ty) / PLASMA_SPEED) * 1000, 80);
@@ -335,6 +357,61 @@ export class GameScene extends Phaser.Scene {
         this.resolveProtonHit(item);
       },
     });
+  }
+
+  private fireProtonAtEnemy(_item: ItemData): void {
+    let img: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
+    if (this.anims.exists('proton-spin')) {
+      const spr = this.add.sprite(this.ship.x, this.ship.y - 28, 'bullet-proton-1').setDepth(6).setScale(1.0);
+      spr.play('proton-spin');
+      img = spr;
+    } else {
+      const key = this.textures.exists('bullet-proton-1') ? 'bullet-proton-1' : 'bullet';
+      img = this.add.image(this.ship.x, this.ship.y - 28, key).setDepth(6).setScale(1.0);
+    }
+
+    let nearestIdx  = -1;
+    let nearestDist = Infinity;
+    for (let i = 0; i < this.enemies.length; i++) {
+      const d = Phaser.Math.Distance.Between(img.x, img.y, this.enemies[i].sprite.x, this.enemies[i].sprite.y);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+    }
+
+    const bObj: BulletObj = { img, type: 'proton', tweenDriven: true };
+    this.bullets.push(bObj);
+
+    if (nearestIdx >= 0) {
+      const targetEnemy = this.enemies[nearestIdx];
+      const tx = targetEnemy.sprite.x, ty = targetEnemy.sprite.y;
+      // Lead the target: predict where it will be when the bullet arrives
+      const flightSecs = nearestDist / PLASMA_SPEED;
+      const aimX = tx;
+      const aimY = ty + targetEnemy.velY * flightSecs;
+      img.setRotation(Phaser.Math.Angle.Between(img.x, img.y, aimX, aimY) + Math.PI / 2);
+      const dur = Math.max(flightSecs * 1000, 60);
+      this.tweens.add({
+        targets: img, x: aimX, y: aimY, duration: dur,
+        onComplete: () => {
+          const bi = this.bullets.indexOf(bObj);
+          if (bi >= 0) this.bullets.splice(bi, 1);
+          img.destroy();
+          const ei = this.enemies.indexOf(targetEnemy);
+          if (ei >= 0) this.killEnemy(ei);
+        },
+      });
+    } else {
+      img.setRotation(0);
+      const dur = (this.ship.y / PLASMA_SPEED) * 1000;
+      this.tweens.add({
+        targets: img, y: -60, duration: dur, ease: 'Linear',
+        onComplete: () => {
+          const bi = this.bullets.indexOf(bObj);
+          if (bi >= 0) this.bullets.splice(bi, 1);
+          img.destroy();
+        },
+      });
+    }
+    this.playSound('sfx-laser', 0.25);
   }
 
   private resolveProtonHit(item: ItemData): void {
@@ -405,16 +482,15 @@ export class GameScene extends Phaser.Scene {
     if (forceType) {
       type = forceType;
     } else {
+      // Scale green probability by fraction of empty slots — full arsenal = 0% greens
+      const emptyRatio = Math.max(0, (cfg.slots - this.arsenal.length) / cfg.slots);
+      const effectiveGreenPct = cfg.greenPct * emptyRatio;
+      // No blue drops while Vulcan is already active
+      const effectiveBluePct = this.activeWeapon === 'vulcan' ? 0 : cfg.bluePct;
       const roll = Math.random();
-      if (roll < cfg.bluePct)                      type = 'blue';
-      else if (roll < cfg.bluePct + cfg.greenPct)  type = 'green';
-      else                                          type = 'red';
-    }
-
-    // Arsenal full and no boss incoming → carrying more letters is pointless, spawn reds
-    if (type === 'green' && !forceType) {
-      const full = this.arsenal.length >= waveCfg(this.wave).slots;
-      if (full && !this.bossScheduled && !this.boss) type = 'red';
+      if (roll < effectiveBluePct)                                type = 'blue';
+      else if (roll < effectiveBluePct + effectiveGreenPct)       type = 'green';
+      else                                                        type = 'red';
     }
 
     const texKey = type === 'blue'  ? 'enemy-blue-m'
@@ -504,6 +580,15 @@ export class GameScene extends Phaser.Scene {
         this.playBossHint();
         this.createBossHintLabel();
         if (this.totalBossRage > 0) this.startBossBulletTimer();
+        this.playSound('sfx-boss-alarm', 0.6);
+        if (this.cache.audio.has('sfx-boss-engine')) {
+          this.bossEngineSound = this.sound.add('sfx-boss-engine', { loop: true, volume: 0.45 });
+          this.bossEngineSound.play();
+        }
+        if (this.cache.audio.has('sfx-boss-thrust')) {
+          this.bossThrustSound = this.sound.add('sfx-boss-thrust', { loop: true, volume: 0.68 });
+          this.bossThrustSound.play();
+        }
         // Pulse glow
         this.tweens.add({
           targets: bossSprite, alpha: 0.6, duration: 700,
@@ -520,12 +605,26 @@ export class GameScene extends Phaser.Scene {
     this.bossRetreatTimer = this.time.delayedCall(BOSS_TIMEOUT, () => this.retreatBoss());
   }
 
+  private stopBossEngineSound(): void {
+    if (this.bossEngineSound) {
+      this.bossEngineSound.stop();
+      this.bossEngineSound.destroy();
+      this.bossEngineSound = null;
+    }
+    if (this.bossThrustSound) {
+      this.bossThrustSound.stop();
+      this.bossThrustSound.destroy();
+      this.bossThrustSound = null;
+    }
+  }
+
   private retreatBoss(): void {
     if (!this.boss || this.bossRetreating) return;
     this.bossRetreating  = true;
     this.bossScheduled   = false;
     this.bossRage++;
     this.bossBulletTimer?.remove(); this.bossBulletTimer = null;
+    this.stopBossEngineSound();
     this.destroyBossLabels();
     this.tweens.killTweensOf(this.boss.sprite);
     this.tweens.add({
@@ -538,9 +637,11 @@ export class GameScene extends Phaser.Scene {
     if (!this.boss) return;
     this.bossRetreatTimer?.remove(); this.bossRetreatTimer = null;
     this.bossBulletTimer?.remove();  this.bossBulletTimer = null;
-    this.bossRage         = 0;
-    this.bossScheduled    = false;
-    this.lastBossKillTime = this.time.now;
+    this.stopBossEngineSound();
+    this.bossRage          = 0;
+    this.bossScheduled     = false;
+    this.lastBossKillTime  = this.time.now;
+    this.arsenalReadyShown = false;
     this.tweens.killTweensOf(this.boss.sprite);
     this.destroyBossLabels();
     const bx = this.boss.sprite.x;
@@ -552,7 +653,7 @@ export class GameScene extends Phaser.Scene {
     this.bossRemaining = [];
 
     this.playBossExplosion(bx, by);
-    this.playSound('sfx-explosion', 0.9);
+    this.playSound('sfx-explosion-boss', 0.9);
     this.score += 50 * this.wave;
     this.scene.get('HUDScene')?.events.emit('score-update', this.score);
 
@@ -754,14 +855,10 @@ export class GameScene extends Phaser.Scene {
       // Discard if this letter/number is already in the arsenal
       if (this.arsenal.some(a => a.char === tok.item.char)) return;
       const maxSlots = waveCfg(this.wave).slots;
-      if (this.arsenal.length >= maxSlots) {
-        // Never silently evict letters mid-boss — the player's loadout is locked
-        if (this.boss) return;
-        this.arsenal.shift();
-      }
+      if (this.arsenal.length >= maxSlots) return;
       this.arsenal.push(tok.item);
       this.refreshArsenalUI();
-      this.playSound('sfx-wave-up', 0.4);
+      this.animateSlotCollect(this.arsenal.length - 1);
       this.checkArsenalReady();
     }
   }
@@ -829,10 +926,11 @@ export class GameScene extends Phaser.Scene {
     const slotY  = barY + 22;
 
     for (let i = 0; i < MAX; i++) {
-      const cx = startX + i * (slotW + gap) + slotW / 2;
-      const bg = this.add.graphics().setDepth(100);
+      const cx   = startX + i * (slotW + gap) + slotW / 2;
+      const glow = this.add.graphics().setDepth(99.5).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0);
+      const bg   = this.add.graphics().setDepth(100);
       const charText = this.add.text(cx, slotY + slotH / 2 - 8, '', {
-        fontSize: '24px', color: '#ffffff',
+        fontSize: '26px', color: '#ffffff',
         fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
       }).setOrigin(0.5).setDepth(101);
       const latinText = this.add.text(cx, slotY + slotH - 9, '', {
@@ -842,42 +940,144 @@ export class GameScene extends Phaser.Scene {
         .setInteractive().setDepth(102);
       const ci = i;
       zone.on('pointerdown', () => this.onArsenalTap(ci));
-      this.slotUIs.push({ bg, charText, latinText, zone, cx, slotY, slotW, slotH });
+      this.slotUIs.push({ bg, glow, charText, latinText, zone, cx, slotY, slotW, slotH, idleTween: null });
     }
     this.refreshArsenalUI();
   }
 
   private refreshArsenalUI(): void {
-    const maxActive = waveCfg(this.wave).slots;
-    const accent    = this.arsenalAccentColor;
+    const maxActive  = waveCfg(this.wave).slots;
+    const accent     = this.arsenalAccentColor;
     const activeBase = this.mode === 'alphabet' ? 0x1a3a7a : 0x4a2200;
+    const glowColor  = this.mode === 'alphabet' ? 0x2266ff : 0xff8800;
 
     for (let i = 0; i < this.slotUIs.length; i++) {
       const ui   = this.slotUIs[i];
       const item = this.arsenal[i];
       const on   = i < maxActive;
-      const { bg, charText, latinText, cx, slotY, slotW, slotH } = ui;
+      const { bg, glow, charText, latinText, cx, slotY, slotW, slotH } = ui;
 
       bg.clear();
-      if (on) {
-        bg.fillStyle(item ? activeBase : 0x0d1a2a, item ? 1 : 0.55);
-        bg.fillRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
-        bg.lineStyle(1.5, item ? (accent + 0x111111) : 0x223344, item ? 0.9 : 0.4);
-        bg.strokeRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
-      } else {
-        bg.fillStyle(0x000000, 0.15);
-        bg.fillRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
-        bg.lineStyle(1, 0x112233, 0.22);
-        bg.strokeRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
-      }
+      glow.clear();
 
-      if (item && on) {
-        charText.setText(this.mode === 'numbers' ? item.display : item.char).setAlpha(1);
-        latinText.setText(this.mode === 'numbers' ? item.char : item.latin).setAlpha(0.72);
+      if (!on) {
+        // ── Locked — clearly unavailable ──────────────────────────────────
+        ui.idleTween?.stop(); ui.idleTween = null;
+        glow.setAlpha(0);
+        bg.fillStyle(0x000000, 0.55);
+        bg.fillRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        bg.lineStyle(1, 0x1a1a1a, 0.30);
+        bg.strokeRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        charText.setText('·').setAlpha(0.20).setStyle({ fontSize: '20px', color: '#445566' });
+        latinText.setText('');
+
+      } else if (item) {
+        // ── Active + filled — vivid, glowing ──────────────────────────────
+        ui.idleTween?.stop(); ui.idleTween = null;
+        glow.lineStyle(6, glowColor, 0.55);
+        glow.strokeRoundedRect(cx - slotW / 2 - 3, slotY - 3, slotW + 6, slotH + 6, 10);
+        glow.setAlpha(0.35);
+        bg.fillStyle(activeBase, 1);
+        bg.fillRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        bg.lineStyle(2, accent + 0x222222, 1);
+        bg.strokeRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        charText.setText(this.mode === 'numbers' ? item.display : item.char)
+          .setAlpha(1).setStyle({ fontSize: '26px', color: '#ffffff' });
+        latinText.setText(this.mode === 'numbers' ? item.char : item.latin).setAlpha(0.80);
+
       } else {
-        charText.setText(''); latinText.setText('');
+        // ── Active + empty — breathing / waiting ──────────────────────────
+        bg.fillStyle(0x061428, 0.80);
+        bg.fillRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        bg.lineStyle(1.5, 0x1155aa, 0.50);
+        bg.strokeRoundedRect(cx - slotW / 2, slotY, slotW, slotH, 8);
+        glow.lineStyle(5, 0x00aaff, 1);
+        glow.strokeRoundedRect(cx - slotW / 2 - 2, slotY - 2, slotW + 4, slotH + 4, 10);
+        charText.setText('').setAlpha(1).setStyle({ fontSize: '26px', color: '#ffffff' });
+        latinText.setText('');
+        if (!ui.idleTween || !ui.idleTween.isPlaying()) {
+          ui.idleTween?.stop();
+          ui.idleTween = this.tweens.add({
+            targets: glow, alpha: 0.20, duration: 1400,
+            yoyo: true, repeat: -1, ease: 'Sine.InOut', delay: i * 120,
+          }) as Phaser.Tweens.Tween;
+        }
       }
     }
+  }
+
+  // ─── Arsenal slot animations ─────────────────────────────────────────────
+
+  private animateSlotCollect(slotIndex: number): void {
+    const ui = this.slotUIs[slotIndex];
+    if (!ui) return;
+    const { charText, bg, glow, cx, slotY, slotH } = ui;
+    charText.setScale(0);
+    this.tweens.add({
+      targets: charText, scaleX: 1.35, scaleY: 1.35, duration: 120, ease: 'Back.Out',
+      onComplete: () => this.tweens.add({ targets: charText, scaleX: 1, scaleY: 1, duration: 80 }),
+    });
+    this.tweens.add({
+      targets: bg, alpha: 0.4, duration: 70, yoyo: true, repeat: 1,
+      onComplete: () => bg.setAlpha(1),
+    });
+    this.tweens.add({
+      targets: glow, alpha: 0.95, duration: 80,
+      onComplete: () => this.tweens.add({ targets: glow, alpha: 0.35, duration: 200 }),
+    });
+    const cy = slotY + slotH / 2;
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const dist  = Phaser.Math.Between(14, 32);
+      const p = this.add.image(cx, cy, 'particle').setDepth(103).setScale(0.5);
+      this.tweens.add({
+        targets: p,
+        x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
+        alpha: 0, scale: 0.2, duration: Phaser.Math.Between(220, 380),
+        onComplete: () => p.destroy(),
+      });
+    }
+  }
+
+  private animateSlotFire(slotIndex: number): void {
+    const ui = this.slotUIs[slotIndex];
+    if (!ui) return;
+    const { charText, glow } = ui;
+    charText.setTint(0xffffff);
+    this.tweens.add({
+      targets: charText, scaleX: 1.4, scaleY: 1.4, alpha: 0, duration: 160, ease: 'Cubic.In',
+      onComplete: () => { charText.clearTint(); charText.setScale(1).setAlpha(1); },
+    });
+    this.tweens.add({
+      targets: glow, alpha: 0.9, duration: 60,
+      onComplete: () => this.tweens.add({ targets: glow, alpha: 0, duration: 150 }),
+    });
+  }
+
+  private animateArsenalFullCascade(): void {
+    const maxSlots = waveCfg(this.wave).slots;
+    for (let i = 0; i < maxSlots; i++) {
+      const ui = this.slotUIs[i];
+      if (!ui) continue;
+      const { glow, charText } = ui;
+      this.time.delayedCall(i * 70, () => {
+        this.tweens.add({
+          targets: glow, alpha: 0.9, duration: 130,
+          onComplete: () => this.tweens.add({ targets: glow, alpha: 0.35, duration: 220 }),
+        });
+        this.tweens.add({
+          targets: charText, scaleX: 1.25, scaleY: 1.25, duration: 140, ease: 'Back.Out',
+          onComplete: () => this.tweens.add({ targets: charText, scaleX: 1, scaleY: 1, duration: 100 }),
+        });
+      });
+    }
+    const allBgs = this.slotUIs.slice(0, maxSlots).map(u => u.bg);
+    this.time.delayedCall(maxSlots * 70 + 220, () => {
+      this.tweens.add({
+        targets: allBgs, alpha: 0.45, duration: 120, yoyo: true, repeat: 2,
+        onComplete: () => allBgs.forEach(b => b.setAlpha(1)),
+      });
+    });
   }
 
   // ─── Dataset helpers ──────────────────────────────────────────────────────
@@ -917,13 +1117,13 @@ export class GameScene extends Phaser.Scene {
     const cfg: [string, number, number, number, number, number][] = [
       ['kp-planet-02', 0.10, 0.10, 0.018, 0.35, 0.28],
       ['kp-planet-06', 0.82, 0.40, 0.020, 0.45, 0.26],
-      ['kp-planet-04', 0.30, 0.65, 0.025, 0.70, 0.30],
+      ['kp-planet-04', 0.30, 0.65, 0.030, 0.70, 0.30],  // +20%
       ['kp-planet-08', 0.68, 0.25, 0.022, 0.90, 0.32],
       ['kp-planet-01', 0.90, 0.60, 0.019, 0.55, 0.26],
-      ['kp-planet-07', 0.20, 0.05, 0.028, 1.20, 0.34],
+      ['kp-planet-07', 0.20, 0.05, 0.034, 1.20, 0.34],  // +20%
       ['kp-planet-00', 0.50, 0.80, 0.015, 0.30, 0.22],
       ['kp-planet-03', 0.75, 0.70, 0.016, 0.42, 0.24],
-      ['kp-planet-05', 0.40, 0.30, 0.014, 0.38, 0.20],
+      ['kp-planet-05', 0.40, 0.30, 0.017, 0.38, 0.20],  // +20%
       ['kp-planet-09', 0.15, 0.45, 0.017, 0.50, 0.25],
     ];
     for (const [key, xp, yp, scale, speed, alpha] of cfg) {
@@ -1065,10 +1265,10 @@ export class GameScene extends Phaser.Scene {
     // Wave advance
     if (this.killCount % KILL_PER_WAVE === 0) {
       this.wave++;
-      this.playSound('sfx-wave-up');
       this.scene.get('HUDScene')?.events.emit('wave-update', this.wave);
       this.showWaveBanner();
       if (this.wave === 4 || this.wave === 7) this.swapParallaxLayers();
+      if (this.wave === 7) this.crossfadeMusic('music-orbital');
       this.refreshArsenalUI();
       this.restartEnemySpawner(); // apply new spawnMs
     }
@@ -1095,6 +1295,7 @@ export class GameScene extends Phaser.Scene {
     if (this.isDead) return;
     this.lives = Math.max(0, this.lives - 1);
     this.cameras.main.shake(280, 0.013);
+    this.playSound('sfx-damage', 0.75);
     this.scene.get('HUDScene')?.events.emit('lives-update', this.lives);
     this.tweens.add({
       targets: this.ship, alpha: 0.15, duration: 80,
@@ -1124,10 +1325,13 @@ export class GameScene extends Phaser.Scene {
   // ─── Arsenal ready banner ────────────────────────────────────────────────
 
   private checkArsenalReady(): void {
-    if (this.arsenalReadyShown) return;
     if (this.arsenal.length < waveCfg(this.wave).slots) return;
-    this.arsenalReadyShown = true;
-    this.showArsenalReadyBanner();
+    this.animateArsenalFullCascade();
+    this.playSound('sfx-arsenal-full', 0.6);
+    if (!this.arsenalReadyShown) {
+      this.arsenalReadyShown = true;
+      this.showArsenalReadyBanner();
+    }
   }
 
   private showArsenalReadyBanner(): void {
@@ -1171,7 +1375,31 @@ export class GameScene extends Phaser.Scene {
     if (this.cache.audio.has(key)) this.sound.play(key, { volume });
   }
   private playMusic(key: string): void {
-    if (this.cache.audio.has(key)) this.sound.play(key, { loop: true, volume: 0.35 });
+    if (!this.cache.audio.has(key)) return;
+    if (this.sound.get(key)) return; // already looping (e.g. returned from menu)
+    const muted = !!this.game.registry.get('musicMuted');
+    this.sound.play(key, { loop: true, volume: muted ? 0 : 0.25 });
+  }
+
+  private crossfadeMusic(toKey: string, durationMs = 2000): void {
+    if (!this.cache.audio.has(toKey)) return;
+    if (this.sound.get(toKey)) return; // already playing
+    const muted = !!this.game.registry.get('musicMuted');
+    const targetVol = muted ? 0 : 0.25;
+
+    // Fade out all currently playing music tracks
+    const mgr = this.sound as unknown as { sounds: Phaser.Sound.BaseSound[] };
+    for (const s of mgr.sounds ?? []) {
+      if (s.key === 'music-game' || s.key === 'music-orbital') {
+        this.tweens.add({ targets: s, volume: 0, duration: durationMs,
+          onComplete: () => s.stop() });
+      }
+    }
+
+    // Start new track silently then fade in
+    this.sound.play(toKey, { loop: true, volume: 0 });
+    const incoming = this.sound.get(toKey) as any;
+    if (incoming) this.tweens.add({ targets: incoming, volume: targetVol, duration: durationMs });
   }
 
   // ─── Update loop ──────────────────────────────────────────────────────────
