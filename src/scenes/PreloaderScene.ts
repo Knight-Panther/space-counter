@@ -11,16 +11,7 @@ export class PreloaderScene extends Phaser.Scene {
   // Drop files into public/images/ and public/audio/ and they load automatically.
   preload(): void {
     // Background images
-    this.load.image('bg-menu',     'images/bg-menu.jpg');
-    this.load.image('bg-alphabet', 'images/bg-alphabet.jpg');
-    this.load.image('bg-numbers',  'images/bg-numbers.jpg');
-
-    // Sprite sheets / character art
-    this.load.image('ship',           'images/ship.png');
-    this.load.image('alien-alphabet', 'images/alien-alphabet.png');
-    this.load.image('alien-numbers',  'images/alien-numbers.png');
-    this.load.image('story-warrior',  'images/story-warrior.png');
-    this.load.image('story-wizard',   'images/story-wizard.png');
+    this.load.image('bg-menu', 'images/bg-menu.jpg');
 
     // Player ship — blue (default) + red (damage flash), 5 banking frames each
     for (const v of ['m', 'l1', 'l2', 'r1', 'r2']) {
@@ -33,10 +24,12 @@ export class PreloaderScene extends Phaser.Scene {
       this.load.image(`exhaust-${i}`, `images/exhaust-${i}.png`);
     }
 
-    // Standard enemies — red, green, blue (weapon-drop carrier)
+    // Standard enemies — red, green, blue with all 5 banking frames
     this.load.image('enemy-red',   'images/enemy-red.png');
     this.load.image('enemy-green', 'images/enemy-green.png');
-    this.load.image('enemy-blue-m', 'images/enemy-blue-m.png');
+    for (const v of ['m', 'l1', 'l2', 'r1', 'r2']) {
+      this.load.image(`enemy-blue-${v}`, `images/enemy-blue-${v}.png`);
+    }
 
     // Boss ships — 3 tiers (blue=easy, green=mid, red=hard), straight frame only
     // (bosses hover so banking frames are loaded but used only if boss drifts)
@@ -85,9 +78,6 @@ export class PreloaderScene extends Phaser.Scene {
     // Space nebula overlay layers (original)
     this.load.image('space-nebula',   'images/Space.png');
     this.load.image('space-nebula-2', 'images/Space_1.png');
-
-    // Planet shadow/lighting overlay
-    this.load.image('planet-shadow', 'images/PLanet_Shadow_1.png');
 
     // SBS seamless nebula layers — used for parallax scrolling
     this.load.image('nebula-purple-01', 'images/nebula-purple-01.png');
@@ -235,6 +225,24 @@ export class PreloaderScene extends Phaser.Scene {
         frames: [1, 2, 3, 4, 5].map(i => ({ key: `exhaust-${i}` })),
         frameRate: 12,
         repeat: -1,
+      });
+    }
+
+    // Plasma bullet flicker — 2 frames
+    if (this.textures.exists('bullet-plasma')) {
+      this.anims.create({
+        key: 'plasma-fly',
+        frames: ['bullet-plasma', 'bullet-plasma-2'].map(k => ({ key: k })),
+        frameRate: 8, repeat: -1,
+      });
+    }
+
+    // Proton bullet spin — 3 frames
+    if (this.textures.exists('bullet-proton-1')) {
+      this.anims.create({
+        key: 'proton-spin',
+        frames: [1, 2, 3].map(i => ({ key: `bullet-proton-${i}` })),
+        frameRate: 10, repeat: -1,
       });
     }
 

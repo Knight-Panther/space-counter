@@ -30,21 +30,22 @@ export class HUDScene extends Phaser.Scene {
 
     // Score — top left, after the home button
     this.scoreText = this.add.text(58, 14, 'Score: 0', {
-      fontSize: '22px',
+      fontSize: '20px',
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 3,
       fontFamily: 'Arial',
-    });
+    }).setOrigin(0, 0);
 
-    // Wave — top center
+    // Wave — starts centered but shifts right if score text grows into it
     this.waveText = this.add.text(width / 2, 14, 'Wave 1', {
-      fontSize: '22px',
+      fontSize: '20px',
       color: accentColor,
       stroke: '#000000',
       strokeThickness: 3,
       fontFamily: 'Arial',
-    }).setOrigin(0.5, 0);
+    }).setOrigin(0, 0);
+    this.repositionWaveText();
 
     // Lives — top right (heart icons)
     this.hearts = [];
@@ -76,12 +77,14 @@ export class HUDScene extends Phaser.Scene {
     // Events
     this.events.on('score-update', (score: number) => {
       this.scoreText.setText(`Score: ${score}`);
+      this.repositionWaveText();
     });
     this.events.on('lives-update', (lives: number) => {
       this.updateHearts(lives);
     });
     this.events.on('wave-update', (wave: number) => {
       this.waveText.setText(`Wave ${wave}`);
+      this.repositionWaveText();
     });
     this.events.on('weapon-start', () => {
       this.weaponBarVisible = true;
@@ -137,6 +140,13 @@ export class HUDScene extends Phaser.Scene {
       this.scene.stop('GameScene');
       this.scene.start('MainMenuScene');
     });
+  }
+
+  private repositionWaveText(): void {
+    const { width } = this.scale;
+    const naturalX  = width / 2 - this.waveText.width / 2; // centered
+    const safeX     = this.scoreText.x + this.scoreText.width + 10; // 10px gap after score
+    this.waveText.setX(Math.max(naturalX, safeX));
   }
 
   private updateHearts(lives: number): void {

@@ -11,13 +11,13 @@ interface StoryConfig {
 const STORIES: Record<GameMode, StoryConfig> = {
   alphabet: {
     text: 'გალაქტიკის კიდიდან ბნელი ძალები დაიძრნენ. მათი მიზანია დედამიწა გაანადგურონ.\n\nშენ პლანეტა „თვალეს" უკანასკნელი მცველი ხარ! შენი ხომალდის ზარბაზანი მხოლოდ სწორ ასო-ბგერებს ემორჩილება — არ დანებდე ბრძოლის ველზე!',
-    bgKey: 'bg-alphabet',
+    bgKey: 'space-nebula',
     accentColor: 0x4488ff,
     introAudioKey: 'intro-alphabet',
   },
   numbers: {
     text: 'გალაქტიკის კიდიდან ბნელი ძალები დაიძრნენ. მათი მიზანია დედამიწა გაანადგურონ.\n\nშენ პლანეტა „თვალეს" უკანასკნელი მცველი ხარ! შენი ხომალდის ზარბაზანი მხოლოდ სწორ რიცხვებს ემორჩილება — არ დანებდე ბრძოლის ველზე!',
-    bgKey: 'bg-numbers',
+    bgKey: 'space-nebula-2',
     accentColor: 0xff8800,
     introAudioKey: 'intro-numbers',
   },
@@ -79,7 +79,7 @@ export class StoryScene extends Phaser.Scene {
     overlay.fillRect(0, 0, w, h);
 
     // Nebula glow — cinematic atmosphere per mode
-    const nebulaKey   = bgKey === 'bg-alphabet' ? 'nebula-purple-01' : 'nebula-green-02';
+    const nebulaKey   = bgKey === 'space-nebula' ? 'nebula-purple-01' : 'nebula-green-02';
     const nebulaAlpha = bgKey === 'bg-alphabet' ? 0.30 : 0.25;
     if (this.textures.exists(nebulaKey)) {
       this.add.image(w / 2, h / 2, nebulaKey)
