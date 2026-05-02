@@ -6,11 +6,9 @@
       "Read(//c/Users/VM-Dev/**)",
       "Edit(//c/Users/VM-Dev/Desktop/Space-counter/**)",
       "Write(//c/Users/VM-Dev/Desktop/Space-counter/**)",
-
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(node *)",
-
       "Bash(git status*)",
       "Bash(git log*)",
       "Bash(git diff*)",
@@ -34,9 +32,7 @@
       "Bash(git show*)",
       "Bash(git blame*)",
       "Bash(git merge *)",
-
       "Bash(gh *)",
-
       "Bash(ls*)",
       "Bash(find *)",
       "Bash(mkdir *)",
@@ -59,13 +55,30 @@
       "Bash(curl *)",
       "Bash(unzip *)",
       "Bash(tar *)",
-
       "Bash(java *)",
       "Bash(sdkmanager *)",
       "Bash(adb *)",
       "Bash(tsc *)",
-
-      "PowerShell(*)"
+      "PowerShell(*)",
+      "Bash(rm \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\src\\\\scenes\\\\MenuScene.ts\")",
+      "WebFetch(domain:rexrainbow.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:skhoroshavin.itch.io)",
+      "WebFetch(domain:phaser.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:kenney.nl)",
+      "WebFetch(domain:opengameart.org)",
+      "WebFetch(domain:itch.io)",
+      "WebFetch(domain:craftpix.net)",
+      "WebFetch(domain:dinvstudio.itch.io)",
+      "WebFetch(domain:screamingbrainstudios.itch.io)",
+      "WebFetch(domain:brainchild.itch.io)",
+      "Read(//mnt/c/Users/VM-Dev/**)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\game\\\\SpaceRage\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Select-Object FullName, Length)",
+      "Bash(Format-Table -AutoSize)"
     ],
     "deny": [
       "Bash(git push --force*)",
