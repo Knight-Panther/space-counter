@@ -43,7 +43,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.createTwinklingStars(w, h);
     this.addAnimatedSun(w, h);
     this.addFloatingPlanets(w, h);
-    this.drawScanlines(w, h);
+
     this.buildTitle(cx, h);
     this.buildMenu(cx, h);
     this.buildFooter(cx, h, w);
@@ -66,6 +66,7 @@ export class MainMenuScene extends Phaser.Scene {
   // ─── Parallax nebula layers ───────────────────────────────────────────────────
 
   private addParallaxLayers(w: number, h: number): void {
+    if (this.textures.exists('bg-menu')) return; // real photo — skip full-screen overlays
     if (this.textures.exists('nebula-purple-03')) {
       this.nebulaLayer = this.add.tileSprite(w / 2, h / 2, w, h, 'nebula-purple-03')
         .setAlpha(0.20).setDepth(1);
@@ -181,10 +182,11 @@ export class MainMenuScene extends Phaser.Scene {
   private drawBackground(w: number, h: number): void {
     if (this.textures.exists('bg-menu')) {
       this.add.image(w / 2, h / 2, 'bg-menu').setDisplaySize(w, h);
-      // darken real image so text pops
       const dim = this.add.graphics();
-      dim.fillStyle(0x000011, 0.10);
-      dim.fillRect(0, 0, w, h);
+      dim.fillStyle(0x000011, 0.05);
+      dim.fillRect(0, h * 0.19, w, h * 0.20); // title
+      dim.fillRect(0, h * 0.42, w, h * 0.20); // menu
+      dim.fillRect(0, h * 0.87, w, h * 0.11); // footer
       return;
     }
 
@@ -234,15 +236,6 @@ export class MainMenuScene extends Phaser.Scene {
     }
   }
 
-  // CRT scanline overlay — gives the retro 2000s arcade feel
-  private drawScanlines(w: number, h: number): void {
-    const gfx = this.add.graphics();
-    gfx.fillStyle(0x000000, 0.07);
-    for (let y = 0; y < h; y += 4) {
-      gfx.fillRect(0, y, w, 1);
-    }
-    gfx.setDepth(50);
-  }
 
   // ─── Title ────────────────────────────────────────────────────────────────────
 

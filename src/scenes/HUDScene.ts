@@ -30,7 +30,7 @@ export class HUDScene extends Phaser.Scene {
     this.buildMenuButton();
 
     // Score — top left, after the home button
-    this.scoreText = this.add.text(58, 14, 'Score: 0', {
+    this.scoreText = this.add.text(58, 14, 'ქულა: 0', {
       fontSize: '20px',
       color: '#ffffff',
       stroke: '#000000',
@@ -39,7 +39,7 @@ export class HUDScene extends Phaser.Scene {
     }).setOrigin(0, 0);
 
     // Wave — starts centered but shifts right if score text grows into it
-    this.waveText = this.add.text(width / 2, 14, 'Wave 1', {
+    this.waveText = this.add.text(width / 2, 14, 'დონე 1', {
       fontSize: '20px',
       color: accentColor,
       stroke: '#000000',
@@ -80,14 +80,14 @@ export class HUDScene extends Phaser.Scene {
 
     // Events
     this.events.on('score-update', (score: number) => {
-      this.scoreText.setText(`Score: ${score}`);
+      this.scoreText.setText(`ქულა: ${score}`);
       this.repositionWaveText();
     });
     this.events.on('lives-update', (lives: number) => {
       this.updateHearts(lives);
     });
     this.events.on('wave-update', (wave: number) => {
-      this.waveText.setText(`Wave ${wave}`);
+      this.waveText.setText(`დონე ${wave}`);
       this.repositionWaveText();
     });
     this.events.on('weapon-start', () => {

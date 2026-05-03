@@ -52,6 +52,7 @@ export class StoryScene extends Phaser.Scene {
     const story = STORIES[this.mode];
 
     this.drawBackground(w, h, story.bgKey);
+    this.addCharacterPortrait(w, h, story.accentColor);
     this.buildTextBox(w, h, story.accentColor);
     this.buildSkipButton(w, story.accentColor);
     this.duckMenuMusic();
@@ -89,13 +90,52 @@ export class StoryScene extends Phaser.Scene {
     }
   }
 
+  // ─── Character portrait ───────────────────────────────────────────────────────
+
+  private addCharacterPortrait(w: number, h: number, accent: number): void {
+    if (!this.textures.exists('tina')) return;
+
+    const portraitW = w * 0.42;
+    const portraitX = w - portraitW * 0.48;
+    const portraitY = h * 0.52;
+
+    // Soft glow behind the character
+    const glow = this.add.graphics();
+    glow.fillStyle(accent, 0.12);
+    glow.fillEllipse(portraitX, portraitY + portraitW * 0.15, portraitW * 1.1, portraitW * 1.4);
+    glow.setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({
+      targets: glow, alpha: 0.45, scaleX: 1.06, scaleY: 1.06,
+      duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.InOut',
+    });
+
+    const portrait = this.add.image(portraitX, portraitY, 'tina');
+    const scale = (h * 0.72) / portrait.height;
+    portrait.setScale(scale).setOrigin(0.5, 0.5);
+
+    // Gentle idle float
+    this.tweens.add({
+      targets: portrait, y: portraitY - 8,
+      duration: 2800, yoyo: true, repeat: -1, ease: 'Sine.InOut',
+    });
+
+    // Slide in from right on scene start
+    portrait.setX(w + portrait.displayWidth);
+    this.tweens.add({
+      targets: portrait, x: portraitX,
+      duration: 700, ease: 'Back.Out',
+    });
+    glow.setAlpha(0);
+    this.tweens.add({ targets: glow, alpha: 0.12, duration: 700 });
+  }
+
   // ─── Text box ─────────────────────────────────────────────────────────────────
 
   private buildTextBox(w: number, h: number, accent: number): void {
     const hPad = 22;
     const boxX = hPad;
     const boxY = h * 0.10;
-    const boxW = w - hPad * 2;
+    const boxW = w * 0.58;
     const boxH = h * 0.80;
     const innerPad = 20;
 

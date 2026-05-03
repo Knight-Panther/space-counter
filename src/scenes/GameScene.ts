@@ -218,6 +218,17 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(120, () => this.syncHUD());
     this.setupInput(width, height);
     this.startEnemySpawner();
+    this.playWave1Instruction();
+  }
+
+  private playWave1Instruction(): void {
+    const key = this.mode === 'alphabet'
+      ? 'gameplay-alphabet-instruction'
+      : 'gameplay-number-instruction';
+    if (!this.cache.audio.has(key)) return;
+    this.time.delayedCall(1500, () => {
+      if (!this.isDead) this.sound.play(key, { volume: 1.0 });
+    });
   }
 
   shutdown(): void { this.sound.stopAll(); }
