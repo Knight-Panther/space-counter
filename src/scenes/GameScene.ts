@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { LETTERS } from '../data/letters';
 import { NUMBERS } from '../data/numbers';
 import { GameMode, ItemData } from '../data/types';
+import { FREE_LETTER_COUNT } from '../data/freeContent';
 
 // ─── Wave configuration ───────────────────────────────────────────────────────
 
@@ -437,8 +438,8 @@ export class GameScene extends Phaser.Scene {
       if (this.bossRemaining.length === 0) {
         this.killBoss();
       } else {
-        // Replay hint for remaining items
-        this.time.delayedCall(400, () => this.playBossHint());
+        // Replay hint for remaining items — no "shoot" voice, player already knows
+        this.time.delayedCall(400, () => this.playBossHint(false));
       }
     } else {
       // Wrong item — penalise player
@@ -674,10 +675,11 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(2000, () => { if (!this.isDead) this.startEnemySpawner(); });
   }
 
-  private playBossHint(): void {
-    // Play audio for each remaining required item with a short gap
+  private playBossHint(withShoot = true): void {
+    const shootDelay = (withShoot && this.cache.audio.has('voice-shoot')) ? 600 : 0;
+    if (shootDelay > 0) this.sound.play('voice-shoot', { volume: 1.0 });
     this.bossRemaining.forEach((item, i) => {
-      this.time.delayedCall(i * 900, () => {
+      this.time.delayedCall(shootDelay + i * 900, () => {
         if (this.cache.audio.has(item.audioKey)) {
           this.sound.play(item.audioKey, { volume: 1.0 });
         }
@@ -1094,8 +1096,20 @@ export class GameScene extends Phaser.Scene {
   // ─── Dataset helpers ──────────────────────────────────────────────────────
 
   private availableItems(): ItemData[] {
-    const maxTier = this.wave < 4 ? 1 : this.wave < 7 ? 2 : 3;
-    return this.dataset.filter(l => l.tier <= maxTier);
+    const maxTier     = this.wave < 4 ? 1 : this.wave < 7 ? 2 : 3;
+    const tierFiltered = this.dataset.filter(l => l.tier <= maxTier);
+
+    if (this.game.registry.get('isPremium')) return tierFiltered;
+
+    // Free tier: letters → first 12 by position; numbers → tier 1 (1-10) only
+    if (this.mode === 'alphabet') {
+      const freeChars = new Set(LETTERS.slice(0, FREE_LETTER_COUNT).map(l => l.char));
+      const result    = tierFiltered.filter(l => freeChars.has(l.char));
+      return result.length > 0 ? result : LETTERS.slice(0, FREE_LETTER_COUNT);
+    } else {
+      const result = tierFiltered.filter(l => l.tier === 1);
+      return result.length > 0 ? result : NUMBERS.filter(l => l.tier === 1);
+    }
   }
 
   private pickRandomItem(): ItemData {

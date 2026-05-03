@@ -101,6 +101,30 @@ export class GameOverScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    // Upsell strip for free users
+    if (!this.game.registry.get('isPremium')) {
+      const stripY = panelY + panelH + 14;
+      const stripH = 60;
+      this.add.graphics()
+        .fillStyle(0x001833, 0.92)
+        .fillRoundedRect(panelX, stripY, panelW, stripH, 12)
+        .lineStyle(1.5, 0x0066cc, 0.7)
+        .strokeRoundedRect(panelX, stripY, panelW, stripH, 12);
+
+      this.add.text(width / 2, stripY + 8, 'სრული ანბანი — 33 ასო + 20 რიცხვი', {
+        fontSize: '13px', color: '#6699bb',
+        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      }).setOrigin(0.5, 0);
+
+      const unlockBtn = this.add.text(width / 2, stripY + 32, '★  განბლოკვა  /  Unlock Full Game', {
+        fontSize: '15px', color: '#ffdd00', fontStyle: 'bold',
+        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+
+      this.tweens.add({ targets: unlockBtn, alpha: 0.3, duration: 850, yoyo: true, repeat: -1 });
+      unlockBtn.on('pointerdown', () => this.scene.launch('PaywallScene'));
+    }
+
     // Short delay before accepting input (prevents accidental skip)
     this.time.delayedCall(800, () => {
       this.input.once('pointerdown', () => this.scene.start('MainMenuScene'));

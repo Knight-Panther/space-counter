@@ -124,6 +124,9 @@ export class PreloaderScene extends Phaser.Scene {
     // Wave 1 gameplay instructions (play once at mission start)
     this.load.audio('gameplay-alphabet-instruction', 'audio/gameplay-alphabet-instruction.wav');
     this.load.audio('gameplay-number-instruction',   'audio/gameplay-number-instruction.wav');
+
+    // "Shoot" voice — prepended before every boss hint sequence
+    this.load.audio('voice-shoot', 'audio/voice-shoot.wav');
     this.load.audio('music-alphabet', 'audio/music-alphabet.mp3');
     this.load.audio('music-numbers',  'audio/music-numbers.mp3');
 

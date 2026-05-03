@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { GameMode } from '../data/types';
+import { PremiumManager } from '../iap/PremiumManager';
 
 type MenuAction = GameMode;
 
@@ -47,6 +48,9 @@ export class MainMenuScene extends Phaser.Scene {
     this.buildTitle(cx, h);
     this.buildMenu(cx, h);
     this.buildFooter(cx, h, w);
+
+    // Rebuild footer (removes unlock button) as soon as premium activates
+    this.game.events.once('premium-changed', () => this.scene.restart());
 
     // Keyboard navigation
     const keys = this.input.keyboard;
@@ -359,17 +363,57 @@ export class MainMenuScene extends Phaser.Scene {
   // ─── Footer ───────────────────────────────────────────────────────────────────
 
   private buildFooter(cx: number, h: number, _w?: number): void {
-    // Bottom separator
-    const sep = this.add.graphics();
-    sep.lineStyle(1, 0x0066ff, 0.4);
-    sep.lineBetween(32, h * 0.9, cx * 2 - 32, h * 0.9);
+    const isPremium = !!this.game.registry.get('isPremium');
 
-    this.add.text(cx, h * 0.93, 'v1.0', {
-      fontSize: '13px',
-      color: C.dim,
-      fontFamily: 'Arial',
-      letterSpacing: 4,
+    if (!isPremium) {
+      const btnW = 230, btnH = 44;
+      const btnY  = h * 0.83;
+      const gfx   = this.add.graphics()
+        .fillStyle(0x003388, 0.85)
+        .fillRoundedRect(cx - btnW / 2, btnY, btnW, btnH, 10)
+        .lineStyle(2, 0x0088ff, 0.90)
+        .strokeRoundedRect(cx - btnW / 2, btnY, btnW, btnH, 10);
+      this.tweens.add({ targets: gfx, alpha: 0.55, duration: 900, yoyo: true, repeat: -1 });
+
+      this.add.text(cx, btnY + btnH / 2, '★  სრული ანბანი  /  Unlock', {
+        fontSize: '16px', color: '#ffffff', fontStyle: 'bold',
+        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      }).setOrigin(0.5);
+
+      this.add.zone(cx, btnY + btnH / 2, btnW, btnH).setInteractive()
+        .on('pointerdown', () => {
+          this.playSound('sfx-button');
+          this.scene.launch('PaywallScene');
+        });
+    }
+
+    // Separator
+    this.add.graphics().lineStyle(1, 0x0066ff, 0.4)
+      .lineBetween(32, h * 0.90, cx * 2 - 32, h * 0.90);
+
+    // Version
+    this.add.text(isPremium ? cx : cx - 36, h * 0.93, 'v1.0', {
+      fontSize: '13px', color: C.dim, fontFamily: 'Arial', letterSpacing: 4,
     }).setOrigin(0.5);
+
+    // Restore Purchases (free users only)
+    if (!isPremium) {
+      const restore = this.add.text(cx + 56, h * 0.93, 'Restore', {
+        fontSize: '13px', color: '#334455', fontFamily: 'Arial',
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      restore.on('pointerdown', async () => {
+        restore.setText('...').setColor('#ffdd44');
+        const mgr    = PremiumManager.get(this.game);
+        const result = await mgr.restorePurchases();
+        if (result.restored) {
+          restore.setText('Restored!').setColor('#00ff88');
+          this.time.delayedCall(1200, () => this.scene.restart());
+        } else {
+          restore.setText('Restore').setColor('#334455');
+        }
+      });
+    }
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@ import { StoryScene } from './scenes/StoryScene';
 import { GameScene } from './scenes/GameScene';
 import { HUDScene } from './scenes/HUDScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { PaywallScene } from './scenes/PaywallScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -20,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, PreloaderScene, MainMenuScene, StoryScene, GameScene, HUDScene, GameOverScene],
+  scene: [BootScene, PreloaderScene, MainMenuScene, StoryScene, GameScene, HUDScene, GameOverScene, PaywallScene],
 };
 
 new Phaser.Game(config);

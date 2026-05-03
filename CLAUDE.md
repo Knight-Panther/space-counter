@@ -8,7 +8,9 @@ A 2D educational mobile game for kids learning the Georgian alphabet (ქარ�
 - **Language**: TypeScript ^6.0.0 (strict mode)
 - **Bundler**: Vite ^8.0.0
 - **Mobile**: Capacitor ^8.3.1 (Android target)
-- **Ads**: @capacitor-community/admob ^8.0.0
+- **IAP**: @revenuecat/purchases-capacitor ^13.0.1
+- **Storage**: @capacitor/preferences ^8.0.1
+- **Ads**: @capacitor-community/admob ^8.0.0 — planned, not yet installed
 - **No framework** (no React, no Vue — vanilla Phaser + TS)
 
 ## Architecture Rules
@@ -69,11 +71,21 @@ export interface LetterData {
 - Particle effects on explosions
 - Screen shake on damage
 
-## Monetization (implement last)
+## Monetization
+
+### IAP — implemented
+- Free tier: first 12 letters (ა–მ) + numbers 1–10
+- Premium: ₾5.00 one-time purchase unlocks all 33 letters + numbers 11–20 + disables ads
+- Purchase flow: Google Play Billing via RevenueCat (`PremiumManager` singleton in `src/iap/`)
+- Premium state: `game.registry.get('isPremium')` — set in BootScene, persisted via Preferences
+- Paywall UI: `PaywallScene` launched as overlay from MainMenu, GameOver, or any scene
+- Free/premium boundary: `src/data/freeContent.ts` → `FREE_LETTER_COUNT = 12`
+
+### Ads — not yet implemented
 - Banner ad at bottom between rounds (not during gameplay)
 - Interstitial ad every 5 rounds
 - Rewarded video: watch ad for extra life
-- Future: IAP to unlock full alphabet (free version = first 11 letters ა-კ)
+- Gate every ad call: `if (this.game.registry.get('isPremium')) return`
 
 ## Performance Guidelines
 - Target 60fps on mid-range Android devices
@@ -99,6 +111,19 @@ Phaser 4 has no default export — always use the namespace import:
 import * as Phaser from 'phaser';   // correct
 import Phaser from 'phaser';        // WRONG — build error
 ```
+
+## Pending / Follow-up
+
+### Before shipping to Play Store
+- [ ] Replace `'goog_REPLACE_WITH_YOUR_KEY'` in `src/iap/PremiumManager.ts:12` with real RevenueCat Android key
+- [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full` at ₾5.00, set Active
+- [ ] RevenueCat dashboard: entitlement `premium` linked to product, copy API key
+- [ ] Run `npx cap sync android` after above steps
+- [ ] Add 33 letter audio files to `public/audio/` (`letter-a.mp3` … `letter-h.mp3` exist; need the rest)
+- [ ] Add 20 number audio files to `public/audio/` (`number-1.mp3` … `number-20.mp3`)
+- [ ] Compress `tina.png` (currently ~8.8 MB → target ~200 KB)
+- [ ] Convert instruction WAVs to MP3 (`gameplay-alphabet-instruction`, `gameplay-number-instruction`, `voice-shoot`)
+- [ ] Install AdMob (`@capacitor-community/admob`) and gate all ad calls behind `isPremium`
 
 ## Do NOT
 - Do not use localStorage (use Phaser's registry or a state manager)
