@@ -125,6 +125,11 @@ import Phaser from 'phaser';        // WRONG — build error
 - [ ] Convert instruction WAVs to MP3 (`gameplay-alphabet-instruction`, `gameplay-number-instruction`, `voice-shoot`)
 - [ ] Install AdMob (`@capacitor-community/admob`) and gate all ad calls behind `isPremium`
 
+## Asset Index
+- Master inventory lives in `assetIndex.json` at the project root
+- **Update rule:** whenever a new asset is dropped into `public/` AND wired up in `src/scenes/PreloaderScene.ts`, update `assetIndex.json`: flip `"status"` to `"present"`, fill in `"size"`, and add the scene name to `"usedIn"`
+- `"Legacy Collection"` folder in `public/` is excluded from the index — study separately before promoting any asset
+
 ## Do NOT
 - Do not use localStorage (use Phaser's registry or a state manager)
 - Do not use Phaser 3 APIs (no Pipeline → use RenderNode, no BitmapMask → use Mask filter, no Geom.Point → use Vector2)

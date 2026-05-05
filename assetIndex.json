@@ -1,0 +1,320 @@
+{
+  "_meta": {
+    "description": "Master asset index for Space-Counter. Update this file every time an asset is added and wired up. Excludes Legacy Collection folder.",
+    "lastUpdated": "2026-05-05",
+    "loaderScene": "src/scenes/PreloaderScene.ts",
+    "totals": {
+      "images": { "present": 144, "missing": 0 },
+      "audio": { "present": 21, "missing": 33 },
+      "fonts": { "present": 0, "missing": 1 },
+      "proceduralAssets": 7
+    }
+  },
+
+  "images": {
+    "backgrounds": [
+      { "key": "bg-menu",        "file": "public/images/bg-menu.jpg",   "size": "3.0M",  "status": "present", "usedIn": ["MenuScene"] },
+      { "key": "space-nebula",   "file": "public/images/Space.png",     "size": "2.4M",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "space-nebula-2", "file": "public/images/Space_1.png",   "size": "1.8M",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "tina",           "file": "public/images/tina.png",      "size": "8.7M",  "status": "present", "usedIn": ["MenuScene"], "note": "NEEDS COMPRESSION — target ~200KB" }
+    ],
+    "starfields": [
+      { "key": "starfield-01", "file": "public/images/starfield-01.png", "size": "30K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "starfield-02", "file": "public/images/starfield-02.png", "size": "22K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "starfield-03", "file": "public/images/starfield-03.png", "size": "130K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "starfield-04", "file": "public/images/starfield-04.png", "size": "5.0K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "starfield-05", "file": "public/images/starfield-05.png", "size": "185K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "starfield-06", "file": "public/images/starfield-06.png", "size": "186K",  "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "nebulae": [
+      { "key": "nebula-purple-01", "file": "public/images/nebula-purple-01.png", "size": "382K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-purple-03", "file": "public/images/nebula-purple-03.png", "size": "237K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-purple-04", "file": "public/images/nebula-purple-04.png", "size": "341K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-blue-02",   "file": "public/images/nebula-blue-02.png",   "size": "374K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-green-02",  "file": "public/images/nebula-green-02.png",  "size": "259K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-green-03",  "file": "public/images/nebula-green-03.png",  "size": "303K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "nebula-green-06",  "file": "public/images/nebula-green-06.png",  "size": "251K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "sun": [
+      { "key": "sun-0",  "file": "public/images/Sun_00000.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-1",  "file": "public/images/Sun_00001.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-2",  "file": "public/images/Sun_00002.png", "size": "117K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-3",  "file": "public/images/Sun_00003.png", "size": "117K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-4",  "file": "public/images/Sun_00004.png", "size": "116K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-5",  "file": "public/images/Sun_00005.png", "size": "117K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-6",  "file": "public/images/Sun_00006.png", "size": "117K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-7",  "file": "public/images/Sun_00007.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-8",  "file": "public/images/Sun_00008.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-9",  "file": "public/images/Sun_00009.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-10", "file": "public/images/Sun_00010.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-11", "file": "public/images/Sun_00011.png", "size": "118K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-12", "file": "public/images/Sun_00012.png", "size": "119K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-13", "file": "public/images/Sun_00013.png", "size": "119K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sun-14", "file": "public/images/Sun_00014.png", "size": "119K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "planets": [
+      { "key": "planet-0", "file": "public/images/Planet0.png", "size": "43K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-1", "file": "public/images/Planet1.png", "size": "32K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-2", "file": "public/images/Planet2.png", "size": "38K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-3", "file": "public/images/Planet3.png", "size": "36K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-4", "file": "public/images/Planet4.png", "size": "40K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-5", "file": "public/images/Planet5.png", "size": "36K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-6", "file": "public/images/Planet6.png", "size": "27K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-7", "file": "public/images/Planet7.png", "size": "35K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-8", "file": "public/images/Planet8.png", "size": "36K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "planet-9", "file": "public/images/Planet9.png", "size": "38K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "kenney_planets": [
+      { "key": "kp-planet-00", "file": "public/images/kp-planet-00.png", "size": "280K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-01", "file": "public/images/kp-planet-01.png", "size": "301K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-02", "file": "public/images/kp-planet-02.png", "size": "255K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-03", "file": "public/images/kp-planet-03.png", "size": "282K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-04", "file": "public/images/kp-planet-04.png", "size": "336K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-05", "file": "public/images/kp-planet-05.png", "size": "288K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-06", "file": "public/images/kp-planet-06.png", "size": "300K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-07", "file": "public/images/kp-planet-07.png", "size": "285K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-08", "file": "public/images/kp-planet-08.png", "size": "285K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "kp-planet-09", "file": "public/images/kp-planet-09.png", "size": "231K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "player_ship": [
+      { "key": "ship-m",    "file": "public/images/ship-m.png",    "size": "23K", "status": "present", "note": "center/straight frame",   "usedIn": ["GameScene"] },
+      { "key": "ship-l1",   "file": "public/images/ship-l1.png",   "size": "22K", "status": "present", "note": "banking left light",       "usedIn": ["GameScene"] },
+      { "key": "ship-l2",   "file": "public/images/ship-l2.png",   "size": "23K", "status": "present", "note": "banking left hard",        "usedIn": ["GameScene"] },
+      { "key": "ship-r1",   "file": "public/images/ship-r1.png",   "size": "23K", "status": "present", "note": "banking right light",      "usedIn": ["GameScene"] },
+      { "key": "ship-r2",   "file": "public/images/ship-r2.png",   "size": "22K", "status": "present", "note": "banking right hard",       "usedIn": ["GameScene"] },
+      { "key": "ship-r-m",  "file": "public/images/ship-r-m.png",  "size": "23K", "status": "present", "note": "damaged center",           "usedIn": ["GameScene"] },
+      { "key": "ship-r-l1", "file": "public/images/ship-r-l1.png", "size": "22K", "status": "present", "note": "damaged banking left light","usedIn": ["GameScene"] },
+      { "key": "ship-r-l2", "file": "public/images/ship-r-l2.png", "size": "23K", "status": "present", "note": "damaged banking left hard", "usedIn": ["GameScene"] },
+      { "key": "ship-r-r1", "file": "public/images/ship-r-r1.png", "size": "23K", "status": "present", "note": "damaged banking right light","usedIn": ["GameScene"] },
+      { "key": "ship-r-r2", "file": "public/images/ship-r-r2.png", "size": "22K", "status": "present", "note": "damaged banking right hard", "usedIn": ["GameScene"] }
+    ],
+    "exhaust": [
+      { "key": "exhaust-1", "file": "public/images/exhaust-1.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "exhaust-2", "file": "public/images/exhaust-2.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "exhaust-3", "file": "public/images/exhaust-3.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "exhaust-4", "file": "public/images/exhaust-4.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "exhaust-5", "file": "public/images/exhaust-5.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "enemies_standard": [
+      { "key": "enemy-red",     "file": "public/images/enemy-red.png",     "size": "24K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-green",   "file": "public/images/enemy-green.png",   "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-blue-m",  "file": "public/images/enemy-blue-m.png",  "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-blue-l1", "file": "public/images/enemy-blue-l1.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-blue-l2", "file": "public/images/enemy-blue-l2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-blue-r1", "file": "public/images/enemy-blue-r1.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "enemy-blue-r2", "file": "public/images/enemy-blue-r2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "enemies_boss": [
+      { "key": "enemy-boss-b-m",  "file": "public/images/enemy-boss-b-m.png",  "size": "24K", "status": "present", "note": "blue tier, center",           "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-b-l1", "file": "public/images/enemy-boss-b-l1.png", "size": "23K", "status": "present", "note": "blue tier, bank left light",   "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-b-l2", "file": "public/images/enemy-boss-b-l2.png", "size": "23K", "status": "present", "note": "blue tier, bank left hard",    "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-b-r1", "file": "public/images/enemy-boss-b-r1.png", "size": "23K", "status": "present", "note": "blue tier, bank right light",  "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-b-r2", "file": "public/images/enemy-boss-b-r2.png", "size": "23K", "status": "present", "note": "blue tier, bank right hard",   "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-g-m",  "file": "public/images/enemy-boss-g-m.png",  "size": "24K", "status": "present", "note": "green tier, center",           "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-g-l1", "file": "public/images/enemy-boss-g-l1.png", "size": "23K", "status": "present", "note": "green tier, bank left light",  "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-g-l2", "file": "public/images/enemy-boss-g-l2.png", "size": "23K", "status": "present", "note": "green tier, bank left hard",   "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-g-r1", "file": "public/images/enemy-boss-g-r1.png", "size": "23K", "status": "present", "note": "green tier, bank right light", "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-g-r2", "file": "public/images/enemy-boss-g-r2.png", "size": "23K", "status": "present", "note": "green tier, bank right hard",  "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-r-m",  "file": "public/images/enemy-boss-r-m.png",  "size": "24K", "status": "present", "note": "red tier, center",             "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-r-l1", "file": "public/images/enemy-boss-r-l1.png", "size": "24K", "status": "present", "note": "red tier, bank left light",    "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-r-l2", "file": "public/images/enemy-boss-r-l2.png", "size": "24K", "status": "present", "note": "red tier, bank left hard",     "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-r-r1", "file": "public/images/enemy-boss-r-r1.png", "size": "24K", "status": "present", "note": "red tier, bank right light",   "usedIn": ["GameScene"] },
+      { "key": "enemy-boss-r-r2", "file": "public/images/enemy-boss-r-r2.png", "size": "24K", "status": "present", "note": "red tier, bank right hard",    "usedIn": ["GameScene"] }
+    ],
+    "mines_letter": [
+      { "key": "mine-1", "file": "public/images/mine-1.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-2", "file": "public/images/mine-2.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-3", "file": "public/images/mine-3.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-4", "file": "public/images/mine-4.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-5", "file": "public/images/mine-5.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-6", "file": "public/images/mine-6.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-7", "file": "public/images/mine-7.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-8", "file": "public/images/mine-8.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-9", "file": "public/images/mine-9.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "mines_weapon_powerup": [
+      { "key": "mine-11-1", "file": "public/images/mine-11-1.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-2", "file": "public/images/mine-11-2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-3", "file": "public/images/mine-11-3.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-4", "file": "public/images/mine-11-4.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-5", "file": "public/images/mine-11-5.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-6", "file": "public/images/mine-11-6.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-7", "file": "public/images/mine-11-7.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-8", "file": "public/images/mine-11-8.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-9", "file": "public/images/mine-11-9.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "bullets": [
+      { "key": "bullet-plasma",   "file": "public/images/bullet-plasma.png",   "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-plasma-2", "file": "public/images/bullet-plasma-2.png", "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-proton-1", "file": "public/images/bullet-proton-1.png", "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-proton-2", "file": "public/images/bullet-proton-2.png", "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-proton-3", "file": "public/images/bullet-proton-3.png", "size": "18K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-vulcan-1", "file": "public/images/bullet-vulcan-1.png", "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-vulcan-2", "file": "public/images/bullet-vulcan-2.png", "size": "19K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "bullet-vulcan-3", "file": "public/images/bullet-vulcan-3.png", "size": "18K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "explosions_type1": [
+      { "key": "explosion-1-01", "file": "public/images/explosion-1-01.png", "size": "20K", "status": "present", "note": "11-frame normal enemy death", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-02", "file": "public/images/explosion-1-02.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-03", "file": "public/images/explosion-1-03.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-04", "file": "public/images/explosion-1-04.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-05", "file": "public/images/explosion-1-05.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-06", "file": "public/images/explosion-1-06.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-07", "file": "public/images/explosion-1-07.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-08", "file": "public/images/explosion-1-08.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-09", "file": "public/images/explosion-1-09.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-10", "file": "public/images/explosion-1-10.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-1-11", "file": "public/images/explosion-1-11.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "explosions_type2": [
+      { "key": "explosion-2-01", "file": "public/images/explosion-2-01.png", "size": "20K", "status": "present", "note": "9-frame power-up / vulcan hit", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-02", "file": "public/images/explosion-2-02.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-03", "file": "public/images/explosion-2-03.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-04", "file": "public/images/explosion-2-04.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-05", "file": "public/images/explosion-2-05.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-06", "file": "public/images/explosion-2-06.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-07", "file": "public/images/explosion-2-07.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-08", "file": "public/images/explosion-2-08.png", "size": "23K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-09", "file": "public/images/explosion-2-09.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "explosions_type3": [
+      { "key": "explosion-3-01", "file": "public/images/explosion-3-01.png", "size": "20K", "status": "present", "note": "9-frame boss death", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-02", "file": "public/images/explosion-3-02.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-03", "file": "public/images/explosion-3-03.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-04", "file": "public/images/explosion-3-04.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-05", "file": "public/images/explosion-3-05.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-06", "file": "public/images/explosion-3-06.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-07", "file": "public/images/explosion-3-07.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-08", "file": "public/images/explosion-3-08.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "explosion-3-09", "file": "public/images/explosion-3-09.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] }
+    ]
+  },
+
+  "audio": {
+    "music": [
+      { "key": "music-game",    "file": "public/audio/music-game.ogg",             "size": "4.5M", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "music-orbital", "file": "public/audio/Orbital Colossus.mp3",        "size": "5.8M", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "music-menu",    "file": "public/audio/MyVeryOwnDeadShip.ogg",       "size": "4.4M", "status": "present", "usedIn": ["MenuScene"] },
+      { "key": "music-alphabet","file": "public/audio/music-alphabet.mp3",           "size": null,   "status": "MISSING", "usedIn": ["GameScene"] },
+      { "key": "music-numbers", "file": "public/audio/music-numbers.mp3",            "size": null,   "status": "MISSING", "usedIn": ["GameScene"] }
+    ],
+    "voice_intro": [
+      { "key": "intro-alphabet", "file": "public/audio/intro-alphabet.wav", "size": "5.0M", "status": "present", "note": "convert to MP3", "usedIn": ["StoryScene"] },
+      { "key": "intro-numbers",  "file": "public/audio/intro-numbers.wav",  "size": "5.5M", "status": "present", "note": "convert to MP3", "usedIn": ["StoryScene"] }
+    ],
+    "voice_gameplay": [
+      { "key": "gameplay-alphabet-instruction", "file": "public/audio/gameplay-alphabet-instruction.wav", "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
+      { "key": "gameplay-number-instruction",   "file": "public/audio/gameplay-number-instruction.wav",   "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
+      { "key": "voice-shoot",                   "file": "public/audio/voice-shoot.wav",                   "size": "421K", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] }
+    ],
+    "sfx": [
+      { "key": "sfx-arsenal-deploy", "file": "public/audio/sfx-arsenal-deploy.ogg", "size": "27K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-arsenal-full",   "file": "public/audio/sfx-arsenal-full.wav",   "size": "242K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-arsenal-tap",    "file": "public/audio/sfx-arsenal-tap.wav",    "size": "347K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-boss-alarm",     "file": "public/audio/sfx-boss-alarm.mp3",     "size": "146K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-boss-engine",    "file": "public/audio/sfx-boss-engine.mp3",    "size": "767K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-boss-thrust",    "file": "public/audio/sfx-boss-engine.wav",    "size": "211K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-damage",         "file": "public/audio/sfx-damage.wav",         "size": "242K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-explosion-boss", "file": "public/audio/sfx-explosion-boss.mp3", "size": "93K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-explosion",      "file": "public/audio/sfx-explosion.mp3",      "size": "82K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-laser-plasma",   "file": "public/audio/sfx-laser-plasma.mp3",   "size": "37K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-laser-vulcan",   "file": "public/audio/sfx-laser-vulcan.mp3",   "size": "55K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-ship-engine",    "file": "public/audio/sfx-ship-engine.mp3",    "size": "810K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.wav",        "size": "891K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-laser",          "file": "public/audio/sfx-laser.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
+      { "key": "sfx-wrong",          "file": "public/audio/sfx-wrong.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
+      { "key": "sfx-alien-appear",   "file": "public/audio/sfx-alien-appear.mp3",   "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
+      { "key": "sfx-button",         "file": "public/audio/sfx-button.mp3",         "size": null,    "status": "MISSING", "usedIn": ["MenuScene"] }
+    ],
+    "letters": [
+      { "key": "letter-a",   "char": "ა", "latin": "a",   "file": "public/audio/letter-a.mp3",   "status": "MISSING" },
+      { "key": "letter-b",   "char": "ბ", "latin": "b",   "file": "public/audio/letter-b.mp3",   "status": "MISSING" },
+      { "key": "letter-g",   "char": "გ", "latin": "g",   "file": "public/audio/letter-g.mp3",   "status": "MISSING" },
+      { "key": "letter-d",   "char": "დ", "latin": "d",   "file": "public/audio/letter-d.mp3",   "status": "MISSING" },
+      { "key": "letter-e",   "char": "ე", "latin": "e",   "file": "public/audio/letter-e.mp3",   "status": "MISSING" },
+      { "key": "letter-v",   "char": "ვ", "latin": "v",   "file": "public/audio/letter-v.mp3",   "status": "MISSING" },
+      { "key": "letter-z",   "char": "ზ", "latin": "z",   "file": "public/audio/letter-z.mp3",   "status": "MISSING" },
+      { "key": "letter-th",  "char": "თ", "latin": "th",  "file": "public/audio/letter-th.mp3",  "status": "MISSING" },
+      { "key": "letter-i",   "char": "ი", "latin": "i",   "file": "public/audio/letter-i.mp3",   "status": "MISSING" },
+      { "key": "letter-k",   "char": "კ", "latin": "k",   "file": "public/audio/letter-k.mp3",   "status": "MISSING" },
+      { "key": "letter-l",   "char": "ლ", "latin": "l",   "file": "public/audio/letter-l.mp3",   "status": "MISSING" },
+      { "key": "letter-m",   "char": "მ", "latin": "m",   "file": "public/audio/letter-m.mp3",   "status": "MISSING" },
+      { "key": "letter-n",   "char": "ნ", "latin": "n",   "file": "public/audio/letter-n.mp3",   "status": "MISSING" },
+      { "key": "letter-o",   "char": "ო", "latin": "o",   "file": "public/audio/letter-o.mp3",   "status": "MISSING" },
+      { "key": "letter-p",   "char": "პ", "latin": "p",   "file": "public/audio/letter-p.mp3",   "status": "MISSING" },
+      { "key": "letter-zh",  "char": "ჟ", "latin": "zh",  "file": "public/audio/letter-zh.mp3",  "status": "MISSING" },
+      { "key": "letter-r",   "char": "რ", "latin": "r",   "file": "public/audio/letter-r.mp3",   "status": "MISSING" },
+      { "key": "letter-s",   "char": "ს", "latin": "s",   "file": "public/audio/letter-s.mp3",   "status": "MISSING" },
+      { "key": "letter-t",   "char": "ტ", "latin": "t",   "file": "public/audio/letter-t.mp3",   "status": "MISSING" },
+      { "key": "letter-u",   "char": "უ", "latin": "u",   "file": "public/audio/letter-u.mp3",   "status": "MISSING" },
+      { "key": "letter-ph",  "char": "ფ", "latin": "ph",  "file": "public/audio/letter-ph.mp3",  "status": "MISSING" },
+      { "key": "letter-q",   "char": "ქ", "latin": "q",   "file": "public/audio/letter-q.mp3",   "status": "MISSING" },
+      { "key": "letter-gh",  "char": "ღ", "latin": "gh",  "file": "public/audio/letter-gh.mp3",  "status": "MISSING" },
+      { "key": "letter-qh",  "char": "ყ", "latin": "qh",  "file": "public/audio/letter-qh.mp3",  "status": "MISSING" },
+      { "key": "letter-sh",  "char": "შ", "latin": "sh",  "file": "public/audio/letter-sh.mp3",  "status": "MISSING" },
+      { "key": "letter-ch",  "char": "ჩ", "latin": "ch",  "file": "public/audio/letter-ch.mp3",  "status": "MISSING" },
+      { "key": "letter-ts",  "char": "ც", "latin": "ts",  "file": "public/audio/letter-ts.mp3",  "status": "MISSING" },
+      { "key": "letter-dz",  "char": "ძ", "latin": "dz",  "file": "public/audio/letter-dz.mp3",  "status": "MISSING" },
+      { "key": "letter-tw",  "char": "წ", "latin": "tw",  "file": "public/audio/letter-tw.mp3",  "status": "MISSING" },
+      { "key": "letter-chw", "char": "ჭ", "latin": "chw", "file": "public/audio/letter-chw.mp3", "status": "MISSING" },
+      { "key": "letter-kh",  "char": "ხ", "latin": "kh",  "file": "public/audio/letter-kh.mp3",  "status": "MISSING" },
+      { "key": "letter-j",   "char": "ჯ", "latin": "j",   "file": "public/audio/letter-j.mp3",   "status": "MISSING" },
+      { "key": "letter-h",   "char": "ჰ", "latin": "h",   "file": "public/audio/letter-h.mp3",   "status": "MISSING" }
+    ],
+    "numbers": [
+      { "key": "number-1",  "file": "public/audio/number-1.mp3",  "status": "MISSING" },
+      { "key": "number-2",  "file": "public/audio/number-2.mp3",  "status": "MISSING" },
+      { "key": "number-3",  "file": "public/audio/number-3.mp3",  "status": "MISSING" },
+      { "key": "number-4",  "file": "public/audio/number-4.mp3",  "status": "MISSING" },
+      { "key": "number-5",  "file": "public/audio/number-5.mp3",  "status": "MISSING" },
+      { "key": "number-6",  "file": "public/audio/number-6.mp3",  "status": "MISSING" },
+      { "key": "number-7",  "file": "public/audio/number-7.mp3",  "status": "MISSING" },
+      { "key": "number-8",  "file": "public/audio/number-8.mp3",  "status": "MISSING" },
+      { "key": "number-9",  "file": "public/audio/number-9.mp3",  "status": "MISSING" },
+      { "key": "number-10", "file": "public/audio/number-10.mp3", "status": "MISSING" },
+      { "key": "number-11", "file": "public/audio/number-11.mp3", "status": "MISSING" },
+      { "key": "number-12", "file": "public/audio/number-12.mp3", "status": "MISSING" },
+      { "key": "number-13", "file": "public/audio/number-13.mp3", "status": "MISSING" },
+      { "key": "number-14", "file": "public/audio/number-14.mp3", "status": "MISSING" },
+      { "key": "number-15", "file": "public/audio/number-15.mp3", "status": "MISSING" },
+      { "key": "number-16", "file": "public/audio/number-16.mp3", "status": "MISSING" },
+      { "key": "number-17", "file": "public/audio/number-17.mp3", "status": "MISSING" },
+      { "key": "number-18", "file": "public/audio/number-18.mp3", "status": "MISSING" },
+      { "key": "number-19", "file": "public/audio/number-19.mp3", "status": "MISSING" },
+      { "key": "number-20", "file": "public/audio/number-20.mp3", "status": "MISSING" }
+    ]
+  },
+
+  "fonts": [
+    {
+      "key": "georgian",
+      "file": "public/fonts/NotoSansGeorgian-Regular.ttf",
+      "status": "MISSING",
+      "note": "public/fonts/ directory exists but is empty",
+      "usedIn": ["all scenes with Georgian text"]
+    }
+  ],
+
+  "procedural": {
+    "note": "These are generated at runtime in PreloaderScene.create() — no physical files on disk.",
+    "assets": [
+      { "key": "player-ship",    "method": "graphics",  "description": "fallback placeholder ship sprite" },
+      { "key": "alien-alphabet", "method": "graphics",  "description": "fallback placeholder alien sprite" },
+      { "key": "alien-numbers",  "method": "graphics",  "description": "fallback placeholder numbers alien" },
+      { "key": "bullet",         "method": "graphics",  "description": "fallback placeholder bullet" },
+      { "key": "stars",          "method": "graphics",  "description": "procedural starfield background" },
+      { "key": "heart",          "method": "graphics",  "description": "life indicator icon" },
+      { "key": "particle",       "method": "graphics",  "description": "explosion particle dot" }
+    ]
+  },
+
+  "missing_summary": {
+    "note": "Phaser logs a 404 warning but does NOT crash — game runs without these, just silently.",
+    "audio_letter_clips": 33,
+    "audio_number_clips": 20,
+    "audio_sfx": 4,
+    "audio_music": 2,
+    "fonts": 1,
+    "total_missing": 60
+  }
+}

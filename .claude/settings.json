@@ -84,7 +84,9 @@
       "Bash(dir \"C:/Users/VM-Dev/Desktop/game/Muzzle_flashes/\")",
       "Bash(Copy-Item \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\dark_ambiences\\\\dark_ambiences\\\\ambience-5.wav\" \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\audio\\\\sfx-wave-up.wav\" -Force)",
       "WebFetch(domain:support.google.com)",
-      "WebFetch(domain:www.revenuecat.com)"
+      "WebFetch(domain:www.revenuecat.com)",
+      "Bash(awk '{print $5, $NF}')",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\Legacy Collection\\\\\" -Recurse -Force | Select-Object FullName, Extension, Length | Sort-Object FullName | Format-Table -AutoSize)"
     ],
     "deny": [
       "Bash(git push --force*)",
