@@ -205,7 +205,9 @@
     "voice_gameplay": [
       { "key": "gameplay-alphabet-instruction", "file": "public/audio/gameplay-alphabet-instruction.wav", "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
       { "key": "gameplay-number-instruction",   "file": "public/audio/gameplay-number-instruction.wav",   "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
-      { "key": "voice-shoot",                   "file": "public/audio/voice-shoot.wav",                   "size": "421K", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] }
+      { "key": "voice-shoot",                   "file": "public/audio/voice-shoot.wav",                   "size": "421K", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
+      { "key": "voice-boss-kill",               "file": "public/audio/voice-boss-kill.mp3",               "size": "32KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "voice-arsenal-full",            "file": "public/audio/voice-arsenal-full.mp3",            "size": "24KB", "status": "present", "usedIn": ["GameScene"] }
     ],
     "sfx": [
       { "key": "sfx-arsenal-deploy", "file": "public/audio/sfx-arsenal-deploy.ogg", "size": "27K",   "status": "present", "usedIn": ["GameScene"] },
@@ -262,26 +264,26 @@
       { "key": "letter-h",   "char": "ჰ", "latin": "h",   "file": "public/audio/letter-h.mp3",   "status": "MISSING" }
     ],
     "numbers": [
-      { "key": "number-1",  "file": "public/audio/number-1.mp3",  "status": "MISSING" },
-      { "key": "number-2",  "file": "public/audio/number-2.mp3",  "status": "MISSING" },
-      { "key": "number-3",  "file": "public/audio/number-3.mp3",  "status": "MISSING" },
-      { "key": "number-4",  "file": "public/audio/number-4.mp3",  "status": "MISSING" },
-      { "key": "number-5",  "file": "public/audio/number-5.mp3",  "status": "MISSING" },
-      { "key": "number-6",  "file": "public/audio/number-6.mp3",  "status": "MISSING" },
-      { "key": "number-7",  "file": "public/audio/number-7.mp3",  "status": "MISSING" },
-      { "key": "number-8",  "file": "public/audio/number-8.mp3",  "status": "MISSING" },
-      { "key": "number-9",  "file": "public/audio/number-9.mp3",  "status": "MISSING" },
-      { "key": "number-10", "file": "public/audio/number-10.mp3", "status": "MISSING" },
-      { "key": "number-11", "file": "public/audio/number-11.mp3", "status": "MISSING" },
-      { "key": "number-12", "file": "public/audio/number-12.mp3", "status": "MISSING" },
-      { "key": "number-13", "file": "public/audio/number-13.mp3", "status": "MISSING" },
-      { "key": "number-14", "file": "public/audio/number-14.mp3", "status": "MISSING" },
-      { "key": "number-15", "file": "public/audio/number-15.mp3", "status": "MISSING" },
-      { "key": "number-16", "file": "public/audio/number-16.mp3", "status": "MISSING" },
-      { "key": "number-17", "file": "public/audio/number-17.mp3", "status": "MISSING" },
-      { "key": "number-18", "file": "public/audio/number-18.mp3", "status": "MISSING" },
-      { "key": "number-19", "file": "public/audio/number-19.mp3", "status": "MISSING" },
-      { "key": "number-20", "file": "public/audio/number-20.mp3", "status": "MISSING" }
+      { "key": "number-1",  "file": "public/audio/number-1.mp3",  "size": "13KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-2",  "file": "public/audio/number-2.mp3",  "size": "11KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-3",  "file": "public/audio/number-3.mp3",  "size": "12KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-4",  "file": "public/audio/number-4.mp3",  "size": "14KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-5",  "file": "public/audio/number-5.mp3",  "size": "12KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-6",  "file": "public/audio/number-6.mp3",  "size": "13KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-7",  "file": "public/audio/number-7.mp3",  "size": "13KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-8",  "file": "public/audio/number-8.mp3",  "size": "11KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-9",  "file": "public/audio/number-9.mp3",  "size": "12KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-10", "file": "public/audio/number-10.mp3", "size": "12KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-11", "file": "public/audio/number-11.mp3", "size": "15KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-12", "file": "public/audio/number-12.mp3", "size": "14KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-13", "file": "public/audio/number-13.mp3", "size": "15KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-14", "file": "public/audio/number-14.mp3", "size": "11KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-15", "file": "public/audio/number-15.mp3", "size": "15KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-16", "file": "public/audio/number-16.mp3", "size": "14KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-17", "file": "public/audio/number-17.mp3", "size": "14KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-18", "file": "public/audio/number-18.mp3", "size": "14KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-19", "file": "public/audio/number-19.mp3", "size": "15KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "number-20", "file": "public/audio/number-20.mp3", "size": "11KB", "status": "present", "usedIn": ["GameScene"] }
     ]
   },
 
@@ -311,7 +313,7 @@
   "missing_summary": {
     "note": "Phaser logs a 404 warning but does NOT crash — game runs without these, just silently.",
     "audio_letter_clips": 33,
-    "audio_number_clips": 20,
+    "audio_number_clips": 0,
     "audio_sfx": 4,
     "audio_music": 2,
     "fonts": 1,

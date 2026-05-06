@@ -31,13 +31,37 @@ export class PreloaderScene extends Phaser.Scene {
       this.load.image(`enemy-blue-${v}`, `images/enemy-blue-${v}.png`);
     }
 
-    // Boss ships — 3 tiers (blue=easy, green=mid, red=hard), straight frame only
-    // (bosses hover so banking frames are loaded but used only if boss drifts)
-    for (const tier of ['b', 'g', 'r']) {
-      for (const v of ['m', 'l1', 'l2', 'r1', 'r2']) {
-        this.load.image(`enemy-boss-${tier}-${v}`, `images/enemy-boss-${tier}-${v}.png`);
-      }
+    // Boss ships — legacy blue tier kept for wave 1
+    for (const v of ['m', 'l1', 'l2', 'r1', 'r2']) {
+      this.load.image(`enemy-boss-b-${v}`, `images/enemy-boss-b-${v}.png`);
     }
+
+    // Boss — Slime / Mummy / Wizard (spritesheets, horizontal layout)
+    this.load.spritesheet('boss-slime',  'images/boss-slime-sheet.png',  { frameWidth: 118, frameHeight: 79  });
+    this.load.spritesheet('boss-mummy',  'images/boss-mummy-sheet.png',  { frameWidth: 69,  frameHeight: 83  });
+    this.load.spritesheet('boss-wizard', 'images/boss-wizard-sheet.png', { frameWidth: 95,  frameHeight: 133 });
+
+    // Boss — Ghost (5 state spritesheets, 64×80 per frame)
+    this.load.spritesheet('boss-ghost-appear', 'images/boss-ghost-appear.png', { frameWidth: 64, frameHeight: 80 });
+    this.load.spritesheet('boss-ghost-idle',   'images/boss-ghost-idle.png',   { frameWidth: 64, frameHeight: 80 });
+    this.load.spritesheet('boss-ghost-chase',  'images/boss-ghost-chase.png',  { frameWidth: 64, frameHeight: 80 });
+    this.load.spritesheet('boss-ghost-shriek', 'images/boss-ghost-shriek.png', { frameWidth: 64, frameHeight: 80 });
+    this.load.spritesheet('boss-ghost-vanish', 'images/boss-ghost-vanish.png', { frameWidth: 64, frameHeight: 80 });
+
+    // Boss — Demon individual frames (idle 6, attack 18, breath-attack 18)
+    for (let i = 1; i <= 6;  i++) this.load.image(`boss-demon-idle-${i}`,   `images/boss-demon-idle-${i}.png`);
+    for (let i = 1; i <= 18; i++) this.load.image(`boss-demon-attack-${i}`, `images/boss-demon-attack-${i}.png`);
+    for (let i = 1; i <= 18; i++) this.load.image(`boss-demon-breath-${i}`, `images/boss-demon-breath-${i}.png`);
+
+    // Boss — Ship-top individual frames (5)
+    for (let i = 1; i <= 5; i++) this.load.image(`boss-ship-top-${i}`, `images/boss-ship-top-${i}.png`);
+
+    // Boss bullets — per-boss projectile sprites
+    for (let i = 1; i <= 4; i++) this.load.image(`boss-bullet-pulse-${i}`,   `images/boss-bullet-pulse-${i}.png`);
+    for (let i = 1; i <= 4; i++) this.load.image(`boss-bullet-bolt-${i}`,    `images/boss-bullet-bolt-${i}.png`);
+    for (let i = 1; i <= 6; i++) this.load.image(`boss-bullet-charged-${i}`, `images/boss-bullet-charged-${i}.png`);
+    for (let i = 1; i <= 4; i++) this.load.image(`boss-bullet-wave-${i}`,    `images/boss-bullet-wave-${i}.png`);
+    for (let i = 1; i <= 3; i++) this.load.image(`boss-bullet-fire-${i}`,    `images/boss-bullet-fire-${i}.png`);
 
     // Letter/number token — mine_1, 9 frames
     for (let i = 1; i <= 9; i++) {
@@ -126,7 +150,9 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.audio('gameplay-number-instruction',   'audio/gameplay-number-instruction.wav');
 
     // "Shoot" voice — prepended before every boss hint sequence
-    this.load.audio('voice-shoot', 'audio/voice-shoot.wav');
+    this.load.audio('voice-shoot',     'audio/voice-shoot.wav');
+    this.load.audio('voice-boss-kill',    'audio/voice-boss-kill.mp3');
+    this.load.audio('voice-arsenal-full', 'audio/voice-arsenal-full.mp3');
     this.load.audio('music-alphabet', 'audio/music-alphabet.mp3');
     this.load.audio('music-numbers',  'audio/music-numbers.mp3');
 
@@ -322,6 +348,48 @@ export class PreloaderScene extends Phaser.Scene {
         frameRate: 15, repeat: 0,
       });
     }
+
+    // ── Boss body animations ───────────────────────────────────────────────────
+
+    if (this.textures.exists('boss-slime'))
+      this.anims.create({ key: 'boss-slime-idle', frames: this.anims.generateFrameNumbers('boss-slime', { start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+
+    if (this.textures.exists('boss-mummy'))
+      this.anims.create({ key: 'boss-mummy-idle', frames: this.anims.generateFrameNumbers('boss-mummy', { start: 0, end: 5 }), frameRate: 8, repeat: -1 });
+
+    if (this.textures.exists('boss-wizard'))
+      this.anims.create({ key: 'boss-wizard-idle', frames: this.anims.generateFrameNumbers('boss-wizard', { start: 0, end: 5 }), frameRate: 8, repeat: -1 });
+
+    if (this.textures.exists('boss-ghost-appear'))
+      this.anims.create({ key: 'boss-ghost-appear', frames: this.anims.generateFrameNumbers('boss-ghost-appear', { start: 0, end: 5 }), frameRate: 10, repeat: 0 });
+    if (this.textures.exists('boss-ghost-idle'))
+      this.anims.create({ key: 'boss-ghost-idle',   frames: this.anims.generateFrameNumbers('boss-ghost-idle',   { start: 0, end: 6 }), frameRate: 8,  repeat: -1 });
+    if (this.textures.exists('boss-ghost-shriek'))
+      this.anims.create({ key: 'boss-ghost-shriek', frames: this.anims.generateFrameNumbers('boss-ghost-shriek', { start: 0, end: 3 }), frameRate: 12, repeat: 0 });
+    if (this.textures.exists('boss-ghost-vanish'))
+      this.anims.create({ key: 'boss-ghost-vanish', frames: this.anims.generateFrameNumbers('boss-ghost-vanish', { start: 0, end: 6 }), frameRate: 10, repeat: 0 });
+
+    if (this.textures.exists('boss-demon-idle-1')) {
+      this.anims.create({ key: 'boss-demon-idle',   frames: Array.from({ length: 6  }, (_, i) => ({ key: `boss-demon-idle-${i + 1}`   })), frameRate: 8,  repeat: -1 });
+      this.anims.create({ key: 'boss-demon-attack', frames: Array.from({ length: 18 }, (_, i) => ({ key: `boss-demon-attack-${i + 1}` })), frameRate: 12, repeat: 0 });
+      this.anims.create({ key: 'boss-demon-breath', frames: Array.from({ length: 18 }, (_, i) => ({ key: `boss-demon-breath-${i + 1}` })), frameRate: 12, repeat: 0 });
+    }
+
+    if (this.textures.exists('boss-ship-top-1'))
+      this.anims.create({ key: 'boss-ship-top-idle', frames: Array.from({ length: 5 }, (_, i) => ({ key: `boss-ship-top-${i + 1}` })), frameRate: 8, repeat: -1 });
+
+    // ── Boss bullet animations ─────────────────────────────────────────────────
+
+    if (this.textures.exists('boss-bullet-pulse-1'))
+      this.anims.create({ key: 'boss-bullet-pulse',   frames: Array.from({ length: 4 }, (_, i) => ({ key: `boss-bullet-pulse-${i + 1}`   })), frameRate: 10, repeat: -1 });
+    if (this.textures.exists('boss-bullet-bolt-1'))
+      this.anims.create({ key: 'boss-bullet-bolt',    frames: Array.from({ length: 4 }, (_, i) => ({ key: `boss-bullet-bolt-${i + 1}`    })), frameRate: 14, repeat: -1 });
+    if (this.textures.exists('boss-bullet-charged-1'))
+      this.anims.create({ key: 'boss-bullet-charged', frames: Array.from({ length: 6 }, (_, i) => ({ key: `boss-bullet-charged-${i + 1}` })), frameRate: 10, repeat: -1 });
+    if (this.textures.exists('boss-bullet-wave-1'))
+      this.anims.create({ key: 'boss-bullet-wave',    frames: Array.from({ length: 4 }, (_, i) => ({ key: `boss-bullet-wave-${i + 1}`    })), frameRate: 8,  repeat: -1 });
+    if (this.textures.exists('boss-bullet-fire-1'))
+      this.anims.create({ key: 'boss-bullet-fire',    frames: Array.from({ length: 3 }, (_, i) => ({ key: `boss-bullet-fire-${i + 1}`    })), frameRate: 12, repeat: -1 });
 
     this.scene.start('MainMenuScene');
   }

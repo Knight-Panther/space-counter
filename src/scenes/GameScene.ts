@@ -4,30 +4,78 @@ import { NUMBERS } from '../data/numbers';
 import { GameMode, ItemData } from '../data/types';
 import { FREE_LETTER_COUNT } from '../data/freeContent';
 
+// ─── Boss type system ─────────────────────────────────────────────────────────
+
+type BossType = 'ship-b' | 'slime' | 'wizard' | 'demon' | 'ship-top';
+type DeathStyle = 'ship' | 'goop' | 'magic' | 'demon';
+
+interface BossDef {
+  spawnKey:     string;       // initial texture key for add.sprite()
+  idleAnim:     string;       // looping anim while hovering; '' = static
+  enterAnim?:   string;       // play once on entry then switch to idleAnim
+  shootAnim?:   string;       // play once per bullet volley
+  retreatAnim?: string;       // play during retreat tween
+  deathStyle:   DeathStyle;
+  bulletKey:    string;       // base texture key for boss bullet
+  bulletAnim?:  string;       // animation key for bullet (if animated)
+  bulletTint:   number;       // tint applied to bullet sprite
+  bulletScale:  number;       // bullet display scale
+  bulletSpeed:  number;       // base px/s bullet speed
+}
+
+const BOSS_DEFS: Record<BossType, BossDef> = {
+  'ship-b': {
+    spawnKey: 'enemy-boss-b-m', idleAnim: '', deathStyle: 'ship',
+    bulletKey: 'bullet-plasma', bulletAnim: 'plasma-fly',
+    bulletTint: 0xff4400, bulletScale: 0.85, bulletSpeed: 200,
+  },
+  'slime': {
+    spawnKey: 'boss-slime', idleAnim: 'boss-slime-idle', deathStyle: 'goop',
+    bulletKey: 'boss-bullet-pulse-1', bulletAnim: 'boss-bullet-pulse',
+    bulletTint: 0x44ff44, bulletScale: 1.6, bulletSpeed: 150,
+  },
+  'wizard': {
+    spawnKey: 'boss-wizard', idleAnim: 'boss-wizard-idle', deathStyle: 'magic',
+    bulletKey: 'boss-bullet-charged-1', bulletAnim: 'boss-bullet-charged',
+    bulletTint: 0xcc44ff, bulletScale: 1.3, bulletSpeed: 220,
+  },
+  'demon': {
+    spawnKey: 'boss-demon-idle-1', idleAnim: 'boss-demon-idle',
+    shootAnim: 'boss-demon-attack', deathStyle: 'demon',
+    bulletKey: 'boss-bullet-fire-1', bulletAnim: 'boss-bullet-fire',
+    bulletTint: 0xff6600, bulletScale: 1.8, bulletSpeed: 240,
+  },
+  'ship-top': {
+    spawnKey: 'boss-ship-top-1', idleAnim: 'boss-ship-top-idle', deathStyle: 'ship',
+    bulletKey: 'boss-bullet-bolt-1', bulletAnim: 'boss-bullet-bolt',
+    bulletTint: 0x4488ff, bulletScale: 1.0, bulletSpeed: 320,
+  },
+};
+
 // ─── Wave configuration ───────────────────────────────────────────────────────
 
 interface WaveCfg {
-  slots:       number;   // max arsenal slots
-  bossReq:     number;   // items boss demands
-  spawnMs:     number;   // ms between enemy spawns
-  greenPct:    number;   // 0-1 fraction of enemies that are green carriers
-  bluePct:     number;   // 0-1 fraction that are blue (weapon-drop)
-  enemySpeed:  number;   // px/s base descent
-  bossTier:    'b' | 'g' | 'r';   // blue / green / red boss sprite
+  slots:       number;
+  bossReq:     number;
+  spawnMs:     number;
+  greenPct:    number;
+  bluePct:     number;
+  enemySpeed:  number;
+  bossType:    BossType;
   bossScale:   number;
 }
 
 const WAVES: WaveCfg[] = [
-  { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossTier: 'b', bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossTier: 'b', bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossTier: 'b', bossScale: 1.0 },
-  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossTier: 'g', bossScale: 1.3 },
-  { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.15, enemySpeed: 115, bossTier: 'g', bossScale: 1.3 },
-  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossTier: 'g', bossScale: 1.3 },
-  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossTier: 'r', bossScale: 1.6 },
-  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossTier: 'r', bossScale: 1.6 },
-  { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossTier: 'r', bossScale: 1.6 },
-  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossTier: 'r', bossScale: 1.8 },
+  { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossType: 'ship-b',   bossScale: 1.0 },
+  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossType: 'slime',    bossScale: 2.2 },
+  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossType: 'wizard',   bossScale: 1.8 },
+  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossType: 'demon',    bossScale: 0.9 },
+  { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.15, enemySpeed: 115, bossType: 'ship-top', bossScale: 1.4 },
+  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossType: 'slime',    bossScale: 2.6 },
+  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossType: 'wizard',   bossScale: 2.2 },
+  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossType: 'demon',    bossScale: 1.1 },
+  { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossType: 'ship-top', bossScale: 1.8 },
+  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossType: 'demon',    bossScale: 1.3 },
 ];
 
 function waveCfg(wave: number): WaveCfg {
@@ -56,7 +104,7 @@ const PLASMA_SPEED   = 520;   // px/s upward
 const CRASH_DIST     = 38;    // px — ship vs enemy collision radius
 const POWERUP_SECS   = 15;    // seconds vulcan spread lasts
 const CLAMP_X        = 26;    // min px from screen edge for ship center
-const BOSS_MIN_GAP_BASE = 40000; // ms cooldown between boss encounters; shrinks by 3 s per wave, floors at 20 s
+const BOSS_KILL_COOLDOWN = 6000;  // ms minimum between killing a boss and triggering the next one
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -128,6 +176,8 @@ export class GameScene extends Phaser.Scene {
 
   // Boss
   private boss:             EnemyObj | null = null;
+  private bossType:         BossType | null = null;
+  private bossIsShooting    = false;
   private bossRetreating  = false;
   private bossRequired:   ItemData[] = [];  // items boss demands (multi)
   private bossRemaining:  ItemData[] = [];  // items still needed to kill boss
@@ -163,6 +213,8 @@ export class GameScene extends Phaser.Scene {
   private isDead              = false;
   private lastBossContactTime = 0;  // cooldown to prevent per-frame damage on boss overlap
   private lastBossKillTime    = 0;
+  private lastBossWave        = 0;  // wave in which the last boss spawned — ensures one boss per wave
+  private lastBossHintTapTime = 0;  // cooldown to prevent hint replay stacking on rapid taps
   private arsenalReadyShown   = false;
 
   // Floor (wave-based) + accumulated retreats = total rage this boss encounter uses
@@ -183,6 +235,8 @@ export class GameScene extends Phaser.Scene {
     this.isDead              = false;
     this.lastBossContactTime = 0;
     this.lastBossKillTime    = 0;
+    this.lastBossWave        = 0;
+    this.lastBossHintTapTime = 0;
     this.arsenalReadyShown   = false;
     this.activeWeapon   = 'plasma';
     this.weaponEndTime  = 0;
@@ -193,7 +247,9 @@ export class GameScene extends Phaser.Scene {
     this.enemies  = [];
     this.tokens   = [];
     this.arsenal  = [];
-    this.boss     = null;
+    this.boss         = null;
+    this.bossType     = null;
+    this.bossIsShooting = false;
     this.bossRetreating  = false;
     this.bossRequired    = [];
     this.bossRemaining   = [];
@@ -558,15 +614,19 @@ export class GameScene extends Phaser.Scene {
     if (this.boss || this.isDead) return;
     const { width } = this.scale;
     const cfg = waveCfg(this.wave);
-    const tier = cfg.bossTier;
-    const key = this.textures.exists(`enemy-boss-${tier}-m`) ? `enemy-boss-${tier}-m` : 'particle';
-    const bossSprite = this.add.sprite(width / 2, -90, key)
+    const bt  = cfg.bossType;
+    const def = BOSS_DEFS[bt];
+    this.bossType       = bt;
+    this.bossIsShooting = false;
+    this.lastBossWave   = this.wave;
+
+    const spawnKey   = this.textures.exists(def.spawnKey) ? def.spawnKey : 'particle';
+    const bossSprite = this.add.sprite(width / 2, -90, spawnKey)
       .setDepth(5).setScale(cfg.bossScale);
 
     this.greensSinceBoss = 0;
     this.bossScheduled   = false;
 
-    // Pick required items only from what the player already collected
     const uniqueArsenal = this.arsenal.filter((item, idx, arr) =>
       arr.findIndex(a => a.char === item.char) === idx
     );
@@ -582,17 +642,37 @@ export class GameScene extends Phaser.Scene {
 
     this.playSound('sfx-alien-appear', 0.8);
 
-    // Enter animation
+    // Play enter anim immediately (e.g. ghost appear), then switch to idle
+    if (def.enterAnim && this.anims.exists(def.enterAnim)) {
+      bossSprite.play(def.enterAnim);
+      bossSprite.once('animationcomplete', () => {
+        if (this.boss && def.idleAnim && this.anims.exists(def.idleAnim))
+          bossSprite.play(def.idleAnim);
+      });
+    }
+
     this.tweens.add({
       targets: bossSprite, y: 110, duration: 1200, ease: 'Back.Out',
       onComplete: () => {
         if (!this.boss) return;
+        // Start idle anim for bosses that have no enter anim
+        if (!def.enterAnim && def.idleAnim && this.anims.exists(def.idleAnim))
+          bossSprite.play(def.idleAnim);
         this.applyRageTint();
         this.createBossRageLabel();
         this.playBossHint();
         this.createBossHintLabel();
+        bossSprite.setInteractive();
+        bossSprite.on('pointerdown', () => {
+          if (this.bossRetreating || !this.boss) return;
+          const now = this.time.now;
+          const hintDuration = this.bossRemaining.length * 900 + 800;
+          if (now - this.lastBossHintTapTime < hintDuration) return;
+          this.lastBossHintTapTime = now;
+          this.playBossHint(false);
+        });
         if (this.totalBossRage > 0) this.startBossBulletTimer();
-        this.playSound('sfx-boss-alarm', 0.6);
+        this.playSound('sfx-boss-alarm', 0.25);
         if (this.cache.audio.has('sfx-boss-engine')) {
           this.bossEngineSound = this.sound.add('sfx-boss-engine', { loop: true, volume: 0.45 });
           this.bossEngineSound.play();
@@ -601,16 +681,8 @@ export class GameScene extends Phaser.Scene {
           this.bossThrustSound = this.sound.add('sfx-boss-thrust', { loop: true, volume: 0.68 });
           this.bossThrustSound.play();
         }
-        // Pulse glow
-        this.tweens.add({
-          targets: bossSprite, alpha: 0.6, duration: 700,
-          yoyo: true, repeat: -1,
-        });
-        // Slow horizontal drift
-        this.tweens.add({
-          targets: bossSprite, x: bossSprite.x + 50, duration: 2400,
-          yoyo: true, repeat: -1, ease: 'Sine.InOut',
-        });
+        this.tweens.add({ targets: bossSprite, alpha: 0.75, duration: 700, yoyo: true, repeat: -1 });
+        this.tweens.add({ targets: bossSprite, x: bossSprite.x + 50, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
       },
     });
 
@@ -639,10 +711,22 @@ export class GameScene extends Phaser.Scene {
     this.stopBossEngineSound();
     this.destroyBossLabels();
     this.tweens.killTweensOf(this.boss.sprite);
-    this.tweens.add({
-      targets: this.boss.sprite, y: -150, alpha: 0, duration: 900,
-      onComplete: () => { this.boss?.sprite.destroy(); this.boss = null; this.bossRetreating = false; },
-    });
+
+    const def = this.bossType ? BOSS_DEFS[this.bossType] : null;
+    const doRetreatTween = () => {
+      if (!this.boss) return;
+      this.tweens.add({
+        targets: this.boss.sprite, y: -150, alpha: 0, duration: 900,
+        onComplete: () => { this.boss?.sprite.destroy(); this.boss = null; this.bossRetreating = false; },
+      });
+    };
+
+    if (def?.retreatAnim && this.anims.exists(def.retreatAnim)) {
+      this.boss.sprite.play(def.retreatAnim);
+      this.boss.sprite.once('animationcomplete', () => doRetreatTween());
+    } else {
+      doRetreatTween();
+    }
   }
 
   private killBoss(): void {
@@ -658,14 +742,17 @@ export class GameScene extends Phaser.Scene {
     this.destroyBossLabels();
     const bx = this.boss.sprite.x;
     const by = this.boss.sprite.y;
+    const bt = this.bossType;
     this.boss.sprite.destroy();
-    this.boss = null;
-    this.bossRetreating = false;
+    this.boss         = null;
+    this.bossType     = null;
+    this.bossRetreating  = false;
     this.bossRequired  = [];
     this.bossRemaining = [];
 
-    this.playBossExplosion(bx, by);
+    this.playBossExplosion(bx, by, bt);
     this.playSound('sfx-explosion-boss', 0.9);
+    this.time.delayedCall(600, () => this.playSound('voice-boss-kill', 1.3));
     this.score += 50 * this.wave;
     this.scene.get('HUDScene')?.events.emit('score-update', this.score);
 
@@ -681,7 +768,7 @@ export class GameScene extends Phaser.Scene {
     this.bossRemaining.forEach((item, i) => {
       this.time.delayedCall(shootDelay + i * 900, () => {
         if (this.cache.audio.has(item.audioKey)) {
-          this.sound.play(item.audioKey, { volume: 1.0 });
+          this.sound.play(item.audioKey, { volume: 1.5 });
         }
       });
     });
@@ -737,14 +824,59 @@ export class GameScene extends Phaser.Scene {
     this.bossHintLabel.setText(`▼  ${chars}\n   ${latins}`);
   }
 
-  private playBossExplosion(x: number, y: number): void {
-    if (this.anims.exists('explosion-3') && this.textures.exists('explosion-3-01')) {
-      const cfg = waveCfg(this.wave);
-      const exp = this.add.sprite(x, y, 'explosion-3-01').setDepth(8).setScale(cfg.bossScale * 1.4);
-      exp.play('explosion-3');
-      exp.once('animationcomplete', () => exp.destroy());
-    } else {
-      this.burstParticles(x, y, 20);
+  private playBossExplosion(x: number, y: number, bt: BossType | null): void {
+    const cfg       = waveCfg(this.wave);
+    const deathStyle = bt ? BOSS_DEFS[bt].deathStyle : 'ship';
+
+    const spawnExp = (animKey: string, ex: number, ey: number, scale: number, delay = 0) => {
+      if (!this.anims.exists(animKey)) return;
+      const fk = `${animKey}-01`;
+      if (!this.textures.exists(fk)) return;
+      this.time.delayedCall(delay, () => {
+        const exp = this.add.sprite(ex, ey, fk).setDepth(8).setScale(scale);
+        exp.play(animKey);
+        exp.once('animationcomplete', () => exp.destroy());
+      });
+    };
+
+    switch (deathStyle) {
+      case 'goop': {
+        const offsets: [number, number][] = [[-40, -20], [30, 30], [0, -50]];
+        for (let i = 0; i < offsets.length; i++) {
+          const [ox, oy] = offsets[i];
+          spawnExp('explosion-2', x + ox, y + oy, cfg.bossScale * 1.1, i * 180);
+        }
+        break;
+      }
+      case 'magic': {
+        spawnExp('explosion-2', x, y, cfg.bossScale * 1.8);
+        this.burstParticles(x, y, 24);
+        this.time.delayedCall(200, () => this.burstParticles(x, y, 16));
+        break;
+      }
+      case 'demon': {
+        spawnExp('explosion-3', x, y, cfg.bossScale * 1.4);
+        this.cameras.main.shake(400, 0.020);
+        const aftershocks: [number, number][] = [[-60, 20], [55, -30]];
+        for (let i = 0; i < aftershocks.length; i++) {
+          const [ox, oy] = aftershocks[i];
+          const delay = 350 + i * 220;
+          spawnExp('explosion-2', x + ox, y + oy, cfg.bossScale * 0.9, delay);
+          this.time.delayedCall(delay + 50, () => this.cameras.main.shake(200, 0.010));
+        }
+        break;
+      }
+      case 'ship':
+      default: {
+        if (this.anims.exists('explosion-3') && this.textures.exists('explosion-3-01')) {
+          const exp = this.add.sprite(x, y, 'explosion-3-01').setDepth(8).setScale(cfg.bossScale * 1.4);
+          exp.play('explosion-3');
+          exp.once('animationcomplete', () => exp.destroy());
+        } else {
+          this.burstParticles(x, y, 20);
+        }
+        break;
+      }
     }
   }
 
@@ -801,14 +933,31 @@ export class GameScene extends Phaser.Scene {
   }
 
   private fireBossBullet(): void {
-    if (!this.boss || this.bossRetreating || this.isDead) return;
+    if (!this.boss || this.bossRetreating || this.isDead || !this.bossType) return;
+    const def   = BOSS_DEFS[this.bossType];
     const bx    = this.boss.sprite.x;
     const by    = this.boss.sprite.y + 20;
     const rage  = this.totalBossRage;
-    const speed = 200 + (rage - 1) * 25;
+    const speed = def.bulletSpeed + Math.max(0, rage - 1) * 25;
     const count = rage >= 5 ? 3 : rage >= 3 ? 2 : 1;
     const baseAngle = Phaser.Math.Angle.Between(bx, by, this.ship.x, this.ship.y);
     const spread = Math.PI / 10;
+
+    if (!this.bossIsShooting) {
+      const shootKey = (this.bossType === 'demon' && rage >= 3 && this.anims.exists('boss-demon-breath'))
+        ? 'boss-demon-breath'
+        : def.shootAnim;
+      if (shootKey && this.anims.exists(shootKey) && this.boss) {
+        this.bossIsShooting = true;
+        this.boss.sprite.play(shootKey);
+        this.boss.sprite.once('animationcomplete', () => {
+          this.bossIsShooting = false;
+          if (this.boss && def.idleAnim && this.anims.exists(def.idleAnim))
+            this.boss.sprite.play(def.idleAnim);
+        });
+      }
+    }
+
     for (let i = 0; i < count; i++) {
       const angle = count === 1 ? baseAngle : baseAngle + (i - (count - 1) / 2) * spread;
       this.spawnBossBullet(bx, by, angle, speed);
@@ -816,9 +965,22 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnBossBullet(x: number, y: number, angle: number, speed: number): void {
-    const key = this.textures.exists('bullet-plasma') ? 'bullet-plasma' : 'bullet';
-    const img = this.add.image(x, y, key).setDepth(6).setScale(0.85).setTint(0xff4400);
-    img.setRotation(angle + Math.PI);  // flip to point downward
+    const def = this.bossType ? BOSS_DEFS[this.bossType] : null;
+    let img: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
+
+    if (def?.bulletAnim && this.anims.exists(def.bulletAnim)) {
+      const texKey = this.textures.exists(def.bulletKey) ? def.bulletKey : 'bullet';
+      const spr = this.add.sprite(x, y, texKey).setDepth(6)
+        .setScale(def.bulletScale).setTint(def.bulletTint);
+      spr.play(def.bulletAnim);
+      img = spr;
+    } else {
+      const texKey = def ? (this.textures.exists(def.bulletKey) ? def.bulletKey : 'bullet') : 'bullet';
+      img = this.add.image(x, y, texKey).setDepth(6)
+        .setScale(def?.bulletScale ?? 0.85).setTint(def?.bulletTint ?? 0xff4400);
+    }
+
+    img.setRotation(angle);
     img.setData('vx', Math.cos(angle) * speed);
     img.setData('vy', Math.sin(angle) * speed);
     this.bullets.push({ img, type: 'boss', tweenDriven: false });
@@ -870,6 +1032,7 @@ export class GameScene extends Phaser.Scene {
       const maxSlots = waveCfg(this.wave).slots;
       if (this.arsenal.length >= maxSlots) return;
       this.arsenal.push(tok.item);
+      this.playSound(tok.item.audioKey, 1.3);
       this.refreshArsenalUI();
       this.animateSlotCollect(this.arsenal.length - 1);
       this.checkArsenalReady();
@@ -1298,10 +1461,10 @@ export class GameScene extends Phaser.Scene {
       this.restartEnemySpawner(); // apply new spawnMs
     }
 
-    // Boss trigger — also enforce a per-wave cooldown after the last kill
-    const minBossGap = Math.max(20000, BOSS_MIN_GAP_BASE - (this.wave - 1) * 3000);
+    // Boss trigger — one boss per wave; short kill-cooldown prevents instant re-trigger
     const bossReady  = this.killsSinceBoss >= BOSS_EVERY && !this.boss && !this.bossScheduled
-                       && (this.time.now - this.lastBossKillTime >= minBossGap);
+                       && this.wave > this.lastBossWave
+                       && (this.time.now - this.lastBossKillTime >= BOSS_KILL_COOLDOWN);
     if (bossReady) {
       this.killsSinceBoss = 0;
       this.bossScheduled  = true;
@@ -1353,6 +1516,7 @@ export class GameScene extends Phaser.Scene {
     if (this.arsenal.length < waveCfg(this.wave).slots) return;
     this.animateArsenalFullCascade();
     this.playSound('sfx-arsenal-full', 0.6);
+    this.time.delayedCall(300, () => this.playSound('voice-arsenal-full', 1.3));
     if (!this.arsenalReadyShown) {
       this.arsenalReadyShown = true;
       this.showArsenalReadyBanner();

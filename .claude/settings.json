@@ -86,7 +86,19 @@
       "WebFetch(domain:support.google.com)",
       "WebFetch(domain:www.revenuecat.com)",
       "Bash(awk '{print $5, $NF}')",
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\Legacy Collection\\\\\" -Recurse -Force | Select-Object FullName, Extension, Length | Sort-Object FullName | Format-Table -AutoSize)"
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\Legacy Collection\\\\\" -Recurse -Force | Select-Object FullName, Extension, Length | Sort-Object FullName | Format-Table -AutoSize)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebFetch(domain:forvo.com)",
+      "Bash(pip show *)",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"from gtts.lang import tts_langs; langs = tts_langs\\(\\); [print\\(k, v\\) for k, v in sorted\\(langs.items\\(\\)\\)]\")",
+      "Bash(python -c \"import pyttsx3; e=pyttsx3.init\\(\\); [print\\(v.id, v.name\\) for v in e.getProperty\\('voices'\\)]\")",
+      "Bash(python -c \"import openai; print\\(openai.__version__\\)\")",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\game\\\\numbers\")",
+      "Bash(Select-Object Name, Length, LastWriteTime)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\Legacy Collection\" -Recurse)",
+      "Bash(Select-Object FullName, PSIsContainer)"
     ],
     "deny": [
       "Bash(git push --force*)",
