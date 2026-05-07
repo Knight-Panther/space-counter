@@ -190,7 +190,7 @@ export class GameScene extends Phaser.Scene {
   private bossRetreating  = false;
   private bossRequired:   ItemData[] = [];  // items boss demands (multi)
   private bossRemaining:  ItemData[] = [];  // items still needed to kill boss
-  private bossHintLabel:  Phaser.GameObjects.Text | null = null;
+  private bossHintLabel:  Phaser.GameObjects.Text | Phaser.GameObjects.Container | null = null;
   private bossRageLabel:  Phaser.GameObjects.Text | null = null;
   private bossRage        = 0;   // increments each time boss retreats unkilled; resets on kill
   private bossBulletTimer:  Phaser.Time.TimerEvent | null = null;
@@ -828,7 +828,7 @@ export class GameScene extends Phaser.Scene {
     this.bossRemaining.forEach((item, i) => {
       this.time.delayedCall(shootDelay + i * 900, () => {
         if (this.cache.audio.has(item.audioKey)) {
-          this.sound.play(item.audioKey, { volume: 1.5 });
+          this.sound.play(item.audioKey, { volume: this.mode === 'alphabet' ? 1.9 : 1.5 });
         }
       });
     });
@@ -840,26 +840,50 @@ export class GameScene extends Phaser.Scene {
     this.bossHintLabel = null;
 
     const unkillable = this.bossRequired.length === 0;
-    const chars   = unkillable ? '⚠  collect items!' : this.bossRemaining.map(r => r.char).join('  +  ');
-    const latins  = unkillable ? '' : this.bossRemaining.map(r => r.latin).join('       ');
-    const text    = unkillable ? chars : `▼  ${chars}\n   ${latins}`;
-    const color   = unkillable ? '#ff6644' : '#ffdd00';
 
-    this.bossHintLabel = this.add.text(
-      this.boss.sprite.x,
-      this.boss.sprite.y + 78,
-      text,
-      {
-        fontSize: '28px',
-        color,
-        stroke: '#000000',
-        strokeThickness: 5,
-        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
-        backgroundColor: '#00000099',
-        padding: { x: 10, y: 6 },
-        align: 'center',
-      }
-    ).setOrigin(0.5, 0).setDepth(10);
+    if (this.mode === 'alphabet' && !unkillable) {
+      const icon = this.add.text(0, 0, '🔊', {
+        fontSize: '18px',
+        backgroundColor: '#00000088',
+        padding: { x: 6, y: 3 },
+      }).setOrigin(0.5);
+
+      const container = this.add.container(
+        this.boss.sprite.x,
+        this.boss.sprite.y - 70,
+        [icon]
+      ).setDepth(10).setSize(44, 34).setInteractive({ useHandCursor: true }).setAlpha(0.6);
+
+      container.on('pointerdown', () => {
+        icon.setScale(0.85);
+        this.playBossHint(false);
+      });
+      container.on('pointerup',  () => icon.setScale(1));
+      container.on('pointerout', () => icon.setScale(1));
+
+      this.bossHintLabel = container;
+    } else {
+      const chars  = unkillable ? '⚠  collect items!' : this.bossRemaining.map(r => r.char).join('  +  ');
+      const latins = unkillable ? '' : this.bossRemaining.map(r => r.latin).join('       ');
+      const text   = unkillable ? chars : `▼  ${chars}\n   ${latins}`;
+      const color  = unkillable ? '#ff6644' : '#ffdd00';
+
+      this.bossHintLabel = this.add.text(
+        this.boss.sprite.x,
+        this.boss.sprite.y + 78,
+        text,
+        {
+          fontSize: '28px',
+          color,
+          stroke: '#000000',
+          strokeThickness: 5,
+          fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+          backgroundColor: '#00000099',
+          padding: { x: 10, y: 6 },
+          align: 'center',
+        }
+      ).setOrigin(0.5, 0).setDepth(10);
+    }
 
     this.tweens.add({
       targets: this.bossHintLabel,
@@ -879,9 +903,10 @@ export class GameScene extends Phaser.Scene {
       this.bossHintLabel = null;
       return;
     }
+    if (this.mode === 'alphabet') return;
     const chars  = this.bossRemaining.map(r => r.char).join('  +  ');
     const latins = this.bossRemaining.map(r => r.latin).join('       ');
-    this.bossHintLabel.setText(`▼  ${chars}\n   ${latins}`);
+    (this.bossHintLabel as Phaser.GameObjects.Text).setText(`▼  ${chars}\n   ${latins}`);
   }
 
   private playBossExplosion(x: number, y: number, bt: BossType | null): void {
@@ -1127,7 +1152,7 @@ export class GameScene extends Phaser.Scene {
       const maxSlots = waveCfg(this.wave).slots;
       if (this.arsenal.length >= maxSlots) return;
       this.arsenal.push(tok.item);
-      this.playSound(tok.item.audioKey, 1.3);
+      this.playSound(tok.item.audioKey, this.mode === 'alphabet' ? 1.7 : 1.3);
       this.refreshArsenalUI();
       this.animateSlotCollect(this.arsenal.length - 1);
       this.checkArsenalReady();
@@ -1814,7 +1839,7 @@ export class GameScene extends Phaser.Scene {
     // Boss labels track boss horizontal drift
     if (this.boss) {
       if (this.bossRageLabel)  this.bossRageLabel.setPosition(this.boss.sprite.x, this.boss.sprite.y - 58);
-      if (this.bossHintLabel)  this.bossHintLabel.setPosition(this.boss.sprite.x, this.boss.sprite.y + 78);
+      if (this.bossHintLabel)  this.bossHintLabel.setPosition(this.boss.sprite.x, this.mode === 'alphabet' ? this.boss.sprite.y - 70 : this.boss.sprite.y + 78);
     }
 
     // Parallax

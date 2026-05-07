@@ -104,7 +104,10 @@
       "Bash(identify c:/Users/VM-Dev/Desktop/Space-counter/public/images/__TRACKED_VAR__)",
       "WebFetch(domain:thiff.itch.io)",
       "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\Game UI collection FREE version\\\\Game UI collection FREE version\" -Recurse)",
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Depth 2)"
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Depth 2)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\game\\\\alphabet\")",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(ffmpeg -version)"
     ],
     "deny": [
       "Bash(git push --force*)",
