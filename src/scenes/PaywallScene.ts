@@ -29,7 +29,7 @@ export class PaywallScene extends Phaser.Scene {
 
     // Close button
     this.add.text(px + panelW - 18, py + 18, '✕', {
-      fontSize: '22px', color: '#446688', fontFamily: 'Arial',
+      fontSize: '22px', color: '#446688', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.stop());
 
@@ -37,11 +37,11 @@ export class PaywallScene extends Phaser.Scene {
     this.add.text(w / 2, py + 26, 'სრული თამაში', {
       fontSize: '30px', color: '#ffdd00', fontStyle: 'bold',
       stroke: '#000000', strokeThickness: 4,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5, 0);
 
     this.add.text(w / 2, py + 70, 'Full Game Unlock', {
-      fontSize: '15px', color: '#6699bb', fontFamily: 'Arial',
+      fontSize: '15px', color: '#6699bb', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0);
 
     // Free vs premium comparison
@@ -52,7 +52,7 @@ export class PaywallScene extends Phaser.Scene {
       `★ Full:  + ${lockedCount} more letters  +  numbers 11–20`,
     ].join('\n'), {
       fontSize: '14px', color: '#aaccee',
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       align: 'center', lineSpacing: 10,
     }).setOrigin(0.5, 0);
 
@@ -63,11 +63,11 @@ export class PaywallScene extends Phaser.Scene {
     // Price
     this.add.text(w / 2, py + 200, mgr.getProductPrice(), {
       fontSize: '46px', color: '#ffffff', fontStyle: 'bold',
-      stroke: '#000000', strokeThickness: 4, fontFamily: 'Arial',
+      stroke: '#000000', strokeThickness: 4, fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0);
 
     this.add.text(w / 2, py + 256, 'ერთჯერადი გადახდა  ·  one-time purchase', {
-      fontSize: '12px', color: '#556677', fontFamily: 'Arial',
+      fontSize: '12px', color: '#556677', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0);
 
     // Buy button
@@ -82,7 +82,7 @@ export class PaywallScene extends Phaser.Scene {
 
     // Status / error line
     this.statusText = this.add.text(w / 2, py + 422, '', {
-      fontSize: '14px', color: '#ffcc44', fontFamily: 'Arial',
+      fontSize: '14px', color: '#ffcc44', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0);
 
     // Auto-close when premium activates (e.g. from this scene or restored elsewhere)
@@ -103,7 +103,7 @@ export class PaywallScene extends Phaser.Scene {
 
     this.add.text(cx, cy + bh / 2, label, {
       fontSize: '17px', color: '#ffffff', fontStyle: 'bold',
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5);
 
     this.add.zone(cx, cy + bh / 2, bw, bh).setInteractive()

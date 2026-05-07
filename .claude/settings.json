@@ -101,7 +101,9 @@
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Select-Object Name, Length)",
       "Bash(python3 -c ' *)",
-      "Bash(identify c:/Users/VM-Dev/Desktop/Space-counter/public/images/__TRACKED_VAR__)"
+      "Bash(identify c:/Users/VM-Dev/Desktop/Space-counter/public/images/__TRACKED_VAR__)",
+      "WebFetch(domain:thiff.itch.io)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\Game UI collection FREE version\\\\Game UI collection FREE version\" -Recurse)"
     ],
     "deny": [
       "Bash(git push --force*)",

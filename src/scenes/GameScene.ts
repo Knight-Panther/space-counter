@@ -597,7 +597,7 @@ export class GameScene extends Phaser.Scene {
       const lbl = this.add.text(x, -60 + 36, item.display, {
         fontSize: '17px', color: '#ffff00',
         stroke: '#000000', strokeThickness: 3,
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       }).setOrigin(0.5).setDepth(6);
       sprite.setData('label', lbl);
     }
@@ -814,7 +814,7 @@ export class GameScene extends Phaser.Scene {
         color,
         stroke: '#000000',
         strokeThickness: 5,
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
         backgroundColor: '#00000099',
         padding: { x: 10, y: 6 },
         align: 'center',
@@ -945,7 +945,7 @@ export class GameScene extends Phaser.Scene {
         fontSize: '20px',
         color: rage >= 4 ? '#ff2200' : rage >= 2 ? '#ff7700' : '#ffcc00',
         stroke: '#000000', strokeThickness: 4,
-        fontFamily: 'Arial',
+        fontFamily: 'Orbitron, Arial',
       }
     ).setOrigin(0.5).setDepth(10);
   }
@@ -1039,7 +1039,7 @@ export class GameScene extends Phaser.Scene {
     const charText = this.add.text(x, y + 28, label, {
       fontSize: '17px', color: isWeapon ? '#ffdd00' : '#ffff00',
       stroke: '#000000', strokeThickness: 3,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5).setDepth(6);
 
     this.tokens.push({ sprite, charText, item, isWeapon });
@@ -1119,7 +1119,7 @@ export class GameScene extends Phaser.Scene {
 
     this.add.text(w / 2, barY + 6, 'არსენალი', {
       fontSize: '11px', color: '#557799',
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial', letterSpacing: 2,
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial', letterSpacing: 2,
     }).setOrigin(0.5, 0).setDepth(100);
 
     this.slotUIs = [];
@@ -1135,10 +1135,10 @@ export class GameScene extends Phaser.Scene {
       const bg   = this.add.graphics().setDepth(100);
       const charText = this.add.text(cx, slotY + slotH / 2 - 8, '', {
         fontSize: '26px', color: '#ffffff',
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       }).setOrigin(0.5).setDepth(101);
       const latinText = this.add.text(cx, slotY + slotH - 9, '', {
-        fontSize: '10px', color: '#aabbff', fontFamily: 'Arial',
+        fontSize: '10px', color: '#aabbff', fontFamily: 'Orbitron, Arial',
       }).setOrigin(0.5).setDepth(101);
       const zone = this.add.zone(cx, slotY + slotH / 2, slotW, slotH)
         .setInteractive().setDepth(102);
@@ -1577,7 +1577,7 @@ export class GameScene extends Phaser.Scene {
     const line1 = this.add.text(width / 2, height / 2 - 34, 'არსენალი სავსეა!', {
       fontSize: '36px', color: '#00ffcc',
       stroke: '#000000', strokeThickness: 5,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial', fontStyle: 'bold',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial', fontStyle: 'bold',
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
     // Auto-scale if wider than 90% of screen
     if (line1.width > width * 0.9) line1.setScale((width * 0.9) / line1.width);
@@ -1588,7 +1588,7 @@ export class GameScene extends Phaser.Scene {
     const line2 = this.add.text(width / 2, height / 2 + 16, boss2txt, {
       fontSize: '15px', color: '#aaffee',
       stroke: '#000000', strokeThickness: 3,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       align: 'center', wordWrap: { width: width * 0.88 },
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
     this.tweens.add({ targets: [line1, line2], alpha: 1, duration: 300, yoyo: true, hold: 1600, onComplete: () => { line1.destroy(); line2.destroy(); } });
@@ -1601,7 +1601,7 @@ export class GameScene extends Phaser.Scene {
     const txt = this.add.text(width / 2, height / 2 - 60, `ტალღა ${this.wave}!`, {
       fontSize: '58px', color: '#ffdd00',
       stroke: '#000000', strokeThickness: 6,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
     if (txt.width > width * 0.88) txt.setScale((width * 0.88) / txt.width);
     this.tweens.add({ targets: txt, alpha: 1, duration: 250, yoyo: true, hold: 900, onComplete: () => txt.destroy() });

@@ -159,7 +159,7 @@ export class StoryScene extends Phaser.Scene {
       {
         fontSize: '18px',
         color: '#e8eeff',
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
         wordWrap: { width: boxW - innerPad * 2 },
         lineSpacing: 10,
       }
@@ -173,7 +173,7 @@ export class StoryScene extends Phaser.Scene {
       {
         fontSize: '17px',
         color: '#' + accent.toString(16).padStart(6, '0'),
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
         fontStyle: 'bold',
       }
     ).setOrigin(0.5, 1).setAlpha(0);
@@ -200,7 +200,7 @@ export class StoryScene extends Phaser.Scene {
     this.add.text(bx, by, 'SKIP ▶', {
       fontSize: '14px',
       color: '#aaaacc',
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5);
 
     const zone = this.add.zone(bx, by, bw, bh).setInteractive();

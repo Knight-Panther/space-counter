@@ -255,7 +255,7 @@ export class MainMenuScene extends Phaser.Scene {
       color: C.title1,
       stroke: '#0055cc',
       strokeThickness: 8,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       fontStyle: 'bold',
     }).setOrigin(0.5, 0);
 
@@ -265,7 +265,7 @@ export class MainMenuScene extends Phaser.Scene {
       color: '#ffdd00',
       stroke: '#884400',
       strokeThickness: 10,
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
       fontStyle: 'bold',
     }).setOrigin(0.5, 0);
   }
@@ -284,7 +284,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.add.text(cx, menuTop - h * 0.059, 'აირჩიე მისია', {
       fontSize: '19px',
       color: C.header,
-      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       letterSpacing: 3,
     }).setOrigin(0.5, 0);
 
@@ -298,7 +298,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.cursorText = this.add.text(cx - w * 0.31, menuTop, '►', {
       fontSize: '26px',
       color: C.cursor,
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0.5);
 
     this.tweens.add({
@@ -317,7 +317,7 @@ export class MainMenuScene extends Phaser.Scene {
       const txt = this.add.text(cx, y, label, {
         fontSize: ITEM_FS,
         color: idx === this.selectedIdx ? C.selected : C.unselected,
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
         fontStyle: 'bold',
       }).setOrigin(0.5, 0.5);
 
@@ -384,7 +384,7 @@ export class MainMenuScene extends Phaser.Scene {
 
       this.add.text(cx, btnY + btnH / 2, '★  სრული ანბანი  /  Unlock', {
         fontSize: '16px', color: '#ffffff', fontStyle: 'bold',
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
       }).setOrigin(0.5);
 
       this.add.zone(cx, btnY + btnH / 2, btnW, btnH).setInteractive()
@@ -401,13 +401,13 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Version
     this.add.text(isPremium ? cx : cx - w * 0.092, h * 0.93, 'v1.0', {
-      fontSize: '13px', color: C.dim, fontFamily: 'Arial', letterSpacing: 4,
+      fontSize: '13px', color: C.dim, fontFamily: 'Orbitron, Arial', letterSpacing: 4,
     }).setOrigin(0.5);
 
     // Restore Purchases (free users only)
     if (!isPremium) {
       const restore = this.add.text(cx + w * 0.144, h * 0.93, 'Restore', {
-        fontSize: '13px', color: '#334455', fontFamily: 'Arial',
+        fontSize: '13px', color: '#334455', fontFamily: 'Orbitron, Arial',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
       restore.on('pointerdown', async () => {

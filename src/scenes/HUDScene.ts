@@ -35,7 +35,7 @@ export class HUDScene extends Phaser.Scene {
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 3,
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0, 0);
 
     // Wave — starts centered but shifts right if score text grows into it
@@ -44,7 +44,7 @@ export class HUDScene extends Phaser.Scene {
       color: accentColor,
       stroke: '#000000',
       strokeThickness: 3,
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0, 0);
     this.repositionWaveText();
 
@@ -77,7 +77,7 @@ export class HUDScene extends Phaser.Scene {
     this.weaponBarFill.setVisible(false);
 
     this.weaponLabel = this.add.text(width / 2, barY - 14, '⚡ VULCAN', {
-      fontSize: '12px', color: '#ffdd00', fontFamily: 'Arial', fontStyle: 'bold',
+      fontSize: '12px', color: '#ffdd00', fontFamily: 'Orbitron, Arial', fontStyle: 'bold',
     }).setOrigin(0.5, 0).setVisible(false);
 
     // Events
@@ -137,7 +137,7 @@ export class HUDScene extends Phaser.Scene {
     this.add.text(bx, by, '⌂', {
       fontSize: '26px',
       color: '#88aaff',
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0.5);
 
     const zone = this.add.zone(bx, by, r * 2, r * 2).setInteractive();
@@ -181,7 +181,7 @@ export class HUDScene extends Phaser.Scene {
     const muted = !!this.game.registry.get('musicMuted');
     this.muteLabel = this.add.text(bx, by, muted ? '🔇' : '🔊', {
       fontSize: '16px',
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0.5);
 
     const zone = this.add.zone(bx, by, r * 2, r * 2).setInteractive();

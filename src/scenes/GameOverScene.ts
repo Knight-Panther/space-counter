@@ -21,7 +21,7 @@ export class GameOverScene extends Phaser.Scene {
     const isAlpha   = this._mode === 'alphabet';
     const accent    = isAlpha ? 0x4488ff : 0xff8800;
     const accentHex = isAlpha ? '#4488ff' : '#ff8800';
-    const GEO_FONT  = 'Arial Unicode MS, Noto Sans Georgian, Arial';
+    const GEO_FONT  = 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial';
     const isPremium = !!this.game.registry.get('isPremium');
 
     // Dim overlay
@@ -66,7 +66,7 @@ export class GameOverScene extends Phaser.Scene {
     this.add.text(w / 2, py + 132, `${this._score}`, {
       fontSize: '52px', color: '#ffffff',
       stroke: '#000000', strokeThickness: 4,
-      fontStyle: 'bold', fontFamily: 'Arial',
+      fontStyle: 'bold', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5, 0);
 
     // Wave
