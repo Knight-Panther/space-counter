@@ -92,7 +92,8 @@ export class HUDScene extends Phaser.Scene {
       this.waveText.setText(`ტალღა ${wave}`);
       this.repositionWaveText();
     });
-    this.events.on('weapon-start', () => {
+    this.events.on('weapon-start', (label?: string) => {
+      if (label) this.weaponLabel.setText(label);
       this.weaponBarVisible = true;
       this.weaponBarBg.setVisible(true);
       this.weaponBarFill.setVisible(true);

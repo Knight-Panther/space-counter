@@ -67,15 +67,15 @@ interface WaveCfg {
 
 const WAVES: WaveCfg[] = [
   { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossType: 'ship-b',   bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossType: 'slime',    bossScale: 2.2 },
-  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossType: 'wizard',   bossScale: 1.8 },
-  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossType: 'demon',    bossScale: 0.9 },
+  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossType: 'slime',    bossScale: 1.54 },
+  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossType: 'wizard',   bossScale: 1.26 },
+  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossType: 'demon',    bossScale: 0.63 },
   { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.15, enemySpeed: 115, bossType: 'ship-top', bossScale: 1.4 },
-  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossType: 'slime',    bossScale: 2.6 },
-  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossType: 'wizard',   bossScale: 2.2 },
-  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossType: 'demon',    bossScale: 1.1 },
+  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossType: 'demon',    bossScale: 0.77 },
   { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossType: 'ship-top', bossScale: 1.8 },
-  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossType: 'demon',    bossScale: 1.3 },
+  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossType: 'demon',    bossScale: 0.91 },
 ];
 
 function waveCfg(wave: number): WaveCfg {
@@ -103,6 +103,10 @@ const FIRE_COOLDOWN  = 200;   // ms between manual plasma shots
 const PLASMA_SPEED   = 520;   // px/s upward
 const CRASH_DIST     = 38;    // px — ship vs enemy collision radius
 const POWERUP_SECS   = 15;    // seconds vulcan spread lasts
+const HEALTH_DROP_CHANCE = 0.10; // probability of a heart drop on kill when at 1 life
+const BEAM_SECS      = 12;    // seconds beam lasts
+const BEAM_WIDTH     = 22;    // px half-width of beam collision column
+const BEAM_COOLDOWN_MS = 300;  // ms between beam firings
 const CLAMP_X        = 26;    // min px from screen edge for ship center
 const BOSS_KILL_COOLDOWN = 6000;  // ms minimum between killing a boss and triggering the next one
 
@@ -126,10 +130,12 @@ interface BulletObj {
 }
 
 interface TokenObj {
-  sprite:   Phaser.GameObjects.Sprite;
-  charText: Phaser.GameObjects.Text;
-  item:     ItemData;
-  isWeapon: boolean;  // true = weapon power-up token, false = letter/number
+  sprite:      Phaser.GameObjects.Sprite;
+  charText:    Phaser.GameObjects.Text;
+  item?:       ItemData;
+  isWeapon:    boolean;
+  isHealth:    boolean;
+  weaponType?: 'vulcan' | 'beam';
 }
 
 interface SlotUI {
@@ -165,9 +171,11 @@ export class GameScene extends Phaser.Scene {
   private shipTargetY = 0;
 
   // Weapon state
-  private activeWeapon: 'plasma' | 'vulcan' = 'plasma';
+  private activeWeapon: 'plasma' | 'vulcan' | 'beam' = 'plasma';
   private weaponTimer: Phaser.Time.TimerEvent | null = null;
-  private weaponEndTime = 0;
+  private weaponEndTime    = 0;
+  private weaponDuration   = POWERUP_SECS; // total seconds of current weapon, for HUD bar scale
+  private lastBeamTime     = 0;
 
   // Game objects
   private bullets:  BulletObj[] = [];
@@ -239,8 +247,10 @@ export class GameScene extends Phaser.Scene {
     this.lastBossWave        = 0;
     this.lastBossHintTapTime = 0;
     this.arsenalReadyShown   = false;
-    this.activeWeapon   = 'plasma';
-    this.weaponEndTime  = 0;
+    this.activeWeapon    = 'plasma';
+    this.weaponEndTime   = 0;
+    this.weaponDuration  = POWERUP_SECS;
+    this.lastBeamTime    = 0;
     this.weaponBarActive = false;
     for (const ui of this.slotUIs) { ui.idleTween?.stop(); ui.idleTween = null; }
     this.slotUIs  = [];
@@ -337,6 +347,7 @@ export class GameScene extends Phaser.Scene {
       if (ptr.y > playH) return;
       this.shipTargetX = Phaser.Math.Clamp(ptr.x, CLAMP_X, w - CLAMP_X);
       this.shipTargetY = Phaser.Math.Clamp(ptr.y, 60, playH - 40);
+      this.fireBullet(); // fire immediately on press; update loop continues auto-fire while held
     });
   }
 
@@ -344,6 +355,7 @@ export class GameScene extends Phaser.Scene {
 
   private fireBullet(): void {
     if (this.isDead) return;
+    if (this.activeWeapon === 'beam') { this.fireBeam(); return; }
     const now = this.time.now;
     if (now - this.lastFireTime < FIRE_COOLDOWN) return;
     this.lastFireTime = now;
@@ -379,6 +391,34 @@ export class GameScene extends Phaser.Scene {
       this.bullets.push({ img: spr, type: 'plasma', tweenDriven: false });
     }
     this.playSound(this.cache.audio.has('sfx-laser-vulcan') ? 'sfx-laser-vulcan' : 'sfx-laser', 0.22);
+  }
+
+  private fireBeam(): void {
+    const now = this.time.now;
+    if (now - this.lastBeamTime < BEAM_COOLDOWN_MS) return;
+    this.lastBeamTime = now;
+
+    const sx = this.ship.x;
+    const sy = this.ship.y - 28;
+
+    // Instant column clear — kill every enemy within BEAM_WIDTH of ship.x
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      if (Math.abs(this.enemies[i].sprite.x - sx) < BEAM_WIDTH) {
+        this.killEnemy(i);
+      }
+    }
+
+    // Self-disposing beam graphic
+    const gfx = this.add.graphics().setDepth(7).setBlendMode(Phaser.BlendModes.ADD);
+    gfx.fillStyle(0x00ffff, 0.22);
+    gfx.fillRect(sx - BEAM_WIDTH, 0, BEAM_WIDTH * 2, sy);
+    gfx.fillStyle(0xffffff, 0.92);
+    gfx.fillRect(sx - 3, 0, 6, sy);
+    gfx.fillStyle(0x00eeff, 0.85);
+    gfx.fillRect(sx - 1.5, 0, 3, sy);
+
+    this.playSound(this.cache.audio.has('sfx-laser-plasma') ? 'sfx-laser-plasma' : 'sfx-laser', 0.5);
+    this.tweens.add({ targets: gfx, alpha: 0, duration: 280, onComplete: () => gfx.destroy() });
   }
 
   // ─── Arsenal tap → proton shot at boss ────────────────────────────────────
@@ -553,7 +593,7 @@ export class GameScene extends Phaser.Scene {
     } else {
       const emptyRatio = Math.max(0, (cfg.slots - this.arsenal.length) / cfg.slots);
       const effectiveGreenPct = cfg.greenPct * emptyRatio;
-      const effectiveBluePct = this.activeWeapon === 'vulcan' ? 0 : cfg.bluePct;
+      const effectiveBluePct = this.activeWeapon !== 'plasma' ? 0 : cfg.bluePct;
       const purplePct = this.wave >= 3 ? 0.12 : 0;
       const shipPct   = this.wave >= 5 ? 0.10 : 0;
       const roll = Math.random();
@@ -658,7 +698,7 @@ export class GameScene extends Phaser.Scene {
 
     this.boss = {
       sprite: bossSprite, type: 'red',
-      velY: 0, wobblePhase: 0, wobbleAmp: 0, baseX: width / 2,
+      velY: 0, wobblePhase: 0, wobbleAmp: 0, baseX: width / 2, scale: 1,
     };
 
     this.playSound('sfx-alien-appear', 0.8);
@@ -1028,21 +1068,36 @@ export class GameScene extends Phaser.Scene {
 
   // ─── Token drop ───────────────────────────────────────────────────────────
 
-  private spawnToken(x: number, y: number, item: ItemData, isWeapon: boolean): void {
+  private spawnToken(x: number, y: number, item: ItemData, isWeapon: boolean, weaponType: 'vulcan' | 'beam' = 'vulcan'): void {
     const animKey  = isWeapon ? 'mine-11-spin' : 'mine-spin';
     const frameKey = isWeapon ? 'mine-11-1'    : 'mine-1';
     const key = this.textures.exists(frameKey) ? frameKey : 'particle';
     const sprite = this.add.sprite(x, y, key).setDepth(5).setScale(0.9);
+    if (isWeapon && weaponType === 'beam') sprite.setTint(0x00eeff);
     if (this.anims.exists(animKey)) sprite.play(animKey);
 
-    const label = isWeapon ? '⚡' : item.display;
+    const isBeam = isWeapon && weaponType === 'beam';
+    const label  = isBeam ? '☄' : isWeapon ? '⚡' : item.display;
+    const color  = isBeam ? '#00ffff' : isWeapon ? '#ffdd00' : '#ffff00';
     const charText = this.add.text(x, y + 28, label, {
-      fontSize: '17px', color: isWeapon ? '#ffdd00' : '#ffff00',
+      fontSize: '17px', color,
       stroke: '#000000', strokeThickness: 3,
       fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5).setDepth(6);
 
-    this.tokens.push({ sprite, charText, item, isWeapon });
+    this.tokens.push({ sprite, charText, item, isWeapon, isHealth: false, weaponType });
+  }
+
+  private spawnHealthToken(x: number, y: number): void {
+    const frameKey = this.textures.exists('mine-1') ? 'mine-1' : 'particle';
+    const sprite   = this.add.sprite(x, y, frameKey).setDepth(5).setScale(0.9).setTint(0xff3366);
+    if (this.anims.exists('mine-spin')) sprite.play('mine-spin');
+    const charText = this.add.text(x, y + 28, '♥', {
+      fontSize: '20px', color: '#ff4477',
+      stroke: '#000000', strokeThickness: 3,
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+    }).setOrigin(0.5).setDepth(6);
+    this.tokens.push({ sprite, charText, isWeapon: false, isHealth: true });
   }
 
   private collectToken(idx: number): void {
@@ -1051,11 +1106,24 @@ export class GameScene extends Phaser.Scene {
     tok.charText.destroy();
     this.tokens.splice(idx, 1);
 
+    if (tok.isHealth) {
+      this.lives = Math.min(this.lives + 1, LIVES_MAX);
+      this.scene.get('HUDScene')?.events.emit('lives-update', this.lives);
+      this.playSound('sfx-wave-up', 0.55);
+      this.cameras.main.flash(220, 255, 80, 80);
+      return;
+    }
+
     if (tok.isWeapon) {
-      this.activateWeaponPowerup();
+      if (tok.weaponType === 'beam') {
+        this.activateBeamPowerup();
+      } else {
+        this.activateWeaponPowerup();
+      }
     } else {
+      if (!tok.item) return;
       // Discard if this letter/number is already in the arsenal
-      if (this.arsenal.some(a => a.char === tok.item.char)) return;
+      if (this.arsenal.some(a => a.char === tok.item!.char)) return;
       const maxSlots = waveCfg(this.wave).slots;
       if (this.arsenal.length >= maxSlots) return;
       this.arsenal.push(tok.item);
@@ -1078,8 +1146,9 @@ export class GameScene extends Phaser.Scene {
       this.scene.get('HUDScene')?.events.emit('weapon-end');
       this.restartEnemySpawner(); // activeWeapon is now 'plasma' → restores normal rate
     });
+    this.weaponDuration  = POWERUP_SECS;
     this.weaponBarActive = true;
-    this.scene.get('HUDScene')?.events.emit('weapon-start', POWERUP_SECS);
+    this.scene.get('HUDScene')?.events.emit('weapon-start', '⚡ VULCAN');
     this.playSound('sfx-wave-up', 0.7);
 
     // Burst of enemies so the weapon has targets immediately
@@ -1088,6 +1157,28 @@ export class GameScene extends Phaser.Scene {
     this.restartEnemySpawner();
 
     // Pickup flash
+    if (this.anims.exists('explosion-2') && this.textures.exists('explosion-2-01')) {
+      const exp = this.add.sprite(this.ship.x, this.ship.y, 'explosion-2-01').setDepth(8);
+      exp.play('explosion-2');
+      exp.once('animationcomplete', () => exp.destroy());
+    }
+  }
+
+  private activateBeamPowerup(): void {
+    this.activeWeapon    = 'beam';
+    this.lastBeamTime    = 0; // allow immediate first shot
+    this.weaponDuration  = BEAM_SECS;
+    this.weaponEndTime   = this.time.now + BEAM_SECS * 1000;
+    this.weaponTimer?.remove();
+    this.weaponTimer = this.time.delayedCall(BEAM_SECS * 1000, () => {
+      this.activeWeapon    = 'plasma';
+      this.weaponBarActive = false;
+      this.scene.get('HUDScene')?.events.emit('weapon-end');
+      this.restartEnemySpawner();
+    });
+    this.weaponBarActive = true;
+    this.scene.get('HUDScene')?.events.emit('weapon-start', '☄ BEAM');
+    this.playSound('sfx-wave-up', 0.7);
     if (this.anims.exists('explosion-2') && this.textures.exists('explosion-2-01')) {
       const exp = this.add.sprite(this.ship.x, this.ship.y, 'explosion-2-01').setDepth(8);
       exp.play('explosion-2');
@@ -1426,7 +1517,10 @@ export class GameScene extends Phaser.Scene {
         this.playEnemyExplosion(e.type, e.sprite.x, e.sprite.y);
         if (e.type === 'green'  && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
         if (e.type === 'purple' && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
-        if (e.type === 'blue'   && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, true);
+        if (e.type === 'blue'   && e.item) {
+          const wt: 'vulcan' | 'beam' = Math.random() < 0.5 ? 'beam' : 'vulcan';
+          this.spawnToken(e.sprite.x, e.sprite.y, e.item, true, wt);
+        }
         e.sprite.destroy();
         this.enemies.splice(i, 1);
         this.playSound('sfx-explosion', 0.65);
@@ -1488,10 +1582,18 @@ export class GameScene extends Phaser.Scene {
 
     if (e.type === 'green'  && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
     if (e.type === 'purple' && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
-    if (e.type === 'blue'   && e.item) this.spawnToken(ex, ey, e.item, true);
+    if (e.type === 'blue'   && e.item) {
+      const wt: 'vulcan' | 'beam' = Math.random() < 0.5 ? 'beam' : 'vulcan';
+      this.spawnToken(ex, ey, e.item, true, wt);
+    }
 
     e.sprite.destroy();
     this.enemies.splice(idx, 1);
+
+    // Rare health drop — only when player is at 1 life
+    if (this.lives === 1 && Math.random() < HEALTH_DROP_CHANCE) {
+      this.spawnHealthToken(ex, ey);
+    }
 
     this.score += 5 * this.wave;
     this.killCount++;
@@ -1669,7 +1771,7 @@ export class GameScene extends Phaser.Scene {
     // Weapon timer → emit remaining seconds for HUD bar
     if (this.weaponBarActive) {
       const rem = Math.max(0, (this.weaponEndTime - this.time.now) / 1000);
-      this.scene.get('HUDScene')?.events.emit('weapon-tick', rem, POWERUP_SECS);
+      this.scene.get('HUDScene')?.events.emit('weapon-tick', rem, this.weaponDuration);
     }
 
     // Bullet movement

@@ -1,13 +1,13 @@
 {
   "_meta": {
     "description": "Master asset index for Space-Counter. Update this file every time an asset is added and wired up. Excludes Legacy Collection folder.",
-    "lastUpdated": "2026-05-06",
+    "lastUpdated": "2026-05-07",
     "loaderScene": "src/scenes/PreloaderScene.ts",
     "totals": {
       "images": { "present": 144, "missing": 0 },
       "audio": { "present": 21, "missing": 33 },
       "fonts": { "present": 0, "missing": 1 },
-      "proceduralAssets": 7
+      "proceduralAssets": 8
     }
   },
 
@@ -136,7 +136,7 @@
       { "key": "enemy-boss-r-r2", "file": "public/images/enemy-boss-r-r2.png", "size": "24K", "status": "present", "note": "red tier, bank right hard",    "usedIn": ["GameScene"] }
     ],
     "mines_letter": [
-      { "key": "mine-1", "file": "public/images/mine-1.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-1", "file": "public/images/mine-1.png", "size": "21K", "status": "present", "note": "also used as health token (setTint 0xff3366)", "usedIn": ["GameScene"] },
       { "key": "mine-2", "file": "public/images/mine-2.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "mine-3", "file": "public/images/mine-3.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "mine-4", "file": "public/images/mine-4.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
@@ -147,7 +147,7 @@
       { "key": "mine-9", "file": "public/images/mine-9.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] }
     ],
     "mines_weapon_powerup": [
-      { "key": "mine-11-1", "file": "public/images/mine-11-1.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "mine-11-1", "file": "public/images/mine-11-1.png", "size": "22K", "status": "present", "note": "vulcan token (no tint) and beam token (setTint 0x00eeff)", "usedIn": ["GameScene"] },
       { "key": "mine-11-2", "file": "public/images/mine-11-2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "mine-11-3", "file": "public/images/mine-11-3.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "mine-11-4", "file": "public/images/mine-11-4.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
@@ -181,7 +181,7 @@
       { "key": "explosion-1-11", "file": "public/images/explosion-1-11.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
     ],
     "explosions_type2": [
-      { "key": "explosion-2-01", "file": "public/images/explosion-2-01.png", "size": "20K", "status": "present", "note": "9-frame power-up / vulcan hit", "usedIn": ["GameScene"] },
+      { "key": "explosion-2-01", "file": "public/images/explosion-2-01.png", "size": "20K", "status": "present", "note": "9-frame power-up flash — vulcan pickup, beam pickup", "usedIn": ["GameScene"] },
       { "key": "explosion-2-02", "file": "public/images/explosion-2-02.png", "size": "20K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "explosion-2-03", "file": "public/images/explosion-2-03.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "explosion-2-04", "file": "public/images/explosion-2-04.png", "size": "21K", "status": "present", "usedIn": ["GameScene"] },
@@ -233,10 +233,10 @@
       { "key": "sfx-damage",         "file": "public/audio/sfx-damage.wav",         "size": "242K",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-explosion-boss", "file": "public/audio/sfx-explosion-boss.mp3", "size": "93K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-explosion",      "file": "public/audio/sfx-explosion.mp3",      "size": "82K",   "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-laser-plasma",   "file": "public/audio/sfx-laser-plasma.mp3",   "size": "37K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-laser-plasma",   "file": "public/audio/sfx-laser-plasma.mp3",   "size": "37K",   "status": "present", "note": "plasma shots and beam weapon fire", "usedIn": ["GameScene"] },
       { "key": "sfx-laser-vulcan",   "file": "public/audio/sfx-laser-vulcan.mp3",   "size": "55K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-ship-engine",    "file": "public/audio/sfx-ship-engine.mp3",    "size": "810K",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.wav",        "size": "891K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.wav",        "size": "891K",  "status": "present", "note": "weapon powerup pickup and health token collect", "usedIn": ["GameScene"] },
       { "key": "sfx-laser",          "file": "public/audio/sfx-laser.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
       { "key": "sfx-wrong",          "file": "public/audio/sfx-wrong.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
       { "key": "sfx-alien-appear",   "file": "public/audio/sfx-alien-appear.mp3",   "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
@@ -320,7 +320,8 @@
       { "key": "bullet",         "method": "graphics",  "description": "fallback placeholder bullet" },
       { "key": "stars",          "method": "graphics",  "description": "procedural starfield background" },
       { "key": "heart",          "method": "graphics",  "description": "life indicator icon" },
-      { "key": "particle",       "method": "graphics",  "description": "explosion particle dot" }
+      { "key": "particle",       "method": "graphics",  "description": "explosion particle dot" },
+      { "key": "beam-laser",     "method": "graphics",  "description": "beam weapon shot — cyan ADD-blend rect drawn in GameScene.fireBeam(), self-disposing via tween; no preload needed" }
     ]
   },
 
