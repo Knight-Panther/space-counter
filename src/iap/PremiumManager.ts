@@ -14,7 +14,7 @@ const REVENUECAT_KEY_ANDROID = 'goog_REPLACE_WITH_YOUR_KEY';
 export class PremiumManager {
   private game: Phaser.Game;
   private _isPremium   = false;
-  private _productPrice = '₾5.00';
+  private _productPrice = '₾3.00';
   private _initialized = false;
 
   private constructor(game: Phaser.Game) { this.game = game; }

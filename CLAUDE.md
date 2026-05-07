@@ -75,7 +75,7 @@ export interface LetterData {
 
 ### IAP — implemented
 - Free tier: first 12 letters (ა–მ) + numbers 1–10
-- Premium: ₾5.00 one-time purchase unlocks all 33 letters + numbers 11–20 + disables ads
+- Premium: ₾3.00 one-time purchase unlocks all 33 letters + numbers 11–20 + disables ads
 - Purchase flow: Google Play Billing via RevenueCat (`PremiumManager` singleton in `src/iap/`)
 - Premium state: `game.registry.get('isPremium')` — set in BootScene, persisted via Preferences
 - Paywall UI: `PaywallScene` launched as overlay from MainMenu, GameOver, or any scene
@@ -116,7 +116,7 @@ import Phaser from 'phaser';        // WRONG — build error
 
 ### Before shipping to Play Store
 - [ ] Replace `'goog_REPLACE_WITH_YOUR_KEY'` in `src/iap/PremiumManager.ts:12` with real RevenueCat Android key
-- [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full` at ₾5.00, set Active
+- [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full` at ₾3.00, set Active
 - [ ] RevenueCat dashboard: entitlement `premium` linked to product, copy API key
 - [ ] Run `npx cap sync android` after above steps
 - [ ] Add 33 letter audio files to `public/audio/` (`letter-a.mp3` … `letter-h.mp3` exist; need the rest)

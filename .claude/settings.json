@@ -107,7 +107,9 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Depth 2)",
       "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\game\\\\alphabet\")",
       "Bash(Select-Object -ExpandProperty Name)",
-      "Bash(ffmpeg -version)"
+      "Bash(ffmpeg -version)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ],
     "deny": [
       "Bash(git push --force*)",
