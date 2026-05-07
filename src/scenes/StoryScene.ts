@@ -68,7 +68,8 @@ export class StoryScene extends Phaser.Scene {
 
   private drawBackground(w: number, h: number, bgKey: string): void {
     if (this.textures.exists(bgKey)) {
-      this.add.image(w / 2, h / 2, bgKey).setDisplaySize(w, h);
+      const src = this.textures.get(bgKey).getSourceImage() as HTMLImageElement;
+      this.add.image(w / 2, h / 2, bgKey).setScale(Math.max(w / src.width, h / src.height));
     } else {
       const bg = this.add.graphics();
       bg.fillStyle(0x000011);
@@ -84,7 +85,7 @@ export class StoryScene extends Phaser.Scene {
     const nebulaAlpha = bgKey === 'bg-alphabet' ? 0.30 : 0.25;
     if (this.textures.exists(nebulaKey)) {
       this.add.image(w / 2, h / 2, nebulaKey)
-        .setDisplaySize(w, h)
+        .setDisplaySize(w, h)  // nebula overlay — stretch-fill is fine for abstract texture
         .setAlpha(nebulaAlpha)
         .setBlendMode(Phaser.BlendModes.ADD);
     }

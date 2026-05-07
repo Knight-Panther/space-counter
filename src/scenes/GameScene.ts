@@ -110,11 +110,12 @@ const BOSS_KILL_COOLDOWN = 6000;  // ms minimum between killing a boss and trigg
 
 interface EnemyObj {
   sprite:      Phaser.GameObjects.Sprite;
-  type:        'red' | 'green' | 'blue';
+  type:        'red' | 'green' | 'blue' | 'purple' | 'ship';
   velY:        number;
   wobblePhase: number;
   wobbleAmp:   number;
   baseX:       number;
+  scale:       number;
   item?:       ItemData;  // green carries letter/number, blue carries weapon powerup
 }
 
@@ -546,33 +547,53 @@ export class GameScene extends Phaser.Scene {
     if (this.isDead) return;
     const { width } = this.scale;
     const cfg = waveCfg(this.wave);
-    let type: 'red' | 'green' | 'blue';
+    let type: 'red' | 'green' | 'blue' | 'purple' | 'ship';
     if (forceType) {
       type = forceType;
     } else {
-      // Scale green probability by fraction of empty slots — full arsenal = 0% greens
       const emptyRatio = Math.max(0, (cfg.slots - this.arsenal.length) / cfg.slots);
       const effectiveGreenPct = cfg.greenPct * emptyRatio;
-      // No blue drops while Vulcan is already active
       const effectiveBluePct = this.activeWeapon === 'vulcan' ? 0 : cfg.bluePct;
+      const purplePct = this.wave >= 3 ? 0.12 : 0;
+      const shipPct   = this.wave >= 5 ? 0.10 : 0;
       const roll = Math.random();
-      if (roll < effectiveBluePct)                                type = 'blue';
-      else if (roll < effectiveBluePct + effectiveGreenPct)       type = 'green';
-      else                                                        type = 'red';
+      if      (roll < effectiveBluePct)                                        type = 'blue';
+      else if (roll < effectiveBluePct + effectiveGreenPct)                    type = 'green';
+      else if (roll < effectiveBluePct + effectiveGreenPct + purplePct)        type = 'purple';
+      else if (roll < effectiveBluePct + effectiveGreenPct + purplePct + shipPct) type = 'ship';
+      else                                                                     type = 'red';
     }
 
-    const texKey = type === 'blue'  ? 'enemy-blue-m'
-                 : type === 'green' ? 'enemy-green'
-                 :                   'enemy-red';
-    const fallback = this.textures.exists(texKey) ? texKey : 'particle';
+    // Texture + animation key per type
+    const animMap: Record<typeof type, { tex: string; anim: string }> = {
+      green:  { tex: 'enemy-01',      anim: 'enemy-01-idle'      },
+      blue:   { tex: 'enemy-02',      anim: 'enemy-02-idle'      },
+      purple: { tex: 'enemy-03',      anim: 'enemy-03-idle'      },
+      ship:   (() => {
+        const variants = ['enemy-ship-01','enemy-ship-02','enemy-ship-03','enemy-ship-04','enemy-ship-yellow-01','enemy-ship-yellow-02'];
+        const tex = variants[Math.floor(Math.random() * variants.length)];
+        return { tex, anim: `${tex}-idle` };
+      })(),
+      red:    { tex: 'enemy-red',     anim: ''                   },
+    };
+    const { tex, anim } = animMap[type];
+    const fallback = this.textures.exists(tex) ? tex : 'particle';
     const x = Phaser.Math.Between(48, width - 48);
     const sprite = this.add.sprite(x, -60, fallback).setDepth(5);
+    const scale = 1.0;
+
+    if (anim && this.anims.exists(anim)) {
+      sprite.play(anim);
+    }
+    // Ships face upward (player-ship art) — flip to face downward as enemies
+    if (type === 'ship') sprite.setFlipY(true);
+
     this.playSound('sfx-alien-appear', 0.3);
 
-    const item = (type === 'green' || type === 'blue') ? this.pickRandomItem() : undefined;
+    const item = (type === 'green' || type === 'blue' || type === 'purple') ? this.pickRandomItem() : undefined;
 
-    // Show carried item label on green enemies
-    if (type === 'green' && item) {
+    // Show carried item label on token-carrying enemies
+    if ((type === 'green' || type === 'purple') && item) {
       const lbl = this.add.text(x, -60 + 36, item.display, {
         fontSize: '17px', color: '#ffff00',
         stroke: '#000000', strokeThickness: 3,
@@ -582,10 +603,10 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.enemies.push({
-      sprite, type, item,
-      velY: cfg.enemySpeed,
+      sprite, type, item, scale,
+      velY: cfg.enemySpeed * (type === 'ship' ? 1.4 : 1.0),
       wobblePhase: Math.random() * Math.PI * 2,
-      wobbleAmp:   type === 'green' ? 38 : type === 'blue' ? 22 : 0,
+      wobbleAmp:   type === 'green' ? 38 : type === 'blue' ? 22 : type === 'purple' ? 28 : 0,
       baseX: x,
     });
   }
@@ -737,7 +758,6 @@ export class GameScene extends Phaser.Scene {
     this.bossRage          = 0;
     this.bossScheduled     = false;
     this.lastBossKillTime  = this.time.now;
-    this.arsenalReadyShown = false;
     this.tweens.killTweensOf(this.boss.sprite);
     this.destroyBossLabels();
     const bx = this.boss.sprite.x;
@@ -827,6 +847,13 @@ export class GameScene extends Phaser.Scene {
   private playBossExplosion(x: number, y: number, bt: BossType | null): void {
     const cfg       = waveCfg(this.wave);
     const deathStyle = bt ? BOSS_DEFS[bt].deathStyle : 'ship';
+
+    // Always play the large mushroom-cloud explosion centred on the boss
+    if (this.anims.exists('expl-d') && this.textures.exists('expl-d')) {
+      const exp = this.add.sprite(x, y, 'expl-d').setDepth(9).setScale(cfg.bossScale * 1.6);
+      exp.play('expl-d');
+      exp.once('animationcomplete', () => exp.destroy());
+    }
 
     const spawnExp = (animKey: string, ex: number, ey: number, scale: number, delay = 0) => {
       if (!this.anims.exists(animKey)) return;
@@ -1090,8 +1117,9 @@ export class GameScene extends Phaser.Scene {
     gfx.lineStyle(2, border, 0.70);
     gfx.lineBetween(0, barY, w, barY);
 
-    this.add.text(w / 2, barY + 6, 'ARSENAL', {
-      fontSize: '11px', color: '#557799', fontFamily: 'Arial', letterSpacing: 3,
+    this.add.text(w / 2, barY + 6, 'არსენალი', {
+      fontSize: '11px', color: '#557799',
+      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial', letterSpacing: 2,
     }).setOrigin(0.5, 0).setDepth(100);
 
     this.slotUIs = [];
@@ -1289,7 +1317,9 @@ export class GameScene extends Phaser.Scene {
   private drawBackground(w: number, h: number): void {
     const bgKey = `bg-${this.mode}`;
     if (this.textures.exists(bgKey)) {
-      this.background = this.add.image(w / 2, h / 2, bgKey).setDisplaySize(w, h).setDepth(0);
+      const bgSrc  = this.textures.get(bgKey).getSourceImage() as HTMLImageElement;
+      const bgScale = Math.max(w / bgSrc.width, h / bgSrc.height);
+      this.background = this.add.image(w / 2, h / 2, bgKey).setScale(bgScale).setDepth(0);
     } else {
       this.background = this.add.tileSprite(0, 0, w, h, 'stars').setOrigin(0, 0).setDepth(0);
     }
@@ -1302,22 +1332,28 @@ export class GameScene extends Phaser.Scene {
       this.nebulaLayer = this.add.tileSprite(w / 2, h / 2, w, h, nKey).setAlpha(0.28).setDepth(1);
     }
     this.flybyPlanets = [];
+    // Base scales — each planet gets a sinusoidal offset so they're naturally varied
     const cfg: [string, number, number, number, number, number][] = [
       ['kp-planet-02', 0.10, 0.10, 0.018, 0.35, 0.28],
       ['kp-planet-06', 0.82, 0.40, 0.020, 0.45, 0.26],
-      ['kp-planet-04', 0.30, 0.65, 0.030, 0.70, 0.30],  // +20%
+      ['kp-planet-04', 0.30, 0.65, 0.030, 0.70, 0.30],
       ['kp-planet-08', 0.68, 0.25, 0.022, 0.90, 0.32],
       ['kp-planet-01', 0.90, 0.60, 0.019, 0.55, 0.26],
-      ['kp-planet-07', 0.20, 0.05, 0.034, 1.20, 0.34],  // +20%
+      ['kp-planet-07', 0.20, 0.05, 0.034, 1.20, 0.34],
       ['kp-planet-00', 0.50, 0.80, 0.015, 0.30, 0.22],
       ['kp-planet-03', 0.75, 0.70, 0.016, 0.42, 0.24],
-      ['kp-planet-05', 0.40, 0.30, 0.017, 0.38, 0.20],  // +20%
+      ['kp-planet-05', 0.40, 0.30, 0.017, 0.38, 0.20],
       ['kp-planet-09', 0.15, 0.45, 0.017, 0.50, 0.25],
     ];
-    for (const [key, xp, yp, scale, speed, alpha] of cfg) {
-      if (!this.textures.exists(key)) continue;
+    // Spread planets across different phases of a sine wave so sizes vary naturally
+    const phaseStep = (Math.PI * 2) / cfg.length;
+    cfg.forEach(([key, xp, yp, baseScale, speed, alpha], i) => {
+      if (!this.textures.exists(key)) return;
+      const sineFactor = (Math.sin(i * phaseStep) + 1) * 0.5;   // 0..1
+      const jitter     = (Math.random() - 0.5) * 0.3;
+      const scale      = Phaser.Math.Clamp(baseScale * (0.7 + sineFactor * 0.9 + jitter), baseScale * 0.55, baseScale * 1.8);
       this.flybyPlanets.push({ img: this.add.image(w * xp, h * yp, key).setScale(scale).setAlpha(alpha).setDepth(2), speed });
-    }
+    });
   }
 
   private swapParallaxLayers(): void {
@@ -1387,12 +1423,10 @@ export class GameScene extends Phaser.Scene {
         this.burstParticles(mx, my, 12);
         const lbl = e.sprite.getData('label') as Phaser.GameObjects.Text | undefined;
         lbl?.destroy();
-        if (this.anims.exists('explosion-1') && this.textures.exists('explosion-1-01')) {
-          const exp = this.add.sprite(e.sprite.x, e.sprite.y, 'explosion-1-01').setDepth(7);
-          exp.play('explosion-1'); exp.once('animationcomplete', () => exp.destroy());
-        }
-        if (e.type === 'green' && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
-        if (e.type === 'blue'  && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, true);
+        this.playEnemyExplosion(e.type, e.sprite.x, e.sprite.y);
+        if (e.type === 'green'  && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
+        if (e.type === 'purple' && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
+        if (e.type === 'blue'   && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, true);
         e.sprite.destroy();
         this.enemies.splice(i, 1);
         this.playSound('sfx-explosion', 0.65);
@@ -1427,19 +1461,34 @@ export class GameScene extends Phaser.Scene {
 
   // ─── Enemy kill ───────────────────────────────────────────────────────────
 
+  private playEnemyExplosion(type: EnemyObj['type'], x: number, y: number): void {
+    const map: Record<EnemyObj['type'], { anim: string; tex: string; scale: number }> = {
+      green:  { anim: 'expl-enemy-warped', tex: 'enemy-death-warped', scale: 1.1 },
+      blue:   { anim: 'expl-enemy-death',  tex: 'enemy-death-fx',     scale: 1.1 },
+      purple: { anim: 'expl-b',            tex: 'expl-b',             scale: 1.2 },
+      ship:   { anim: 'expl-g',            tex: 'expl-g',             scale: 1.3 },
+      red:    { anim: 'explosion-1',       tex: 'explosion-1-01',     scale: 1.1 },
+    };
+    const { anim, tex, scale } = map[type];
+    if (this.anims.exists(anim) && this.textures.exists(tex)) {
+      const exp = this.add.sprite(x, y, tex).setDepth(7).setScale(scale);
+      exp.play(anim); exp.once('animationcomplete', () => exp.destroy());
+    } else {
+      this.burstParticles(x, y);
+    }
+  }
+
   private killEnemy(idx: number): void {
     const e = this.enemies[idx];
     const ex = e.sprite.x, ey = e.sprite.y;
     const lbl = e.sprite.getData('label') as Phaser.GameObjects.Text | undefined;
     lbl?.destroy();
 
-    if (this.anims.exists('explosion-1') && this.textures.exists('explosion-1-01')) {
-      const exp = this.add.sprite(ex, ey, 'explosion-1-01').setDepth(7).setScale(1.1);
-      exp.play('explosion-1'); exp.once('animationcomplete', () => exp.destroy());
-    } else { this.burstParticles(ex, ey); }
+    this.playEnemyExplosion(e.type, ex, ey);
 
-    if (e.type === 'green' && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
-    if (e.type === 'blue'  && e.item) this.spawnToken(ex, ey, e.item, true);
+    if (e.type === 'green'  && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
+    if (e.type === 'purple' && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
+    if (e.type === 'blue'   && e.item) this.spawnToken(ex, ey, e.item, true);
 
     e.sprite.destroy();
     this.enemies.splice(idx, 1);
@@ -1525,13 +1574,22 @@ export class GameScene extends Phaser.Scene {
 
   private showArsenalReadyBanner(): void {
     const { width, height } = this.scale;
-    const line1 = this.add.text(width / 2, height / 2 - 30, 'ARSENAL FULL!', {
-      fontSize: '44px', color: '#00ffcc',
-      stroke: '#000000', strokeThickness: 6, fontFamily: 'Arial', fontStyle: 'bold',
+    const line1 = this.add.text(width / 2, height / 2 - 34, 'არსენალი სავსეა!', {
+      fontSize: '36px', color: '#00ffcc',
+      stroke: '#000000', strokeThickness: 5,
+      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial', fontStyle: 'bold',
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
-    const line2 = this.add.text(width / 2, height / 2 + 24, 'Tap letters below to fire at the boss', {
-      fontSize: '18px', color: '#aaffee',
-      stroke: '#000000', strokeThickness: 4, fontFamily: 'Arial',
+    // Auto-scale if wider than 90% of screen
+    if (line1.width > width * 0.9) line1.setScale((width * 0.9) / line1.width);
+
+    const boss2txt = this.mode === 'alphabet'
+      ? 'მთავარ ბოროტებას მხოლოდ ასო-ბგერები კლავს'
+      : 'მთავარ ბოროტებას მხოლოდ ციფრები კლავს';
+    const line2 = this.add.text(width / 2, height / 2 + 16, boss2txt, {
+      fontSize: '15px', color: '#aaffee',
+      stroke: '#000000', strokeThickness: 3,
+      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      align: 'center', wordWrap: { width: width * 0.88 },
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
     this.tweens.add({ targets: [line1, line2], alpha: 1, duration: 300, yoyo: true, hold: 1600, onComplete: () => { line1.destroy(); line2.destroy(); } });
   }
@@ -1540,10 +1598,12 @@ export class GameScene extends Phaser.Scene {
 
   private showWaveBanner(): void {
     const { width, height } = this.scale;
-    const txt = this.add.text(width / 2, height / 2 - 60, `Wave ${this.wave}!`, {
+    const txt = this.add.text(width / 2, height / 2 - 60, `ტალღა ${this.wave}!`, {
       fontSize: '58px', color: '#ffdd00',
-      stroke: '#000000', strokeThickness: 6, fontFamily: 'Arial',
+      stroke: '#000000', strokeThickness: 6,
+      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
     }).setOrigin(0.5).setAlpha(0).setDepth(90);
+    if (txt.width > width * 0.88) txt.setScale((width * 0.88) / txt.width);
     this.tweens.add({ targets: txt, alpha: 1, duration: 250, yoyo: true, hold: 900, onComplete: () => txt.destroy() });
   }
 
@@ -1646,7 +1706,7 @@ export class GameScene extends Phaser.Scene {
         }
       }
       const lbl = e.sprite.getData('label') as Phaser.GameObjects.Text | undefined;
-      if (lbl) lbl.setPosition(e.sprite.x, e.sprite.y + 34);
+      if (lbl) lbl.setPosition(e.sprite.x, e.sprite.y + e.sprite.displayHeight * 0.58);
     }
 
     // Boss labels track boss horizontal drift

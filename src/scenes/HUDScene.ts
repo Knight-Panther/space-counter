@@ -30,7 +30,7 @@ export class HUDScene extends Phaser.Scene {
     this.buildMenuButton();
 
     // Score — top left, after the home button
-    this.scoreText = this.add.text(58, 14, 'ქულა: 0', {
+    this.scoreText = this.add.text(Math.round(width * 0.149), 14, 'ქულა: 0', {
       fontSize: '20px',
       color: '#ffffff',
       stroke: '#000000',
@@ -39,7 +39,7 @@ export class HUDScene extends Phaser.Scene {
     }).setOrigin(0, 0);
 
     // Wave — starts centered but shifts right if score text grows into it
-    this.waveText = this.add.text(width / 2, 14, 'დონე 1', {
+    this.waveText = this.add.text(width / 2, 14, 'ტალღა 1', {
       fontSize: '20px',
       color: accentColor,
       stroke: '#000000',
@@ -50,8 +50,10 @@ export class HUDScene extends Phaser.Scene {
 
     // Lives — top right (heart icons)
     this.hearts = [];
+    const heartSpacing = Math.round(width * 0.072);
+    const heartMargin  = Math.round(width * 0.036);
     for (let i = 0; i < LIVES_MAX; i++) {
-      const heart = this.add.image(width - 14 - i * 28, 20, 'heart').setOrigin(1, 0);
+      const heart = this.add.image(width - heartMargin - i * heartSpacing, 20, 'heart').setOrigin(1, 0);
       this.hearts.push(heart);
     }
 
@@ -87,7 +89,7 @@ export class HUDScene extends Phaser.Scene {
       this.updateHearts(lives);
     });
     this.events.on('wave-update', (wave: number) => {
-      this.waveText.setText(`დონე ${wave}`);
+      this.waveText.setText(`ტალღა ${wave}`);
       this.repositionWaveText();
     });
     this.events.on('weapon-start', () => {
@@ -116,7 +118,8 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private buildMenuButton(): void {
-    const bx = 28;
+    const { width } = this.scale;
+    const bx = Math.round(width * 0.072);
     const by = 28;
     const r  = 20;
 
@@ -161,7 +164,7 @@ export class HUDScene extends Phaser.Scene {
 
   private buildMuteButton(): void {
     const { width } = this.scale;
-    const bx = width - 28;
+    const bx = width - Math.round(width * 0.072);
     const by = 62;
     const r  = 16;
 

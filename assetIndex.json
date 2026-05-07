@@ -1,7 +1,7 @@
 {
   "_meta": {
     "description": "Master asset index for Space-Counter. Update this file every time an asset is added and wired up. Excludes Legacy Collection folder.",
-    "lastUpdated": "2026-05-05",
+    "lastUpdated": "2026-05-06",
     "loaderScene": "src/scenes/PreloaderScene.ts",
     "totals": {
       "images": { "present": 144, "missing": 0 },
@@ -16,7 +16,7 @@
       { "key": "bg-menu",        "file": "public/images/bg-menu.jpg",   "size": "3.0M",  "status": "present", "usedIn": ["MenuScene"] },
       { "key": "space-nebula",   "file": "public/images/Space.png",     "size": "2.4M",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "space-nebula-2", "file": "public/images/Space_1.png",   "size": "1.8M",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "tina",           "file": "public/images/tina.png",      "size": "8.7M",  "status": "present", "usedIn": ["MenuScene"], "note": "NEEDS COMPRESSION — target ~200KB" }
+      { "key": "tina",           "file": "public/images/tina.png",      "size": "322K",  "status": "present", "usedIn": ["StoryScene"], "note": "compressed 4096x4096→512x512" }
     ],
     "starfields": [
       { "key": "starfield-01", "file": "public/images/starfield-01.png", "size": "30K",   "status": "present", "usedIn": ["GameScene"] },
@@ -103,6 +103,20 @@
       { "key": "enemy-blue-l2", "file": "public/images/enemy-blue-l2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "enemy-blue-r1", "file": "public/images/enemy-blue-r1.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "enemy-blue-r2", "file": "public/images/enemy-blue-r2.png", "size": "22K", "status": "present", "usedIn": ["GameScene"] }
+    ],
+    "enemies_animated": [
+      { "key": "enemy-01",      "file": "public/images/enemy-01.png",      "size": "2.3KB", "status": "present", "note": "green frog alien, 5-frame spritesheet 240x48, frameW=48, anim: enemy-01-idle",       "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-enemies" },
+      { "key": "enemy-02",      "file": "public/images/enemy-02.png",      "size": "1.6KB", "status": "present", "note": "blue round robot, 4-frame spritesheet 192x48, frameW=48, anim: enemy-02-idle",       "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-enemies" },
+      { "key": "enemy-03",      "file": "public/images/enemy-03.png",      "size": "2.1KB", "status": "present", "note": "purple saucer, 4-frame spritesheet 192x48, frameW=48, anim: enemy-03-idle, wave 3+", "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-enemies" },
+      { "key": "enemy-ship-02", "file": "public/images/enemy-ship-02.png", "size": "3.0KB", "status": "present", "note": "ship enemy type A, 5-frame spritesheet 320x64, frameW=64, flipY=true, wave 5+",     "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-ship/red" },
+      { "key": "enemy-ship-03", "file": "public/images/enemy-ship-03.png", "size": "2.1KB", "status": "present", "note": "ship enemy type B, 5-frame spritesheet 240x48, frameW=48, flipY=true, wave 5+",     "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-ship/red" }
+    ],
+    "explosions_per_enemy": [
+      { "key": "enemy-death-warped", "file": "public/images/enemy-death-warped.png", "size": "5.1KB", "status": "present", "note": "7-frame spritesheet 560x80, frameW=80, anim: expl-enemy-warped — used on enemy-01 (green frog) kill",   "usedIn": ["GameScene"], "source": "Legacy Collection/Warped/top-down-shooter-enemies/enemy-explosion" },
+      { "key": "enemy-death-fx",     "file": "public/images/enemy-death-fx.png",     "size": "4.6KB", "status": "present", "note": "8-frame spritesheet 384x48, frameW=48, anim: expl-enemy-death — used on enemy-02 (blue robot) kill",     "usedIn": ["GameScene"], "source": "Legacy Collection/Explosions and Magic/EnemyDeath" },
+      { "key": "expl-b",             "file": "public/images/expl-b.png",             "size": "3.0KB", "status": "present", "note": "8-frame spritesheet 512x64, frameW=64, anim: expl-b — used on enemy-03 (purple saucer) kill",            "usedIn": ["GameScene"], "source": "Legacy Collection/Explosions and Magic/Explosions pack/explosion-1-b" },
+      { "key": "expl-g",             "file": "public/images/expl-g.png",             "size": "1.2KB", "status": "present", "note": "7-frame spritesheet 336x48, frameW=48, anim: expl-g — used on ship enemy kill",                          "usedIn": ["GameScene"], "source": "Legacy Collection/Explosions and Magic/Explosions pack/explosion-1-g" },
+      { "key": "expl-d",             "file": "public/images/expl-d.png",             "size": "9.2KB", "status": "present", "note": "12-frame spritesheet 1536x128, frameW=128, anim: expl-d — mushroom cloud on every boss kill",            "usedIn": ["GameScene"], "source": "Legacy Collection/Explosions and Magic/Explosions pack/explosion-1-d" }
     ],
     "enemies_boss": [
       { "key": "enemy-boss-b-m",  "file": "public/images/enemy-boss-b-m.png",  "size": "24K", "status": "present", "note": "blue tier, center",           "usedIn": ["GameScene"] },
@@ -203,9 +217,9 @@
       { "key": "intro-numbers",  "file": "public/audio/intro-numbers.wav",  "size": "5.5M", "status": "present", "note": "convert to MP3", "usedIn": ["StoryScene"] }
     ],
     "voice_gameplay": [
-      { "key": "gameplay-alphabet-instruction", "file": "public/audio/gameplay-alphabet-instruction.wav", "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
-      { "key": "gameplay-number-instruction",   "file": "public/audio/gameplay-number-instruction.wav",   "size": "1.4M", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
-      { "key": "voice-shoot",                   "file": "public/audio/voice-shoot.wav",                   "size": "421K", "status": "present", "note": "convert to MP3", "usedIn": ["GameScene"] },
+      { "key": "gameplay-alphabet-instruction", "file": "public/audio/gameplay-alphabet-instruction.mp3", "size": "58K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "gameplay-number-instruction",   "file": "public/audio/gameplay-number-instruction.mp3",   "size": "57K", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "voice-shoot",                   "file": "public/audio/voice-shoot.mp3",                   "size": "16K", "status": "present", "usedIn": ["GameScene"] },
       { "key": "voice-boss-kill",               "file": "public/audio/voice-boss-kill.mp3",               "size": "32KB", "status": "present", "usedIn": ["GameScene"] },
       { "key": "voice-arsenal-full",            "file": "public/audio/voice-arsenal-full.mp3",            "size": "24KB", "status": "present", "usedIn": ["GameScene"] }
     ],

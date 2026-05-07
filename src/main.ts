@@ -10,16 +10,15 @@ import { PaywallScene } from './scenes/PaywallScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 390,
-  height: 844,
+  parent: 'game-container',
   backgroundColor: '#000011',
   physics: {
     default: 'arcade',
     arcade: { gravity: { x: 0, y: 0 }, debug: false },
   },
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.NO_CENTER,
   },
   scene: [BootScene, PreloaderScene, MainMenuScene, StoryScene, GameScene, HUDScene, GameOverScene, PaywallScene],
 };

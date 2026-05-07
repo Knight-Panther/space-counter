@@ -98,7 +98,10 @@
       "Bash(Get-ChildItem \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\game\\\\numbers\")",
       "Bash(Select-Object Name, Length, LastWriteTime)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\Legacy Collection\" -Recurse)",
-      "Bash(Select-Object FullName, PSIsContainer)"
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Select-Object Name, Length)",
+      "Bash(python3 -c ' *)",
+      "Bash(identify c:/Users/VM-Dev/Desktop/Space-counter/public/images/__TRACKED_VAR__)"
     ],
     "deny": [
       "Bash(git push --force*)",

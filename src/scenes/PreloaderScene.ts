@@ -31,6 +31,24 @@ export class PreloaderScene extends Phaser.Scene {
       this.load.image(`enemy-blue-${v}`, `images/enemy-blue-${v}.png`);
     }
 
+    // New animated enemies (spritesheets)
+    this.load.spritesheet('enemy-01',       'images/enemy-01.png',       { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-02',       'images/enemy-02.png',       { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-03',       'images/enemy-03.png',       { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-ship-01',        'images/enemy-ship-01.png',        { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-ship-02',        'images/enemy-ship-02.png',        { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet('enemy-ship-03',        'images/enemy-ship-03.png',        { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-ship-04',        'images/enemy-ship-04.png',        { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-ship-yellow-01', 'images/enemy-ship-yellow-01.png', { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('enemy-ship-yellow-02', 'images/enemy-ship-yellow-02.png', { frameWidth: 64, frameHeight: 64 });
+
+    // Per-enemy explosion spritesheets
+    this.load.spritesheet('enemy-death-warped', 'images/enemy-death-warped.png', { frameWidth: 80,  frameHeight: 80  });
+    this.load.spritesheet('enemy-death-fx',     'images/enemy-death-fx.png',     { frameWidth: 48,  frameHeight: 48  });
+    this.load.spritesheet('expl-b',             'images/expl-b.png',             { frameWidth: 64,  frameHeight: 64  });
+    this.load.spritesheet('expl-d',             'images/expl-d.png',             { frameWidth: 128, frameHeight: 128 });
+    this.load.spritesheet('expl-g',             'images/expl-g.png',             { frameWidth: 48,  frameHeight: 48  });
+
     // Boss ships — legacy blue tier kept for wave 1
     for (const v of ['m', 'l1', 'l2', 'r1', 'r2']) {
       this.load.image(`enemy-boss-b-${v}`, `images/enemy-boss-b-${v}.png`);
@@ -146,11 +164,11 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.audio('intro-numbers',  'audio/intro-numbers.wav');
 
     // Wave 1 gameplay instructions (play once at mission start)
-    this.load.audio('gameplay-alphabet-instruction', 'audio/gameplay-alphabet-instruction.wav');
-    this.load.audio('gameplay-number-instruction',   'audio/gameplay-number-instruction.wav');
+    this.load.audio('gameplay-alphabet-instruction', 'audio/gameplay-alphabet-instruction.mp3');
+    this.load.audio('gameplay-number-instruction',   'audio/gameplay-number-instruction.mp3');
 
     // "Shoot" voice — prepended before every boss hint sequence
-    this.load.audio('voice-shoot',     'audio/voice-shoot.wav');
+    this.load.audio('voice-shoot',     'audio/voice-shoot.mp3');
     this.load.audio('voice-boss-kill',    'audio/voice-boss-kill.mp3');
     this.load.audio('voice-arsenal-full', 'audio/voice-arsenal-full.mp3');
     this.load.audio('music-alphabet', 'audio/music-alphabet.mp3');
@@ -348,6 +366,33 @@ export class PreloaderScene extends Phaser.Scene {
         frameRate: 15, repeat: 0,
       });
     }
+
+    // ── New enemy idle animations ─────────────────────────────────────────────
+    if (this.textures.exists('enemy-01'))
+      this.anims.create({ key: 'enemy-01-idle', frames: this.anims.generateFrameNumbers('enemy-01', { start: 0, end: 4 }), frameRate: 8, repeat: -1 });
+    if (this.textures.exists('enemy-02'))
+      this.anims.create({ key: 'enemy-02-idle', frames: this.anims.generateFrameNumbers('enemy-02', { start: 0, end: 3 }), frameRate: 8, repeat: -1 });
+    if (this.textures.exists('enemy-03'))
+      this.anims.create({ key: 'enemy-03-idle', frames: this.anims.generateFrameNumbers('enemy-03', { start: 0, end: 3 }), frameRate: 9, repeat: -1 });
+    for (const [key, end] of [
+      ['enemy-ship-01', 4], ['enemy-ship-02', 4], ['enemy-ship-03', 4],
+      ['enemy-ship-04', 4], ['enemy-ship-yellow-01', 4], ['enemy-ship-yellow-02', 4],
+    ] as [string, number][]) {
+      if (this.textures.exists(key))
+        this.anims.create({ key: `${key}-idle`, frames: this.anims.generateFrameNumbers(key, { start: 0, end }), frameRate: 8, repeat: -1 });
+    }
+
+    // ── Per-enemy explosion animations ────────────────────────────────────────
+    if (this.textures.exists('enemy-death-warped'))
+      this.anims.create({ key: 'expl-enemy-warped', frames: this.anims.generateFrameNumbers('enemy-death-warped', { start: 0, end: 6 }), frameRate: 14, repeat: 0 });
+    if (this.textures.exists('enemy-death-fx'))
+      this.anims.create({ key: 'expl-enemy-death',  frames: this.anims.generateFrameNumbers('enemy-death-fx',     { start: 0, end: 7 }), frameRate: 14, repeat: 0 });
+    if (this.textures.exists('expl-b'))
+      this.anims.create({ key: 'expl-b', frames: this.anims.generateFrameNumbers('expl-b', { start: 0, end: 7  }), frameRate: 14, repeat: 0 });
+    if (this.textures.exists('expl-d'))
+      this.anims.create({ key: 'expl-d', frames: this.anims.generateFrameNumbers('expl-d', { start: 0, end: 11 }), frameRate: 12, repeat: 0 });
+    if (this.textures.exists('expl-g'))
+      this.anims.create({ key: 'expl-g', frames: this.anims.generateFrameNumbers('expl-g', { start: 0, end: 6  }), frameRate: 14, repeat: 0 });
 
     // ── Boss body animations ───────────────────────────────────────────────────
 

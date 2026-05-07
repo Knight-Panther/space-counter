@@ -3,7 +3,7 @@ import { GameMode } from '../data/types';
 
 export class GameOverScene extends Phaser.Scene {
   private _score = 0;
-  private _wave = 1;
+  private _wave  = 1;
   private _mode: GameMode = 'alphabet';
 
   constructor() {
@@ -17,118 +17,119 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create(): void {
-    const { width, height } = this.scale;
-    const accentColor = this._mode === 'alphabet' ? 0x4488ff : 0xff8800;
-    const accentHex   = this._mode === 'alphabet' ? '#4488ff' : '#ff8800';
+    const { width: w, height: h } = this.scale;
+    const isAlpha   = this._mode === 'alphabet';
+    const accent    = isAlpha ? 0x4488ff : 0xff8800;
+    const accentHex = isAlpha ? '#4488ff' : '#ff8800';
+    const GEO_FONT  = 'Arial Unicode MS, Noto Sans Georgian, Arial';
+    const isPremium = !!this.game.registry.get('isPremium');
 
-    // Dimmed overlay with subtle nebula tint
-    const overlay = this.add.graphics();
-    overlay.fillStyle(0x000011, 0.78);
-    overlay.fillRect(0, 0, width, height);
+    // Dim overlay
+    this.add.graphics().fillStyle(0x000011, 0.78).fillRect(0, 0, w, h);
 
-    // Glowing panel
-    const panelW = width * 0.84;
-    const panelH = height * 0.56;
-    const panelX = (width - panelW) / 2;
-    const panelY = height * 0.18;
-    const panel = this.add.graphics();
-    panel.fillStyle(0x000033, 0.88);
-    panel.fillRoundedRect(panelX, panelY, panelW, panelH, 20);
-    panel.lineStyle(2, accentColor, 0.8);
-    panel.strokeRoundedRect(panelX, panelY, panelW, panelH, 20);
+    // Layout — buttons at fixed offsets, panel height grows to include pro strip if needed
+    const BTN1_Y = 256, BTN1_H = 52;
+    const BTN2_Y = BTN1_Y + BTN1_H + 10, BTN2_H = 46;
+    const STRIP_Y = BTN2_Y + BTN2_H + 16, STRIP_H = 60;
 
-    // Game Over header
-    this.add.text(width / 2, panelY + 32, 'GAME OVER', {
-      fontSize: '44px',
-      color: '#ff4444',
-      stroke: '#000000',
-      strokeThickness: 6,
-      fontStyle: 'bold',
-      fontFamily: 'Arial',
+    const panelW = Math.min(w * 0.88, 420);
+    const contentH = isPremium
+      ? BTN2_Y + BTN2_H + 22
+      : STRIP_Y + STRIP_H + 14;
+    const panelH = Math.max(contentH, h * 0.55);
+    const px = (w - panelW) / 2;
+    const py = Math.max((h - panelH) / 2 - h * 0.04, h * 0.06);
+
+    this.add.graphics()
+      .fillStyle(0x000033, 0.88).fillRoundedRect(px, py, panelW, panelH, 20)
+      .lineStyle(2, accent, 0.8).strokeRoundedRect(px, py, panelW, panelH, 20);
+
+    // Title — auto-scales to fit inside panel width
+    const title = this.add.text(w / 2, py + 24, 'პლანეტა Tvale დაეცა', {
+      fontSize: '32px', color: '#ff4444',
+      stroke: '#000000', strokeThickness: 5,
+      fontStyle: 'bold', fontFamily: GEO_FONT,
     }).setOrigin(0.5, 0);
+    const maxTW = panelW * 0.88;
+    if (title.width > maxTW) title.setScale(maxTW / title.width);
 
     // Mode badge
-    this.add.text(width / 2, panelY + 90, this._mode === 'alphabet' ? '🔤 ALPHABET MODE' : '🔢 NUMBERS MODE', {
-      fontSize: '16px',
-      color: accentHex,
-      fontFamily: 'Arial',
+    this.add.text(w / 2, py + 76, isAlpha ? '🔤 ანბანის მისია' : '🔢 ციფრების მისია', {
+      fontSize: '15px', color: accentHex, fontFamily: GEO_FONT,
     }).setOrigin(0.5, 0);
 
     // Score
-    this.add.text(width / 2, panelY + 138, `Score`, {
-      fontSize: '18px',
-      color: '#888899',
-      fontFamily: 'Arial',
+    this.add.text(w / 2, py + 112, 'ქულა', {
+      fontSize: '15px', color: '#888899', fontFamily: GEO_FONT,
     }).setOrigin(0.5, 0);
 
-    this.add.text(width / 2, panelY + 162, `${this._score}`, {
-      fontSize: '52px',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 4,
-      fontStyle: 'bold',
-      fontFamily: 'Arial',
+    this.add.text(w / 2, py + 132, `${this._score}`, {
+      fontSize: '52px', color: '#ffffff',
+      stroke: '#000000', strokeThickness: 4,
+      fontStyle: 'bold', fontFamily: 'Arial',
     }).setOrigin(0.5, 0);
 
-    // Wave reached
-    this.add.text(width / 2, panelY + 230, `Wave reached: ${this._wave}`, {
-      fontSize: '22px',
-      color: accentHex,
-      stroke: '#000000',
-      strokeThickness: 3,
-      fontFamily: 'Arial',
+    // Wave
+    this.add.text(w / 2, py + 198, `გავლილი დონე: ${this._wave}`, {
+      fontSize: '20px', color: accentHex,
+      stroke: '#000000', strokeThickness: 3, fontFamily: GEO_FONT,
     }).setOrigin(0.5, 0);
 
     // Divider
-    const div = this.add.graphics();
-    div.lineStyle(1, accentColor, 0.35);
-    div.lineBetween(panelX + 20, panelY + 272, panelX + panelW - 20, panelY + 272);
+    this.add.graphics()
+      .lineStyle(1, accent, 0.35)
+      .lineBetween(px + 20, py + 240, px + panelW - 20, py + 240);
 
-    // Tap to continue prompt
-    const restartText = this.add.text(width / 2, panelY + 296, 'Tap to return to Main Menu', {
-      fontSize: '20px',
-      color: '#44ff88',
-      stroke: '#000000',
-      strokeThickness: 3,
-      fontFamily: 'Arial',
-    }).setOrigin(0.5, 0);
+    // Restart button
+    this.addButton(w / 2, py + BTN1_Y, panelW * 0.78, BTN1_H,
+      'თამაშის თავიდან დაწყება', 0x003311, 0x00aa44, '#aaffcc',
+      () => this.scene.start('GameScene', { mode: this._mode }));
 
-    this.tweens.add({
-      targets: restartText,
-      alpha: 0.2,
-      duration: 700,
-      yoyo: true,
-      repeat: -1,
-    });
+    // Main menu button
+    this.addButton(w / 2, py + BTN2_Y, panelW * 0.72, BTN2_H,
+      'მთავარ მენიუში დაბრუნება', 0x000a22, 0x224466, '#7799cc',
+      () => this.scene.start('MainMenuScene'));
 
-    // Upsell strip for free users
-    if (!this.game.registry.get('isPremium')) {
-      const stripY = panelY + panelH + 14;
-      const stripH = 60;
+    // Pro version strip — inside the panel at the bottom, only for free users
+    if (!isPremium) {
       this.add.graphics()
-        .fillStyle(0x001833, 0.92)
-        .fillRoundedRect(panelX, stripY, panelW, stripH, 12)
-        .lineStyle(1.5, 0x0066cc, 0.7)
-        .strokeRoundedRect(panelX, stripY, panelW, stripH, 12);
+        .lineStyle(1, 0xffaa00, 0.25)
+        .lineBetween(px + 20, py + STRIP_Y - 4, px + panelW - 20, py + STRIP_Y - 4);
 
-      this.add.text(width / 2, stripY + 8, 'სრული ანბანი — 33 ასო + 20 რიცხვი', {
-        fontSize: '13px', color: '#6699bb',
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      this.add.text(w / 2, py + STRIP_Y, '⭐  პრო ვერსია', {
+        fontSize: '14px', color: '#ffdd00', fontStyle: 'bold', fontFamily: GEO_FONT,
       }).setOrigin(0.5, 0);
 
-      const unlockBtn = this.add.text(width / 2, stripY + 32, '★  განბლოკვა  /  Unlock Full Game', {
-        fontSize: '15px', color: '#ffdd00', fontStyle: 'bold',
-        fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+      const proBtn = this.add.text(w / 2, py + STRIP_Y + 28,
+        'გახსენით სრული ციფრები და ასო-ბგერები  ›', {
+        fontSize: '12px', color: '#aaccff', fontFamily: GEO_FONT,
+        wordWrap: { width: panelW * 0.86 }, align: 'center',
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
 
-      this.tweens.add({ targets: unlockBtn, alpha: 0.3, duration: 850, yoyo: true, repeat: -1 });
-      unlockBtn.on('pointerdown', () => this.scene.launch('PaywallScene'));
+      this.tweens.add({ targets: proBtn, alpha: 0.3, duration: 900, yoyo: true, repeat: -1 });
+      proBtn.on('pointerdown', () => this.scene.launch('PaywallScene'));
     }
+  }
 
-    // Short delay before accepting input (prevents accidental skip)
-    this.time.delayedCall(800, () => {
-      this.input.once('pointerdown', () => this.scene.start('MainMenuScene'));
-      this.input.keyboard?.once('keydown', () => this.scene.start('MainMenuScene'));
-    });
+  private addButton(
+    cx: number, cy: number, bw: number, bh: number,
+    label: string, fill: number, border: number, textColor: string,
+    onTap: () => void,
+  ): void {
+    const gfx = this.add.graphics()
+      .fillStyle(fill, 1).fillRoundedRect(cx - bw / 2, cy, bw, bh, 10)
+      .lineStyle(1.5, border, 0.9).strokeRoundedRect(cx - bw / 2, cy, bw, bh, 10);
+
+    const lbl = this.add.text(cx, cy + bh / 2, label, {
+      fontSize: '15px', color: textColor, fontStyle: 'bold',
+      fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
+    }).setOrigin(0.5);
+    // Scale button label if it overflows button width
+    if (lbl.width > bw * 0.88) lbl.setScale((bw * 0.88) / lbl.width);
+
+    this.add.zone(cx, cy + bh / 2, bw, bh).setInteractive()
+      .on('pointerover',  () => gfx.setAlpha(0.7))
+      .on('pointerout',   () => gfx.setAlpha(1.0))
+      .on('pointerdown',  onTap);
   }
 }

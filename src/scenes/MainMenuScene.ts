@@ -24,7 +24,9 @@ export class MainMenuScene extends Phaser.Scene {
   private cursorText!: Phaser.GameObjects.Text;
   private itemTexts: Phaser.GameObjects.Text[] = [];
   private nebulaLayer: Phaser.GameObjects.TileSprite | null = null;
-  private starLayer: Phaser.GameObjects.TileSprite | null = null;
+  private starLayer:   Phaser.GameObjects.TileSprite | null = null;
+  private menuLineH    = 0;
+  private menuTopY     = 0;
 
   constructor() {
     super({ key: 'MainMenuScene' });
@@ -185,7 +187,10 @@ export class MainMenuScene extends Phaser.Scene {
 
   private drawBackground(w: number, h: number): void {
     if (this.textures.exists('bg-menu')) {
-      this.add.image(w / 2, h / 2, 'bg-menu').setDisplaySize(w, h);
+      // Cover scaling — maintain aspect ratio, crop edges to fill canvas
+      const src   = this.textures.get('bg-menu').getSourceImage() as HTMLImageElement;
+      const scale = Math.max(w / src.width, h / src.height);
+      this.add.image(w / 2, h / 2, 'bg-menu').setScale(scale);
       const dim = this.add.graphics();
       dim.fillStyle(0x000011, 0.05);
       dim.fillRect(0, h * 0.19, w, h * 0.20); // title
@@ -255,7 +260,7 @@ export class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     // Title line 2
-    this.add.text(cx, h * 0.22 + 62, 'Tvale', {
+    this.add.text(cx, h * 0.295, 'Tvale', {
       fontSize: '52px',
       color: '#ffdd00',
       stroke: '#884400',
@@ -268,12 +273,15 @@ export class MainMenuScene extends Phaser.Scene {
   // ─── Menu list ────────────────────────────────────────────────────────────────
 
   private buildMenu(cx: number, h: number): void {
+    const w       = this.scale.width;
     const menuTop = h * 0.50;
-    const lineH   = 56;   // tighter gap between items
+    const lineH   = Math.round(h * 0.067);
+    this.menuLineH = lineH;
+    this.menuTopY  = menuTop;
     const ITEM_FS = '40px';
 
     // "აირჩიე მისია" header
-    this.add.text(cx, menuTop - 50, 'აირჩიე მისია', {
+    this.add.text(cx, menuTop - h * 0.059, 'აირჩიე მისია', {
       fontSize: '19px',
       color: C.header,
       fontFamily: 'Arial Unicode MS, Noto Sans Georgian, Arial',
@@ -281,12 +289,13 @@ export class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     // Thin rule under header
+    const ruleHalf = w * 0.23;
     const rule = this.add.graphics();
     rule.lineStyle(1, 0x224466, 0.6);
-    rule.lineBetween(cx - 90, menuTop - 16, cx + 90, menuTop - 16);
+    rule.lineBetween(cx - ruleHalf, menuTop - h * 0.019, cx + ruleHalf, menuTop - h * 0.019);
 
     // Cursor arrow — sits left of centered text block
-    this.cursorText = this.add.text(cx - 120, menuTop, '►', {
+    this.cursorText = this.add.text(cx - w * 0.31, menuTop, '►', {
       fontSize: '26px',
       color: C.cursor,
       fontFamily: 'Arial',
@@ -337,10 +346,7 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private refreshSelector(): void {
-    const menuTop = this.scale.height * 0.50;
-    const lineH   = 56;
-
-    this.cursorText.setY(menuTop + this.selectedIdx * lineH);
+    this.cursorText.setY(this.menuTopY + this.selectedIdx * this.menuLineH);
 
     this.itemTexts.forEach((t, i) => {
       t.setColor(i === this.selectedIdx ? C.selected : C.unselected);
@@ -363,10 +369,11 @@ export class MainMenuScene extends Phaser.Scene {
   // ─── Footer ───────────────────────────────────────────────────────────────────
 
   private buildFooter(cx: number, h: number, _w?: number): void {
+    const w         = this.scale.width;
     const isPremium = !!this.game.registry.get('isPremium');
 
     if (!isPremium) {
-      const btnW = 230, btnH = 44;
+      const btnW = Math.min(w * 0.59, 260), btnH = 44;
       const btnY  = h * 0.83;
       const gfx   = this.add.graphics()
         .fillStyle(0x003388, 0.85)
@@ -388,17 +395,18 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     // Separator
+    const margin = w * 0.082;
     this.add.graphics().lineStyle(1, 0x0066ff, 0.4)
-      .lineBetween(32, h * 0.90, cx * 2 - 32, h * 0.90);
+      .lineBetween(margin, h * 0.90, w - margin, h * 0.90);
 
     // Version
-    this.add.text(isPremium ? cx : cx - 36, h * 0.93, 'v1.0', {
+    this.add.text(isPremium ? cx : cx - w * 0.092, h * 0.93, 'v1.0', {
       fontSize: '13px', color: C.dim, fontFamily: 'Arial', letterSpacing: 4,
     }).setOrigin(0.5);
 
     // Restore Purchases (free users only)
     if (!isPremium) {
-      const restore = this.add.text(cx + 56, h * 0.93, 'Restore', {
+      const restore = this.add.text(cx + w * 0.144, h * 0.93, 'Restore', {
         fontSize: '13px', color: '#334455', fontFamily: 'Arial',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
