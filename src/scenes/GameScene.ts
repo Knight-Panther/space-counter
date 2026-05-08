@@ -506,6 +506,10 @@ export class GameScene extends Phaser.Scene {
     });
     if (this.boss && !this.bossRetreating && this.bossRequired.length > 0) {
       this.fireProton(item);
+    } else if (this.arsenalCharged) {
+      this.arsenalCharged = false;
+      this.refreshArsenalUI();
+      this.novaAoE(this.ship.x, this.ship.y);
     } else {
       this.fireProtonAtEnemy(item);
     }
@@ -607,23 +611,24 @@ export class GameScene extends Phaser.Scene {
     if (hitIdx >= 0) {
       // Correct item — cross it off
       this.bossRemaining.splice(hitIdx, 1);
-      if (isNova) this.pendingNovaKill = true;
       this.mistakeWeights.set(item.char, Math.max(0, (this.mistakeWeights.get(item.char) ?? 0) - 1));
       this.pushRecentShot(true);
       this.flashBossCorrect();
       this.updateBossHintLabel();
       if (this.bossRemaining.length === 0) {
+        if (isNova) this.pendingNovaKill = true;
         this.killBoss();
+      } else if (isNova) {
+        // Partial correct hit with Nova — blast regular enemies immediately, boss survives
+        this.novaAoE(this.boss.sprite.x, this.boss.sprite.y);
       }
     } else {
-      // Wrong item — penalise player
+      // Wrong item — boss is immune, no player damage
       this.mistakeWeights.set(item.char, (this.mistakeWeights.get(item.char) ?? 0) + 1);
       this.pushRecentShot(false);
       this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - 0.03);
       this.rescaleEnemySpeeds();
       this.flashBossImmune();
-      this.takeDamage();
-      this.playSound('sfx-wrong');
     }
   }
 
@@ -674,9 +679,10 @@ export class GameScene extends Phaser.Scene {
       type = forceType;
     } else {
       const emptyRatio = Math.max(0, (cfg.slots - this.arsenal.length) / cfg.slots);
-      const effectiveGreenPct = cfg.greenPct * emptyRatio;
+      const emptyRatioSq = emptyRatio * emptyRatio;
+      const effectiveGreenPct = cfg.greenPct * emptyRatioSq;
       const effectiveBluePct = this.activeWeapon !== 'plasma' ? 0 : cfg.bluePct;
-      const purplePct = this.wave >= 3 ? 0.12 : 0;
+      const purplePct = this.wave >= 3 ? 0.12 * emptyRatioSq : 0;
       const shipPct   = this.wave >= 5 ? 0.10 : 0;
       const roll = Math.random();
       if      (roll < effectiveBluePct)                                        type = 'blue';
