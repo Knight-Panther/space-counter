@@ -129,7 +129,7 @@ const FIRE_COOLDOWN  = 200;   // ms between manual plasma shots
 const PLASMA_SPEED   = 520;   // px/s upward
 const CRASH_DIST     = 38;    // px — ship vs enemy collision radius
 const POWERUP_SECS   = 15;    // seconds vulcan spread lasts
-const HEALTH_DROP_CHANCE = 0.10; // probability of a heart drop on kill when at 1 life
+const HEALTH_DROP_CHANCE = 0.20; // probability of a heart drop on kill when at 1 life
 const BEAM_SECS      = 12;    // seconds beam lasts
 const BEAM_WIDTH     = 22;    // px half-width of beam collision column
 const BEAM_COOLDOWN_MS = 300;  // ms between beam firings
@@ -478,6 +478,7 @@ export class GameScene extends Phaser.Scene {
     const item = this.arsenal[slotIndex];
     if (!item) return;
     this.playSound('sfx-arsenal-tap', 0.65);
+    if (this.cache.audio.has(item.audioKey)) this.sound.play(item.audioKey, { volume: 1.2 });
     this.animateSlotFire(slotIndex);
     this.time.delayedCall(80, () => {
       this.arsenal.splice(slotIndex, 1);
@@ -586,9 +587,6 @@ export class GameScene extends Phaser.Scene {
       this.updateBossHintLabel();
       if (this.bossRemaining.length === 0) {
         this.killBoss();
-      } else {
-        // Replay hint for remaining items — no "shoot" voice, player already knows
-        this.time.delayedCall(400, () => this.playBossHint(false));
       }
     } else {
       // Wrong item — penalise player
@@ -1215,7 +1213,7 @@ export class GameScene extends Phaser.Scene {
       const maxSlots = waveCfg(this.wave).slots;
       if (this.arsenal.length >= maxSlots) return;
       this.arsenal.push(tok.item);
-      this.playSound(tok.item.audioKey, this.mode === 'alphabet' ? 1.7 : 1.3);
+      this.playSound('sfx-arsenal-full', 0.35);
       this.refreshArsenalUI();
       this.animateSlotCollect(this.arsenal.length - 1);
       this.checkArsenalReady();
