@@ -119,11 +119,14 @@ import Phaser from 'phaser';        // WRONG — build error
 - [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full` at ₾3.00, set Active
 - [ ] RevenueCat dashboard: entitlement `premium` linked to product, copy API key
 - [ ] Run `npx cap sync android` after above steps
-- [ ] Add 33 letter audio files to `public/audio/` (`letter-a.mp3` … `letter-h.mp3` exist; need the rest)
-- [ ] Add 20 number audio files to `public/audio/` (`number-1.mp3` … `number-20.mp3`)
-- [ ] Compress `tina.png` (currently ~8.8 MB → target ~200 KB)
-- [ ] Convert instruction WAVs to MP3 (`gameplay-alphabet-instruction`, `gameplay-number-instruction`, `voice-shoot`)
+- [x] All 33 letter MP3s present in `public/audio/`
+- [x] All 20 number MP3s present in `public/audio/`
+- [ ] Compress `tina.png` (currently ~322 KB, was compressed from 8.8 MB)
+- [x] All instruction/voice WAVs converted to MP3
+- [ ] Source 4 missing SFX: `sfx-laser.mp3`, `sfx-wrong.mp3`, `sfx-alien-appear.mp3`, `sfx-button.mp3`
+- [ ] Add `NotoSansGeorgian-Regular.ttf` to `public/fonts/` (see todoList.md for subset instructions)
 - [ ] Install AdMob (`@capacitor-community/admob`) and gate all ad calls behind `isPremium`
+- [ ] Compress large PNGs: `Space.png` (2.4 MB), `Space_1.png` (1.8 MB) — see todoList.md
 
 ## Asset Index
 - Master inventory lives in `assetIndex.json` at the project root

@@ -7,6 +7,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsInlineLimit: 0,
+    assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser'],
+        },
+      },
+    },
   },
 });

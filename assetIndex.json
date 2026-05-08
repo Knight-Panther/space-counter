@@ -1,11 +1,11 @@
 {
   "_meta": {
     "description": "Master asset index for Space-Counter. Update this file every time an asset is added and wired up. Excludes Legacy Collection folder.",
-    "lastUpdated": "2026-05-07",
+    "lastUpdated": "2026-05-08",
     "loaderScene": "src/scenes/PreloaderScene.ts",
     "totals": {
       "images": { "present": 144, "missing": 0 },
-      "audio": { "present": 21, "missing": 33 },
+      "audio": { "present": 76, "missing": 4 },
       "fonts": { "present": 0, "missing": 1 },
       "proceduralAssets": 8
     }
@@ -13,7 +13,7 @@
 
   "images": {
     "backgrounds": [
-      { "key": "bg-menu",        "file": "public/images/bg-menu.jpg",   "size": "3.0M",  "status": "present", "usedIn": ["MenuScene"] },
+      { "key": "bg-menu",        "file": "public/images/bg-menu.jpg",   "size": "361K",  "status": "present", "usedIn": ["MenuScene"] },
       { "key": "space-nebula",   "file": "public/images/Space.png",     "size": "2.4M",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "space-nebula-2", "file": "public/images/Space_1.png",   "size": "1.8M",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "tina",           "file": "public/images/tina.png",      "size": "322K",  "status": "present", "usedIn": ["StoryScene"], "note": "compressed 4096x4096→512x512" }
@@ -206,15 +206,13 @@
 
   "audio": {
     "music": [
-      { "key": "music-game",    "file": "public/audio/music-game.ogg",             "size": "4.5M", "status": "present", "usedIn": ["GameScene"] },
-      { "key": "music-orbital", "file": "public/audio/Orbital Colossus.mp3",        "size": "5.8M", "status": "present", "usedIn": ["GameScene"] },
-      { "key": "music-menu",    "file": "public/audio/MyVeryOwnDeadShip.ogg",       "size": "4.4M", "status": "present", "usedIn": ["MenuScene"] },
-      { "key": "music-alphabet","file": "public/audio/music-alphabet.mp3",           "size": null,   "status": "MISSING", "usedIn": ["GameScene"] },
-      { "key": "music-numbers", "file": "public/audio/music-numbers.mp3",            "size": null,   "status": "MISSING", "usedIn": ["GameScene"] }
+      { "key": "music-game",    "file": "public/audio/music-game.mp3",        "size": "1.0M", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "music-orbital", "file": "public/audio/Orbital Colossus.mp3",  "size": "1.8M", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "music-menu",    "file": "public/audio/MyVeryOwnDeadShip.mp3", "size": "2.6M", "status": "present", "usedIn": ["MenuScene"] }
     ],
     "voice_intro": [
-      { "key": "intro-alphabet", "file": "public/audio/intro-alphabet.wav", "size": "5.0M", "status": "present", "note": "convert to MP3", "usedIn": ["StoryScene"] },
-      { "key": "intro-numbers",  "file": "public/audio/intro-numbers.wav",  "size": "5.5M", "status": "present", "note": "convert to MP3", "usedIn": ["StoryScene"] }
+      { "key": "intro-alphabet", "file": "public/audio/intro-alphabet.mp3", "size": "105K", "status": "present", "usedIn": ["StoryScene"] },
+      { "key": "intro-numbers",  "file": "public/audio/intro-numbers.mp3",  "size": "111K", "status": "present", "usedIn": ["StoryScene"] }
     ],
     "voice_gameplay": [
       { "key": "gameplay-alphabet-instruction", "file": "public/audio/gameplay-alphabet-instruction.mp3", "size": "58K", "status": "present", "usedIn": ["GameScene"] },
@@ -225,57 +223,57 @@
     ],
     "sfx": [
       { "key": "sfx-arsenal-deploy", "file": "public/audio/sfx-arsenal-deploy.ogg", "size": "27K",   "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-arsenal-full",   "file": "public/audio/sfx-arsenal-full.wav",   "size": "242K",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-arsenal-tap",    "file": "public/audio/sfx-arsenal-tap.wav",    "size": "347K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-arsenal-full",   "file": "public/audio/sfx-arsenal-full.mp3",   "size": "6.8K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-arsenal-tap",    "file": "public/audio/sfx-arsenal-tap.mp3",    "size": "5.3K",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-boss-alarm",     "file": "public/audio/sfx-boss-alarm.mp3",     "size": "146K",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-boss-engine",    "file": "public/audio/sfx-boss-engine.mp3",    "size": "767K",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-boss-thrust",    "file": "public/audio/sfx-boss-engine.wav",    "size": "211K",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-damage",         "file": "public/audio/sfx-damage.wav",         "size": "242K",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-boss-thrust",    "file": "public/audio/sfx-boss-thrust.mp3",    "size": "18K",   "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-damage",         "file": "public/audio/sfx-damage.mp3",         "size": "7.4K",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-explosion-boss", "file": "public/audio/sfx-explosion-boss.mp3", "size": "93K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-explosion",      "file": "public/audio/sfx-explosion.mp3",      "size": "82K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-laser-plasma",   "file": "public/audio/sfx-laser-plasma.mp3",   "size": "37K",   "status": "present", "note": "plasma shots and beam weapon fire", "usedIn": ["GameScene"] },
       { "key": "sfx-laser-vulcan",   "file": "public/audio/sfx-laser-vulcan.mp3",   "size": "55K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-ship-engine",    "file": "public/audio/sfx-ship-engine.mp3",    "size": "810K",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.wav",        "size": "891K",  "status": "present", "note": "weapon powerup pickup and health token collect", "usedIn": ["GameScene"] },
+      { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.mp3",        "size": "18K",   "status": "present", "note": "weapon powerup pickup and health token collect", "usedIn": ["GameScene"] },
       { "key": "sfx-laser",          "file": "public/audio/sfx-laser.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
       { "key": "sfx-wrong",          "file": "public/audio/sfx-wrong.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
       { "key": "sfx-alien-appear",   "file": "public/audio/sfx-alien-appear.mp3",   "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
       { "key": "sfx-button",         "file": "public/audio/sfx-button.mp3",         "size": null,    "status": "MISSING", "usedIn": ["MenuScene"] }
     ],
     "letters": [
-      { "key": "letter-a",   "char": "ა", "latin": "a",   "file": "public/audio/letter-a.mp3",   "status": "MISSING" },
-      { "key": "letter-b",   "char": "ბ", "latin": "b",   "file": "public/audio/letter-b.mp3",   "status": "MISSING" },
-      { "key": "letter-g",   "char": "გ", "latin": "g",   "file": "public/audio/letter-g.mp3",   "status": "MISSING" },
-      { "key": "letter-d",   "char": "დ", "latin": "d",   "file": "public/audio/letter-d.mp3",   "status": "MISSING" },
-      { "key": "letter-e",   "char": "ე", "latin": "e",   "file": "public/audio/letter-e.mp3",   "status": "MISSING" },
-      { "key": "letter-v",   "char": "ვ", "latin": "v",   "file": "public/audio/letter-v.mp3",   "status": "MISSING" },
-      { "key": "letter-z",   "char": "ზ", "latin": "z",   "file": "public/audio/letter-z.mp3",   "status": "MISSING" },
-      { "key": "letter-th",  "char": "თ", "latin": "th",  "file": "public/audio/letter-th.mp3",  "status": "MISSING" },
-      { "key": "letter-i",   "char": "ი", "latin": "i",   "file": "public/audio/letter-i.mp3",   "status": "MISSING" },
-      { "key": "letter-k",   "char": "კ", "latin": "k",   "file": "public/audio/letter-k.mp3",   "status": "MISSING" },
-      { "key": "letter-l",   "char": "ლ", "latin": "l",   "file": "public/audio/letter-l.mp3",   "status": "MISSING" },
-      { "key": "letter-m",   "char": "მ", "latin": "m",   "file": "public/audio/letter-m.mp3",   "status": "MISSING" },
-      { "key": "letter-n",   "char": "ნ", "latin": "n",   "file": "public/audio/letter-n.mp3",   "status": "MISSING" },
-      { "key": "letter-o",   "char": "ო", "latin": "o",   "file": "public/audio/letter-o.mp3",   "status": "MISSING" },
-      { "key": "letter-p",   "char": "პ", "latin": "p",   "file": "public/audio/letter-p.mp3",   "status": "MISSING" },
-      { "key": "letter-zh",  "char": "ჟ", "latin": "zh",  "file": "public/audio/letter-zh.mp3",  "status": "MISSING" },
-      { "key": "letter-r",   "char": "რ", "latin": "r",   "file": "public/audio/letter-r.mp3",   "status": "MISSING" },
-      { "key": "letter-s",   "char": "ს", "latin": "s",   "file": "public/audio/letter-s.mp3",   "status": "MISSING" },
-      { "key": "letter-t",   "char": "ტ", "latin": "t",   "file": "public/audio/letter-t.mp3",   "status": "MISSING" },
-      { "key": "letter-u",   "char": "უ", "latin": "u",   "file": "public/audio/letter-u.mp3",   "status": "MISSING" },
-      { "key": "letter-ph",  "char": "ფ", "latin": "ph",  "file": "public/audio/letter-ph.mp3",  "status": "MISSING" },
-      { "key": "letter-q",   "char": "ქ", "latin": "q",   "file": "public/audio/letter-q.mp3",   "status": "MISSING" },
-      { "key": "letter-gh",  "char": "ღ", "latin": "gh",  "file": "public/audio/letter-gh.mp3",  "status": "MISSING" },
-      { "key": "letter-qh",  "char": "ყ", "latin": "qh",  "file": "public/audio/letter-qh.mp3",  "status": "MISSING" },
-      { "key": "letter-sh",  "char": "შ", "latin": "sh",  "file": "public/audio/letter-sh.mp3",  "status": "MISSING" },
-      { "key": "letter-ch",  "char": "ჩ", "latin": "ch",  "file": "public/audio/letter-ch.mp3",  "status": "MISSING" },
-      { "key": "letter-ts",  "char": "ც", "latin": "ts",  "file": "public/audio/letter-ts.mp3",  "status": "MISSING" },
-      { "key": "letter-dz",  "char": "ძ", "latin": "dz",  "file": "public/audio/letter-dz.mp3",  "status": "MISSING" },
-      { "key": "letter-tw",  "char": "წ", "latin": "tw",  "file": "public/audio/letter-tw.mp3",  "status": "MISSING" },
-      { "key": "letter-chw", "char": "ჭ", "latin": "chw", "file": "public/audio/letter-chw.mp3", "status": "MISSING" },
-      { "key": "letter-kh",  "char": "ხ", "latin": "kh",  "file": "public/audio/letter-kh.mp3",  "status": "MISSING" },
-      { "key": "letter-j",   "char": "ჯ", "latin": "j",   "file": "public/audio/letter-j.mp3",   "status": "MISSING" },
-      { "key": "letter-h",   "char": "ჰ", "latin": "h",   "file": "public/audio/letter-h.mp3",   "status": "MISSING" }
+      { "key": "letter-a",   "char": "ა", "latin": "a",   "file": "public/audio/letter-a.mp3",   "status": "present" },
+      { "key": "letter-b",   "char": "ბ", "latin": "b",   "file": "public/audio/letter-b.mp3",   "status": "present" },
+      { "key": "letter-g",   "char": "გ", "latin": "g",   "file": "public/audio/letter-g.mp3",   "status": "present" },
+      { "key": "letter-d",   "char": "დ", "latin": "d",   "file": "public/audio/letter-d.mp3",   "status": "present" },
+      { "key": "letter-e",   "char": "ე", "latin": "e",   "file": "public/audio/letter-e.mp3",   "status": "present" },
+      { "key": "letter-v",   "char": "ვ", "latin": "v",   "file": "public/audio/letter-v.mp3",   "status": "present" },
+      { "key": "letter-z",   "char": "ზ", "latin": "z",   "file": "public/audio/letter-z.mp3",   "status": "present" },
+      { "key": "letter-th",  "char": "თ", "latin": "th",  "file": "public/audio/letter-th.mp3",  "status": "present" },
+      { "key": "letter-i",   "char": "ი", "latin": "i",   "file": "public/audio/letter-i.mp3",   "status": "present" },
+      { "key": "letter-k",   "char": "კ", "latin": "k",   "file": "public/audio/letter-k.mp3",   "status": "present" },
+      { "key": "letter-l",   "char": "ლ", "latin": "l",   "file": "public/audio/letter-l.mp3",   "status": "present" },
+      { "key": "letter-m",   "char": "მ", "latin": "m",   "file": "public/audio/letter-m.mp3",   "status": "present" },
+      { "key": "letter-n",   "char": "ნ", "latin": "n",   "file": "public/audio/letter-n.mp3",   "status": "present" },
+      { "key": "letter-o",   "char": "ო", "latin": "o",   "file": "public/audio/letter-o.mp3",   "status": "present" },
+      { "key": "letter-p",   "char": "პ", "latin": "p",   "file": "public/audio/letter-p.mp3",   "status": "present" },
+      { "key": "letter-zh",  "char": "ჟ", "latin": "zh",  "file": "public/audio/letter-zh.mp3",  "status": "present" },
+      { "key": "letter-r",   "char": "რ", "latin": "r",   "file": "public/audio/letter-r.mp3",   "status": "present" },
+      { "key": "letter-s",   "char": "ს", "latin": "s",   "file": "public/audio/letter-s.mp3",   "status": "present" },
+      { "key": "letter-t",   "char": "ტ", "latin": "t",   "file": "public/audio/letter-t.mp3",   "status": "present" },
+      { "key": "letter-u",   "char": "უ", "latin": "u",   "file": "public/audio/letter-u.mp3",   "status": "present" },
+      { "key": "letter-ph",  "char": "ფ", "latin": "ph",  "file": "public/audio/letter-ph.mp3",  "status": "present" },
+      { "key": "letter-q",   "char": "ქ", "latin": "q",   "file": "public/audio/letter-q.mp3",   "status": "present" },
+      { "key": "letter-gh",  "char": "ღ", "latin": "gh",  "file": "public/audio/letter-gh.mp3",  "status": "present" },
+      { "key": "letter-qh",  "char": "ყ", "latin": "qh",  "file": "public/audio/letter-qh.mp3",  "status": "present" },
+      { "key": "letter-sh",  "char": "შ", "latin": "sh",  "file": "public/audio/letter-sh.mp3",  "status": "present" },
+      { "key": "letter-ch",  "char": "ჩ", "latin": "ch",  "file": "public/audio/letter-ch.mp3",  "status": "present" },
+      { "key": "letter-ts",  "char": "ც", "latin": "ts",  "file": "public/audio/letter-ts.mp3",  "status": "present" },
+      { "key": "letter-dz",  "char": "ძ", "latin": "dz",  "file": "public/audio/letter-dz.mp3",  "status": "present" },
+      { "key": "letter-tw",  "char": "წ", "latin": "tw",  "file": "public/audio/letter-tw.mp3",  "status": "present" },
+      { "key": "letter-chw", "char": "ჭ", "latin": "chw", "file": "public/audio/letter-chw.mp3", "status": "present" },
+      { "key": "letter-kh",  "char": "ხ", "latin": "kh",  "file": "public/audio/letter-kh.mp3",  "status": "present" },
+      { "key": "letter-j",   "char": "ჯ", "latin": "j",   "file": "public/audio/letter-j.mp3",   "status": "present" },
+      { "key": "letter-h",   "char": "ჰ", "latin": "h",   "file": "public/audio/letter-h.mp3",   "status": "present" }
     ],
     "numbers": [
       { "key": "number-1",  "file": "public/audio/number-1.mp3",  "size": "13KB", "status": "present", "usedIn": ["GameScene"] },
@@ -326,12 +324,12 @@
   },
 
   "missing_summary": {
-    "note": "Phaser logs a 404 warning but does NOT crash — game runs without these, just silently.",
-    "audio_letter_clips": 33,
+    "note": "Phaser logs a 404 warning but does NOT crash — game runs without these, just silently. sfx keys are guarded with cache.audio.has() in GameScene.",
+    "audio_letter_clips": 0,
     "audio_number_clips": 0,
     "audio_sfx": 4,
-    "audio_music": 2,
+    "audio_music": 0,
     "fonts": 1,
-    "total_missing": 60
+    "total_missing": 5
   }
 }

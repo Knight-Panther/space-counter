@@ -422,6 +422,21 @@ export class MainMenuScene extends Phaser.Scene {
         }
       });
     }
+
+    // Copyright — two-part so company name stands out
+    const copyY = h * 0.965;
+    const tYear = this.add.text(0, copyY, '© 2026 ', {
+      fontSize: '11px', color: '#8899bb',
+      fontFamily: 'Roboto, Arial', letterSpacing: 1,
+    }).setOrigin(0, 0.5);
+    const tCo = this.add.text(0, copyY, 'XTelo', {
+      fontSize: '14px', color: '#55ddff',
+      fontFamily: 'Roboto, Orbitron, Arial', fontStyle: 'bold', letterSpacing: 2,
+    }).setOrigin(0, 0.5);
+    // Centre the combined block horizontally
+    const totalW = tYear.width + tCo.width;
+    tYear.setX(cx - totalW / 2);
+    tCo.setX(cx - totalW / 2 + tYear.width);
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────────

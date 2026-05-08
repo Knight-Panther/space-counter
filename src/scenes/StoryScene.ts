@@ -133,12 +133,14 @@ export class StoryScene extends Phaser.Scene {
   // ─── Text box ─────────────────────────────────────────────────────────────────
 
   private buildTextBox(w: number, h: number, accent: number): void {
-    const hPad = 22;
-    const boxX = hPad;
-    const boxY = h * 0.10;
-    const boxW = w * 0.58;
-    const boxH = h * 0.80;
-    const innerPad = 20;
+    const hPad     = 22;
+    const boxX     = hPad;
+    const boxY     = h * 0.10;
+    const boxW     = w * 0.58;
+    const boxH     = h * 0.80;
+    const innerPad = 16;
+    // Scale font so text fits on short screens (e.g. 14px at h≤640, up to 18px at h≥820)
+    const fs = Math.max(14, Math.min(18, Math.round(h * 0.022)));
 
     // Frosted dark panel
     const box = this.add.graphics();
@@ -157,11 +159,11 @@ export class StoryScene extends Phaser.Scene {
       boxY + innerPad,
       '',
       {
-        fontSize: '18px',
+        fontSize: `${fs}px`,
         color: '#e8eeff',
-        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Roboto, Arial Unicode MS, Noto Sans Georgian, Arial',
         wordWrap: { width: boxW - innerPad * 2 },
-        lineSpacing: 10,
+        lineSpacing: 6,
       }
     );
 
@@ -171,9 +173,9 @@ export class StoryScene extends Phaser.Scene {
       boxY + boxH - innerPad,
       'განაგრძე  ▶',
       {
-        fontSize: '17px',
+        fontSize: `${Math.max(13, fs - 2)}px`,
         color: '#' + accent.toString(16).padStart(6, '0'),
-        fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+        fontFamily: 'Roboto, Arial Unicode MS, Noto Sans Georgian, Arial',
         fontStyle: 'bold',
       }
     ).setOrigin(0.5, 1).setAlpha(0);
