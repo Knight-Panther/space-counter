@@ -56,7 +56,6 @@ const BOSS_DEFS: Record<BossType, BossDef> = {
 // ─── Wave configuration ───────────────────────────────────────────────────────
 
 interface WaveCfg {
-  slots:       number;
   bossReq:     number;
   spawnMs:     number;
   greenPct:    number;
@@ -64,42 +63,48 @@ interface WaveCfg {
   enemySpeed:  number;
   bossType:    BossType;
   bossScale:   number;
+  // slots is derived: Math.min(6, bossReq + 2) — keeps pool size tied to boss complexity
+  readonly slots: number;
+}
+
+function makeWave(bossReq: number, spawnMs: number, greenPct: number, bluePct: number, enemySpeed: number, bossType: BossType, bossScale: number): WaveCfg {
+  return { bossReq, spawnMs, greenPct, bluePct, enemySpeed, bossType, bossScale, slots: Math.min(6, bossReq + 2) };
 }
 
 const WAVES: WaveCfg[] = [
   // Waves 1–10
-  { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossType: 'ship-b',   bossScale: 1.0 },
-  { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossType: 'slime',    bossScale: 1.54 },
-  { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossType: 'wizard',   bossScale: 1.26 },
-  { slots: 4, bossReq: 2, spawnMs: 2800, greenPct: 0.32, bluePct: 0.15, enemySpeed: 105, bossType: 'demon',    bossScale: 0.63 },
-  { slots: 4, bossReq: 2, spawnMs: 2600, greenPct: 0.35, bluePct: 0.15, enemySpeed: 115, bossType: 'ship-top', bossScale: 1.4 },
-  { slots: 4, bossReq: 2, spawnMs: 2300, greenPct: 0.38, bluePct: 0.16, enemySpeed: 125, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 5, bossReq: 3, spawnMs: 2000, greenPct: 0.42, bluePct: 0.17, enemySpeed: 140, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossType: 'demon',    bossScale: 0.77 },
-  { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossType: 'ship-top', bossScale: 1.8 },
-  { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossType: 'demon',    bossScale: 0.91 },
-  // Waves 11–15: 6 slots, 3 boss req, spawnMs 1300→1100, speed 195→215
-  { slots: 6, bossReq: 3, spawnMs: 1300, greenPct: 0.57, bluePct: 0.20, enemySpeed: 195, bossType: 'ship-b',   bossScale: 1.0 },
-  { slots: 6, bossReq: 3, spawnMs: 1250, greenPct: 0.59, bluePct: 0.21, enemySpeed: 200, bossType: 'slime',    bossScale: 1.54 },
-  { slots: 6, bossReq: 3, spawnMs: 1200, greenPct: 0.61, bluePct: 0.21, enemySpeed: 205, bossType: 'wizard',   bossScale: 1.26 },
-  { slots: 6, bossReq: 3, spawnMs: 1150, greenPct: 0.63, bluePct: 0.21, enemySpeed: 210, bossType: 'demon',    bossScale: 0.77 },
-  { slots: 6, bossReq: 3, spawnMs: 1100, greenPct: 0.65, bluePct: 0.22, enemySpeed: 215, bossType: 'ship-top', bossScale: 1.8 },
-  // Waves 16–30: smooth linear curve — spawnMs -17/wave, speed +3/wave, no dips
-  { slots: 6, bossReq: 4, spawnMs: 1083, greenPct: 0.67, bluePct: 0.22, enemySpeed: 218, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 4, spawnMs: 1066, greenPct: 0.68, bluePct: 0.22, enemySpeed: 221, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 4, spawnMs: 1049, greenPct: 0.70, bluePct: 0.23, enemySpeed: 224, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 4, spawnMs: 1032, greenPct: 0.71, bluePct: 0.23, enemySpeed: 227, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 4, spawnMs: 1015, greenPct: 0.72, bluePct: 0.23, enemySpeed: 230, bossType: 'ship-top', bossScale: 1.4 },
-  { slots: 6, bossReq: 4, spawnMs:  998, greenPct: 0.73, bluePct: 0.24, enemySpeed: 233, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 4, spawnMs:  981, greenPct: 0.74, bluePct: 0.24, enemySpeed: 236, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 4, spawnMs:  964, greenPct: 0.75, bluePct: 0.24, enemySpeed: 239, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 4, spawnMs:  947, greenPct: 0.76, bluePct: 0.24, enemySpeed: 242, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 4, spawnMs:  930, greenPct: 0.77, bluePct: 0.25, enemySpeed: 245, bossType: 'ship-top', bossScale: 1.8 },
-  { slots: 6, bossReq: 5, spawnMs:  913, greenPct: 0.78, bluePct: 0.25, enemySpeed: 248, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 5, spawnMs:  896, greenPct: 0.79, bluePct: 0.25, enemySpeed: 251, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 5, spawnMs:  879, greenPct: 0.80, bluePct: 0.25, enemySpeed: 254, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 5, spawnMs:  862, greenPct: 0.81, bluePct: 0.25, enemySpeed: 257, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 5, spawnMs:  845, greenPct: 0.82, bluePct: 0.25, enemySpeed: 260, bossType: 'ship-top', bossScale: 1.8 },
+  makeWave(1, 3800, 0.25, 0.12,  75, 'ship-b',   1.0),
+  makeWave(1, 3400, 0.28, 0.13,  85, 'slime',    1.54),
+  makeWave(1, 3100, 0.30, 0.14,  95, 'wizard',   1.26),
+  makeWave(2, 2800, 0.32, 0.15, 105, 'demon',    0.63),
+  makeWave(2, 2600, 0.35, 0.15, 115, 'ship-top', 1.4),
+  makeWave(2, 2300, 0.38, 0.16, 125, 'slime',    1.82),
+  makeWave(3, 2000, 0.42, 0.17, 140, 'wizard',   1.54),
+  makeWave(3, 1800, 0.46, 0.18, 155, 'demon',    0.77),
+  makeWave(3, 1600, 0.50, 0.19, 170, 'ship-top', 1.8),
+  makeWave(3, 1400, 0.55, 0.20, 185, 'demon',    0.91),
+  // Waves 11–15: bossReq 3 → slots 5
+  makeWave(3, 1300, 0.57, 0.20, 195, 'ship-b',   1.0),
+  makeWave(3, 1250, 0.59, 0.21, 200, 'slime',    1.54),
+  makeWave(3, 1200, 0.61, 0.21, 205, 'wizard',   1.26),
+  makeWave(3, 1150, 0.63, 0.21, 210, 'demon',    0.77),
+  makeWave(3, 1100, 0.65, 0.22, 215, 'ship-top', 1.8),
+  // Waves 16–30: bossReq 4–5 → slots 6
+  makeWave(4, 1083, 0.67, 0.22, 218, 'ship-b',   1.2),
+  makeWave(4, 1066, 0.68, 0.22, 221, 'slime',    1.82),
+  makeWave(4, 1049, 0.70, 0.23, 224, 'wizard',   1.54),
+  makeWave(4, 1032, 0.71, 0.23, 227, 'demon',    0.91),
+  makeWave(4, 1015, 0.72, 0.23, 230, 'ship-top', 1.4),
+  makeWave(4,  998, 0.73, 0.24, 233, 'ship-b',   1.2),
+  makeWave(4,  981, 0.74, 0.24, 236, 'slime',    1.82),
+  makeWave(4,  964, 0.75, 0.24, 239, 'wizard',   1.54),
+  makeWave(4,  947, 0.76, 0.24, 242, 'demon',    0.91),
+  makeWave(4,  930, 0.77, 0.25, 245, 'ship-top', 1.8),
+  makeWave(5,  913, 0.78, 0.25, 248, 'ship-b',   1.2),
+  makeWave(5,  896, 0.79, 0.25, 251, 'slime',    1.82),
+  makeWave(5,  879, 0.80, 0.25, 254, 'wizard',   1.54),
+  makeWave(5,  862, 0.81, 0.25, 257, 'demon',    0.91),
+  makeWave(5,  845, 0.82, 0.25, 260, 'ship-top', 1.8),
 ];
 
 function waveCfg(wave: number): WaveCfg {
@@ -129,6 +134,7 @@ const LIVES_MAX           = 3;
 const KILL_PER_WAVE       = 25;  // 25 kills × 30 waves = 750 kills for a full run
 const SPAWN_SCALE         = 15 / KILL_PER_WAVE;  // keeps spawn density proportional after wave-length change
 const BOSS_EVERY          = 20;   // enemy kills between boss spawns (was 12 — bosses overlapped wave transitions)
+const MAX_ENEMIES         = 13;   // hard cap on simultaneous enemies — prevents screen clutter
 const BOSS_TIMEOUT        = 15000; // ms before boss retreats
 const ARSENAL_H           = 90;
 const VULCAN_SPAWN_MULT   = 0.45;  // spawner interval multiplier while Vulcan is active
@@ -672,6 +678,8 @@ export class GameScene extends Phaser.Scene {
 
   private spawnEnemy(forceType?: 'green'): void {
     if (this.isDead) return;
+    // Forced greens are pre-boss guarantees — let them through even at cap
+    if (!forceType && this.enemies.length >= MAX_ENEMIES) return;
     const { width } = this.scale;
     const cfg = waveCfg(this.wave);
     let type: 'red' | 'green' | 'blue' | 'purple' | 'ship';
@@ -1153,7 +1161,7 @@ export class GameScene extends Phaser.Scene {
     const rage  = this.totalBossRage;
     // Partial adaptive scale so struggling players get slower bullets too.
     // Floor at 0.65 keeps boss dangerous even at the lowest difficulty setting.
-    const bulletMult = Math.max(0.65, Math.min(1.30, this.adaptiveSpeedMult));
+    const bulletMult = Math.max(0.65, Math.min(1.10, this.adaptiveSpeedMult));
     const speed = (def.bulletSpeed + Math.max(0, rage - 1) * 25) * bulletMult;
     const count = rage >= 5 ? 3 : rage >= 3 ? 2 : 1;
     const baseAngle = Phaser.Math.Angle.Between(bx, by, this.ship.x, this.ship.y);
@@ -1667,11 +1675,11 @@ export class GameScene extends Phaser.Scene {
       const ease     = 0.05 + severity * 0.05;
       this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - ease);
     } else if (stress < 0.12) {
-      // Player dominating — raise challenge slowly
-      this.adaptiveSpeedMult = Math.min(1.30, this.adaptiveSpeedMult + 0.015);
+      // Player dominating — raise challenge gently (was 0.015, lowered to avoid snowball)
+      this.adaptiveSpeedMult = Math.min(1.10, this.adaptiveSpeedMult + 0.008);
     } else {
       // Neutral — drift gently back toward 1.0
-      this.adaptiveSpeedMult = Math.min(1.30, Math.max(0.40,
+      this.adaptiveSpeedMult = Math.min(1.10, Math.max(0.40,
         this.adaptiveSpeedMult + (1.0 - this.adaptiveSpeedMult) * 0.005));
     }
 
@@ -1889,7 +1897,7 @@ export class GameScene extends Phaser.Scene {
       if (this.wave > 30 && !this.missionComplete) { this.showMissionCompleteOverlay(); return; }
       // Clean wave bonus — no lives lost this wave
       if (this.lives >= this.livesAtWaveStart) {
-        this.adaptiveSpeedMult = Math.min(1.30, this.adaptiveSpeedMult + 0.05);
+        this.adaptiveSpeedMult = Math.min(1.10, this.adaptiveSpeedMult + 0.05);
         this.rescaleEnemySpeeds();
       }
       this.livesAtWaveStart = this.lives;
