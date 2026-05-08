@@ -164,6 +164,7 @@ interface TokenObj {
   item?:       ItemData;
   isWeapon:    boolean;
   isHealth:    boolean;
+  isNova?:     boolean;
   weaponType?: 'vulcan' | 'beam';
 }
 
@@ -268,6 +269,8 @@ export class GameScene extends Phaser.Scene {
   private lastBossWave        = 0;  // wave in which the last boss spawned — ensures one boss per wave
   private lastBossHintTapTime = 0;  // cooldown to prevent hint replay stacking on rapid taps
   private arsenalReadyShown   = false;
+  private arsenalCharged      = false;  // Nova Core active — next proton at boss is a nova shot
+  private pendingNovaKill     = false;  // a nova proton has landed a correct hit this boss fight
 
   // Floor (wave-based) + accumulated retreats = total rage this boss encounter uses
   private get totalBossRage(): number { return this.bossRage + waveRageFloor(this.wave); }
@@ -500,14 +503,20 @@ export class GameScene extends Phaser.Scene {
 
   private fireProton(item: ItemData): void {
     if (!this.boss) return;
+    const isNova = this.arsenalCharged;
     let img: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
     if (this.anims.exists('proton-spin')) {
-      const spr = this.add.sprite(this.ship.x, this.ship.y - 28, 'bullet-proton-1').setDepth(6).setScale(1.2);
+      const spr = this.add.sprite(this.ship.x, this.ship.y - 28, 'bullet-proton-1').setDepth(6).setScale(isNova ? 2.2 : 1.2);
       spr.play('proton-spin');
       img = spr;
     } else {
       const key = this.textures.exists('bullet-proton-1') ? 'bullet-proton-1' : 'bullet';
-      img = this.add.image(this.ship.x, this.ship.y - 28, key).setDepth(6).setScale(1.2);
+      img = this.add.image(this.ship.x, this.ship.y - 28, key).setDepth(6).setScale(isNova ? 2.2 : 1.2);
+    }
+    if (isNova) {
+      img.setTint(0xffdd00);
+      this.arsenalCharged = false;
+      this.refreshArsenalUI();
     }
     const tx = this.boss.sprite.x;
     const ty = this.boss.sprite.y;
@@ -522,7 +531,7 @@ export class GameScene extends Phaser.Scene {
         const idx = this.bullets.indexOf(bObj);
         if (idx >= 0) this.bullets.splice(idx, 1);
         img.destroy();
-        this.resolveProtonHit(item);
+        this.resolveProtonHit(item, isNova);
       },
     });
   }
@@ -582,12 +591,13 @@ export class GameScene extends Phaser.Scene {
     this.playSound('sfx-laser', 0.25);
   }
 
-  private resolveProtonHit(item: ItemData): void {
+  private resolveProtonHit(item: ItemData, isNova = false): void {
     if (!this.boss) return;
     const hitIdx = this.bossRemaining.findIndex(r => r.char === item.char);
     if (hitIdx >= 0) {
       // Correct item — cross it off
       this.bossRemaining.splice(hitIdx, 1);
+      if (isNova) this.pendingNovaKill = true;
       this.mistakeWeights.set(item.char, Math.max(0, (this.mistakeWeights.get(item.char) ?? 0) - 1));
       this.pushRecentShot(true);
       this.flashBossCorrect();
@@ -864,6 +874,8 @@ export class GameScene extends Phaser.Scene {
 
   private killBoss(): void {
     if (!this.boss) return;
+    const wasNova = this.pendingNovaKill;
+    this.pendingNovaKill = false;
     this.bossRetreatTimer?.remove(); this.bossRetreatTimer = null;
     this.bossBulletTimer?.remove();  this.bossBulletTimer = null;
     this.stopBossEngineSound();
@@ -892,6 +904,7 @@ export class GameScene extends Phaser.Scene {
     this.enemySpawnTimer?.paused && (this.enemySpawnTimer.paused = false);
     this.enemySpawnTimer?.remove();
     this.time.delayedCall(2000, () => { if (!this.isDead) this.startEnemySpawner(); });
+    if (wasNova) this.time.delayedCall(600, () => this.novaAoE(bx, by));
   }
 
   private playBossHint(withShoot = true): void {
@@ -1200,11 +1213,34 @@ export class GameScene extends Phaser.Scene {
     this.tokens.push({ sprite, charText, isWeapon: false, isHealth: true });
   }
 
+  private spawnNovaToken(x: number, y: number): void {
+    const frameKey = this.textures.exists('mine-11-1') ? 'mine-11-1' : (this.textures.exists('mine-1') ? 'mine-1' : 'particle');
+    const sprite   = this.add.sprite(x, y, frameKey).setDepth(5).setScale(1.1).setTint(0xffcc00);
+    if (this.anims.exists('mine-11-spin')) sprite.play('mine-11-spin');
+    else if (this.anims.exists('mine-spin')) sprite.play('mine-spin');
+    this.tweens.add({ targets: sprite, scaleX: 1.4, scaleY: 1.4, duration: 380, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+    const charText = this.add.text(x, y + 30, '★', {
+      fontSize: '22px', color: '#ffdd00',
+      stroke: '#000000', strokeThickness: 3,
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+    }).setOrigin(0.5).setDepth(6);
+    this.tokens.push({ sprite, charText, isWeapon: false, isHealth: false, isNova: true });
+  }
+
+  private activateNovaCharge(): void {
+    this.arsenalCharged = true;
+    this.cameras.main.flash(280, 255, 220, 0);
+    this.playSound('sfx-wave-up', 0.80);
+    this.refreshArsenalUI();
+  }
+
   private collectToken(idx: number): void {
     const tok = this.tokens[idx];
     tok.sprite.destroy();
     tok.charText.destroy();
     this.tokens.splice(idx, 1);
+
+    if (tok.isNova) { this.activateNovaCharge(); return; }
 
     if (tok.isHealth) {
       this.lives = Math.min(this.lives + 1, LIVES_MAX);
@@ -1401,6 +1437,22 @@ export class GameScene extends Phaser.Scene {
             yoyo: true, repeat: -1, ease: 'Sine.InOut', delay: i * 120,
           }) as Phaser.Tweens.Tween;
         }
+      }
+    }
+
+    // Nova Core charged — override all active slot borders with a gold pulse
+    if (this.arsenalCharged) {
+      for (let j = 0; j < Math.min(this.slotUIs.length, maxActive); j++) {
+        const ui = this.slotUIs[j];
+        ui.idleTween?.stop();
+        ui.glow.clear();
+        ui.glow.lineStyle(7, 0xffdd00, 1);
+        ui.glow.strokeRoundedRect(ui.cx - ui.slotW / 2 - 3, ui.slotY - 3, ui.slotW + 6, ui.slotH + 6, 10);
+        ui.glow.setAlpha(0.85);
+        ui.idleTween = this.tweens.add({
+          targets: ui.glow, alpha: 0.38, duration: 340,
+          yoyo: true, repeat: -1, ease: 'Sine.InOut', delay: j * 75,
+        }) as Phaser.Tweens.Tween;
       }
     }
   }
@@ -1777,6 +1829,9 @@ export class GameScene extends Phaser.Scene {
       const wt: 'vulcan' | 'beam' = Math.random() < 0.5 ? 'beam' : 'vulcan';
       this.spawnToken(ex, ey, e.item, true, wt);
     }
+    if (this.wave >= 11 && !this.arsenalCharged && Math.random() < 0.06) {
+      this.spawnNovaToken(ex, ey);
+    }
 
     e.sprite.destroy();
     this.enemies.splice(idx, 1);
@@ -1847,6 +1902,45 @@ export class GameScene extends Phaser.Scene {
     this.rescaleEnemySpeeds();
     this.restartEnemySpawner();
     if (this.lives <= 0) { this.isDead = true; this.time.delayedCall(500, () => this.endGame()); }
+  }
+
+  // ─── Nova AoE ─────────────────────────────────────────────────────────────
+
+  private novaAoE(bx: number, by: number): void {
+    const { width: w, height: h } = this.scale;
+    const maxR   = Math.max(w, h) + 60;
+    const ring   = this.add.graphics().setDepth(30);
+    const state  = { r: 24, alpha: 1.0 };
+    this.tweens.add({
+      targets: state as any,
+      r: maxR, alpha: 0,
+      duration: 750, ease: 'Sine.Out',
+      onUpdate: () => {
+        ring.clear();
+        ring.lineStyle(7, 0xffdd00, state.alpha);
+        ring.strokeCircle(bx, by, state.r);
+        ring.lineStyle(3, 0xffffff, state.alpha * 0.55);
+        ring.strokeCircle(bx, by, state.r * 0.86);
+      },
+      onComplete: () => ring.destroy(),
+    });
+
+    const doomed = [...this.enemies];
+    this.enemies = [];
+    for (let i = 0; i < doomed.length; i++) {
+      const e = doomed[i];
+      this.time.delayedCall(i * 65, () => {
+        if (!e.sprite.active) return;
+        this.burstParticles(e.sprite.x, e.sprite.y, 10);
+        e.sprite.destroy();
+        this.score += 3 * this.wave;
+        this.scene.get('HUDScene')?.events.emit('score-update', this.score);
+      });
+    }
+
+    this.cameras.main.flash(350, 255, 220, 80);
+    this.cameras.main.shake(260, 0.011);
+    this.playSound('sfx-explosion-boss', 0.65);
   }
 
   // ─── Particles ────────────────────────────────────────────────────────────
