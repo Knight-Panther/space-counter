@@ -31,7 +31,7 @@ export class PaywallScene extends Phaser.Scene {
     this.add.text(px + panelW - 18, py + 18, '✕', {
       fontSize: '22px', color: '#446688', fontFamily: 'Orbitron, Arial',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.scene.stop());
+      .on('pointerdown', () => { this.resumeGameIfPaused(); this.scene.stop(); });
 
     // Title
     this.add.text(w / 2, py + 26, 'სრული თამაში', {
@@ -88,7 +88,9 @@ export class PaywallScene extends Phaser.Scene {
     // Auto-close when premium activates (e.g. from this scene or restored elsewhere)
     this.game.events.once('premium-changed', () => {
       this.statusText.setText('გახსნილია!  ✓  Unlocked!').setColor('#00ff88');
-      this.time.delayedCall(1200, () => { if (this.scene.isActive()) this.scene.stop(); });
+      this.time.delayedCall(1200, () => {
+        if (this.scene.isActive()) { this.resumeGameIfPaused(); this.scene.stop(); }
+      });
     });
   }
 
@@ -110,6 +112,11 @@ export class PaywallScene extends Phaser.Scene {
       .on('pointerover',  () => gfx.setAlpha(0.75))
       .on('pointerout',   () => gfx.setAlpha(1.0))
       .on('pointerdown',  onTap);
+  }
+
+  private resumeGameIfPaused(): void {
+    const gs = this.scene.get('GameScene');
+    if (gs?.scene.isPaused()) gs.scene.resume();
   }
 
   private async onBuyTap(mgr: PremiumManager): Promise<void> {

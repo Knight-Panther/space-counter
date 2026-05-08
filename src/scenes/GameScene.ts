@@ -84,41 +84,43 @@ const WAVES: WaveCfg[] = [
   { slots: 6, bossReq: 3, spawnMs: 1200, greenPct: 0.61, bluePct: 0.21, enemySpeed: 205, bossType: 'wizard',   bossScale: 1.26 },
   { slots: 6, bossReq: 3, spawnMs: 1150, greenPct: 0.63, bluePct: 0.21, enemySpeed: 210, bossType: 'demon',    bossScale: 0.77 },
   { slots: 6, bossReq: 3, spawnMs: 1100, greenPct: 0.65, bluePct: 0.22, enemySpeed: 215, bossType: 'ship-top', bossScale: 1.8 },
-  // Waves 16–20: 6 slots, 4 boss req, spawnMs 1050→900, speed 225→245
-  { slots: 6, bossReq: 4, spawnMs: 1050, greenPct: 0.67, bluePct: 0.22, enemySpeed: 225, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 4, spawnMs: 1013, greenPct: 0.68, bluePct: 0.22, enemySpeed: 230, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 4, spawnMs:  975, greenPct: 0.70, bluePct: 0.23, enemySpeed: 235, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 4, spawnMs:  938, greenPct: 0.71, bluePct: 0.23, enemySpeed: 240, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 4, spawnMs:  900, greenPct: 0.72, bluePct: 0.23, enemySpeed: 245, bossType: 'ship-top', bossScale: 1.4 },
-  // Waves 21–25: 6 slots, 4 boss req, spawnMs 880→800, speed 255→270
-  { slots: 6, bossReq: 4, spawnMs:  880, greenPct: 0.73, bluePct: 0.24, enemySpeed: 255, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 4, spawnMs:  860, greenPct: 0.74, bluePct: 0.24, enemySpeed: 259, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 4, spawnMs:  840, greenPct: 0.75, bluePct: 0.24, enemySpeed: 263, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 4, spawnMs:  820, greenPct: 0.76, bluePct: 0.24, enemySpeed: 266, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 4, spawnMs:  800, greenPct: 0.77, bluePct: 0.25, enemySpeed: 270, bossType: 'ship-top', bossScale: 1.8 },
-  // Waves 26–30: 6 slots, 5 boss req, spawnMs 780→700, speed 280→300
-  { slots: 6, bossReq: 5, spawnMs:  780, greenPct: 0.78, bluePct: 0.25, enemySpeed: 280, bossType: 'ship-b',   bossScale: 1.2 },
-  { slots: 6, bossReq: 5, spawnMs:  760, greenPct: 0.79, bluePct: 0.25, enemySpeed: 285, bossType: 'slime',    bossScale: 1.82 },
-  { slots: 6, bossReq: 5, spawnMs:  740, greenPct: 0.80, bluePct: 0.25, enemySpeed: 290, bossType: 'wizard',   bossScale: 1.54 },
-  { slots: 6, bossReq: 5, spawnMs:  720, greenPct: 0.81, bluePct: 0.25, enemySpeed: 295, bossType: 'demon',    bossScale: 0.91 },
-  { slots: 6, bossReq: 5, spawnMs:  700, greenPct: 0.82, bluePct: 0.25, enemySpeed: 300, bossType: 'ship-top', bossScale: 1.8 },
+  // Waves 16–30: smooth linear curve — spawnMs -17/wave, speed +3/wave, no dips
+  { slots: 6, bossReq: 4, spawnMs: 1083, greenPct: 0.67, bluePct: 0.22, enemySpeed: 218, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 4, spawnMs: 1066, greenPct: 0.68, bluePct: 0.22, enemySpeed: 221, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 4, spawnMs: 1049, greenPct: 0.70, bluePct: 0.23, enemySpeed: 224, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 4, spawnMs: 1032, greenPct: 0.71, bluePct: 0.23, enemySpeed: 227, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 4, spawnMs: 1015, greenPct: 0.72, bluePct: 0.23, enemySpeed: 230, bossType: 'ship-top', bossScale: 1.4 },
+  { slots: 6, bossReq: 4, spawnMs:  998, greenPct: 0.73, bluePct: 0.24, enemySpeed: 233, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 4, spawnMs:  981, greenPct: 0.74, bluePct: 0.24, enemySpeed: 236, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 4, spawnMs:  964, greenPct: 0.75, bluePct: 0.24, enemySpeed: 239, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 4, spawnMs:  947, greenPct: 0.76, bluePct: 0.24, enemySpeed: 242, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 4, spawnMs:  930, greenPct: 0.77, bluePct: 0.25, enemySpeed: 245, bossType: 'ship-top', bossScale: 1.8 },
+  { slots: 6, bossReq: 5, spawnMs:  913, greenPct: 0.78, bluePct: 0.25, enemySpeed: 248, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 5, spawnMs:  896, greenPct: 0.79, bluePct: 0.25, enemySpeed: 251, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 5, spawnMs:  879, greenPct: 0.80, bluePct: 0.25, enemySpeed: 254, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 5, spawnMs:  862, greenPct: 0.81, bluePct: 0.25, enemySpeed: 257, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 5, spawnMs:  845, greenPct: 0.82, bluePct: 0.25, enemySpeed: 260, bossType: 'ship-top', bossScale: 1.8 },
 ];
 
 function waveCfg(wave: number): WaveCfg {
-  return WAVES[Math.min(wave - 1, WAVES.length - 1)];
+  if (wave <= WAVES.length) return WAVES[wave - 1];
+  const base = WAVES[WAVES.length - 1];
+  const over = wave - WAVES.length;
+  return { ...base, spawnMs: Math.max(450, base.spawnMs - over * 17), enemySpeed: base.enemySpeed + over * 3 };
 }
 
 // Base rage the boss always starts with, regardless of player performance.
-// Increments every 2 waves: wave 1-2=0, 3-4=1, 5-6=2, 7-8=3, 9-10=4, …
+// Increments every 5 waves: wave 1-4=0, 5-9=1, 10-14=2, 15-19=3, 20-24=4, 25+=5
+// (every-4 reached rage 5 at wave 20 — 3-bullet boss too early for kids)
 function waveRageFloor(wave: number): number {
-  return Math.floor((wave - 1) / 2);
+  return Math.floor(wave / 5);
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LIVES_MAX           = 3;
 const KILL_PER_WAVE       = 15;  // 15 kills × 30 waves = 450 kills for a full run
-const BOSS_EVERY          = 12;    // enemy kills between boss spawns
+const BOSS_EVERY          = 20;   // enemy kills between boss spawns (was 12 — bosses overlapped wave transitions)
 const BOSS_TIMEOUT        = 15000; // ms before boss retreats
 const ARSENAL_H           = 90;
 const VULCAN_SPAWN_MULT   = 0.45;  // spawner interval multiplier while Vulcan is active
@@ -142,6 +144,7 @@ interface EnemyObj {
   sprite:      Phaser.GameObjects.Sprite;
   type:        'red' | 'green' | 'blue' | 'purple' | 'ship';
   velY:        number;
+  baseVelY:    number;  // speed without adaptiveSpeedMult — used to rescale live enemies
   wobblePhase: number;
   wobbleAmp:   number;
   baseX:       number;
@@ -225,16 +228,16 @@ export class GameScene extends Phaser.Scene {
   private bossThrustSound:  Phaser.Sound.BaseSound  | null = null;
 
   // Adaptive difficulty
-  private recentShots:          boolean[] = [];   // ring buffer, capacity 20
-  private adaptiveSpeedMult     = 1.0;
-  private prevWaveAccuracy      = -1;             // -1 = not yet recorded
-  private consecutiveHighCount  = 0;
-  private consecutiveLowCount   = 0;
+  private recentShots:       boolean[] = [];   // ring buffer, capacity 20
+  private lastKnownAccuracy  = 0.5;            // preserved across wave resets
+  private adaptiveSpeedMult  = 1.0;
+  private livesAtWaveStart   = LIVES_MAX;
 
   // Timers
   private lastFireTime      = 0;
   private enemySpawnTimer:  Phaser.Time.TimerEvent | null = null;
   private bossRetreatTimer: Phaser.Time.TimerEvent | null = null;
+  private pressureTimer:    Phaser.Time.TimerEvent | null = null;
 
   // Arsenal UI
   private slotUIs:           SlotUI[] = [];
@@ -258,6 +261,7 @@ export class GameScene extends Phaser.Scene {
   private letterIntroWave     = new Map<string, number>();
   private gracePresentCount   = new Map<string, number>(); // times a grace-period char was target
   private isDead              = false;
+  private missionComplete     = false;
   private masteryShown        = false;
   private lastBossContactTime = 0;  // cooldown to prevent per-frame damage on boss overlap
   private lastBossKillTime    = 0;
@@ -267,6 +271,7 @@ export class GameScene extends Phaser.Scene {
 
   // Floor (wave-based) + accumulated retreats = total rage this boss encounter uses
   private get totalBossRage(): number { return this.bossRage + waveRageFloor(this.wave); }
+  private get waveMercyMult(): number { return this.wave >= 15 ? 0.80 : 1.0; }
 
   constructor() { super({ key: 'GameScene' }); }
 
@@ -313,11 +318,12 @@ export class GameScene extends Phaser.Scene {
     this.shipEngineSound = null;
     this.mistakeWeights.clear();
     this.appearanceCount.clear();
-    this.recentShots          = [];
-    this.adaptiveSpeedMult    = 1.0;
-    this.prevWaveAccuracy     = -1;
-    this.consecutiveHighCount = 0;
-    this.consecutiveLowCount  = 0;
+    this.pressureTimer?.remove();
+    this.pressureTimer     = null;
+    this.recentShots       = [];
+    this.lastKnownAccuracy = 0.5;
+    this.adaptiveSpeedMult = 1.0;
+    this.livesAtWaveStart  = LIVES_MAX;
     this.introducedByWave.clear();
     this.newItemGracePeriod.clear();
     this.letterIntroWave.clear();
@@ -337,6 +343,7 @@ export class GameScene extends Phaser.Scene {
     this.setupInput(width, height);
     this.processCurriculumWave(1); // introduce wave-1 items immediately (no delay card on first wave)
     this.startEnemySpawner();
+    this.startPressureMonitor();
     this.playWave1Instruction();
   }
 
@@ -592,6 +599,8 @@ export class GameScene extends Phaser.Scene {
       // Wrong item — penalise player
       this.mistakeWeights.set(item.char, (this.mistakeWeights.get(item.char) ?? 0) + 1);
       this.pushRecentShot(false);
+      this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - 0.03);
+      this.rescaleEnemySpeeds();
       this.flashBossImmune();
       this.takeDamage();
       this.playSound('sfx-wrong');
@@ -624,7 +633,8 @@ export class GameScene extends Phaser.Scene {
     const cfg      = waveCfg(this.wave);
     const vulcanM  = this.activeWeapon === 'vulcan' ? VULCAN_SPAWN_MULT : 1.0;
     // Higher adaptiveSpeedMult → harder → shorter interval (divide) and faster enemies
-    const delay    = Math.max(400, (cfg.spawnMs / this.adaptiveSpeedMult) * vulcanM);
+    // waveMercyMult < 1 at wave 15+ → dividing by it lengthens the interval (easier)
+    const delay    = Math.max(650, (cfg.spawnMs / this.adaptiveSpeedMult / this.waveMercyMult) * vulcanM);
     this.enemySpawnTimer = this.time.addEvent({
       delay, loop: true, callback: () => this.spawnEnemy(),
     });
@@ -697,7 +707,8 @@ export class GameScene extends Phaser.Scene {
 
     this.enemies.push({
       sprite, type, item, scale,
-      velY: cfg.enemySpeed * this.adaptiveSpeedMult * (type === 'ship' ? 1.4 : 1.0),
+      baseVelY: cfg.enemySpeed * this.waveMercyMult * (type === 'ship' ? 1.4 : 1.0),
+      velY: cfg.enemySpeed * this.adaptiveSpeedMult * this.waveMercyMult * (type === 'ship' ? 1.4 : 1.0),
       wobblePhase: Math.random() * Math.PI * 2,
       wobbleAmp:   type === 'green' ? 38 : type === 'blue' ? 22 : type === 'purple' ? 28 : 0,
       baseX: x,
@@ -759,7 +770,7 @@ export class GameScene extends Phaser.Scene {
 
     this.boss = {
       sprite: bossSprite, type: 'red',
-      velY: 0, wobblePhase: 0, wobbleAmp: 0, baseX: width / 2, scale: 1,
+      velY: 0, baseVelY: 0, wobblePhase: 0, wobbleAmp: 0, baseX: width / 2, scale: 1,
     };
 
     this.playSound('sfx-alien-appear', 0.8);
@@ -1091,7 +1102,10 @@ export class GameScene extends Phaser.Scene {
     const bx    = this.boss.sprite.x;
     const by    = this.boss.sprite.y + 20;
     const rage  = this.totalBossRage;
-    const speed = def.bulletSpeed + Math.max(0, rage - 1) * 25;
+    // Partial adaptive scale so struggling players get slower bullets too.
+    // Floor at 0.65 keeps boss dangerous even at the lowest difficulty setting.
+    const bulletMult = Math.max(0.65, Math.min(1.30, this.adaptiveSpeedMult));
+    const speed = (def.bulletSpeed + Math.max(0, rage - 1) * 25) * bulletMult;
     const count = rage >= 5 ? 3 : rage >= 3 ? 2 : 1;
     const baseAngle = Phaser.Math.Angle.Between(bx, by, this.ship.x, this.ship.y);
     const spread = Math.PI / 10;
@@ -1195,6 +1209,10 @@ export class GameScene extends Phaser.Scene {
     if (tok.isHealth) {
       this.lives = Math.min(this.lives + 1, LIVES_MAX);
       this.scene.get('HUDScene')?.events.emit('lives-update', this.lives);
+      // Heart collected while under pressure — ease difficulty slightly so recovery feels real
+      this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - 0.05);
+      this.rescaleEnemySpeeds();
+      this.restartEnemySpawner();
       this.playSound('sfx-wave-up', 0.55);
       this.cameras.main.flash(220, 255, 80, 80);
       return;
@@ -1511,7 +1529,7 @@ export class GameScene extends Phaser.Scene {
   // ─── Adaptive difficulty ─────────────────────────────────────────────────
 
   private currentAccuracy(): number {
-    if (this.recentShots.length === 0) return 0.5;
+    if (this.recentShots.length === 0) return this.lastKnownAccuracy;
     return this.recentShots.filter(Boolean).length / this.recentShots.length;
   }
 
@@ -1520,29 +1538,60 @@ export class GameScene extends Phaser.Scene {
     if (this.recentShots.length > 20) this.recentShots.shift();
   }
 
-  private recalcAdaptiveDifficulty(): void {
-    // Freeze recalculation while new items are in their grace period
-    if (this.newItemGracePeriod.size > 0) return;
-
-    const acc = this.currentAccuracy();
-    if (this.prevWaveAccuracy >= 0) {
-      if (acc > 0.75 && this.prevWaveAccuracy > 0.75) {
-        this.consecutiveHighCount++;
-        this.consecutiveLowCount = 0;
-        if (this.consecutiveHighCount >= 2)
-          this.adaptiveSpeedMult = Math.min(1.20, this.adaptiveSpeedMult * 1.10);
-      } else if (acc < 0.45 && this.prevWaveAccuracy < 0.45) {
-        this.consecutiveLowCount++;
-        this.consecutiveHighCount = 0;
-        if (this.consecutiveLowCount >= 2)
-          this.adaptiveSpeedMult = Math.max(0.80, this.adaptiveSpeedMult * 0.92);
-      } else {
-        this.consecutiveHighCount = 0;
-        this.consecutiveLowCount  = 0;
-        this.adaptiveSpeedMult    = this.adaptiveSpeedMult + (1.0 - this.adaptiveSpeedMult) * 0.05;
-      }
+  private rescaleEnemySpeeds(): void {
+    for (const e of this.enemies) {
+      e.velY = e.baseVelY * this.adaptiveSpeedMult;
     }
-    this.prevWaveAccuracy = acc;
+  }
+
+  private recalcAdaptiveDifficulty(): void {
+    // Preserve real accuracy before clearing so the first pressure tick of the
+    // new wave uses the player's actual last-wave performance, not a default 0.5.
+    if (this.recentShots.length > 0) {
+      this.lastKnownAccuracy =
+        this.recentShots.filter(Boolean).length / this.recentShots.length;
+    }
+    this.recentShots = [];
+  }
+
+  private startPressureMonitor(): void {
+    this.pressureTimer?.remove();
+    this.pressureTimer = this.time.addEvent({
+      delay: 1500, loop: true,
+      callback: this.runPressureMonitor, callbackScope: this,
+    });
+  }
+
+  private runPressureMonitor(): void {
+    if (this.isDead) return;
+
+    // stress: 0 = thriving, 1 = overwhelmed
+    // 60% weight on lives, 40% on recent shot accuracy
+    const lifeRatio = this.lives / LIVES_MAX;
+    const accuracy  = this.currentAccuracy();
+    const stress    = (1 - lifeRatio) * 0.60 + (1 - accuracy) * 0.40;
+
+    const prev = this.adaptiveSpeedMult;
+
+    if (stress > 0.45) {
+      // Scale ease with severity: mild struggle → -0.05, extreme (1 life + poor aim) → -0.10
+      const severity = Math.min(1, (stress - 0.45) / 0.55);
+      const ease     = 0.05 + severity * 0.05;
+      this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - ease);
+    } else if (stress < 0.12) {
+      // Player dominating — raise challenge slowly
+      this.adaptiveSpeedMult = Math.min(1.30, this.adaptiveSpeedMult + 0.015);
+    } else {
+      // Neutral — drift gently back toward 1.0
+      this.adaptiveSpeedMult = Math.min(1.30, Math.max(0.40,
+        this.adaptiveSpeedMult + (1.0 - this.adaptiveSpeedMult) * 0.005));
+    }
+
+    const delta = Math.abs(this.adaptiveSpeedMult - prev);
+    if (delta > 0.001) {
+      this.rescaleEnemySpeeds();
+      if (delta > 0.015) this.restartEnemySpawner();
+    }
   }
 
   // ─── Parallax / background ────────────────────────────────────────────────
@@ -1746,7 +1795,13 @@ export class GameScene extends Phaser.Scene {
     // Wave advance
     if (this.killCount % KILL_PER_WAVE === 0) {
       this.wave++;
-      if (this.wave > 30) { this.completeGame(); return; }
+      if (this.wave > 30 && !this.missionComplete) { this.showMissionCompleteOverlay(); return; }
+      // Clean wave bonus — no lives lost this wave
+      if (this.lives >= this.livesAtWaveStart) {
+        this.adaptiveSpeedMult = Math.min(1.30, this.adaptiveSpeedMult + 0.05);
+        this.rescaleEnemySpeeds();
+      }
+      this.livesAtWaveStart = this.lives;
       this.scene.get('HUDScene')?.events.emit('wave-update', this.wave);
       this.showWaveBanner();
       if (this.wave === 4 || this.wave === 7) this.swapParallaxLayers();
@@ -1787,6 +1842,10 @@ export class GameScene extends Phaser.Scene {
       yoyo: true, repeat: 4,
       onComplete: () => this.ship?.setAlpha(1),
     });
+    // Life lost — ease off difficulty immediately, rescale enemies already on screen
+    this.adaptiveSpeedMult = Math.max(0.40, this.adaptiveSpeedMult - 0.20);
+    this.rescaleEnemySpeeds();
+    this.restartEnemySpawner();
     if (this.lives <= 0) { this.isDead = true; this.time.delayedCall(500, () => this.endGame()); }
   }
 
@@ -1863,10 +1922,11 @@ export class GameScene extends Phaser.Scene {
 
     this.masteryShown = true;
     this.game.registry.set('masteryShown', true);
-    // Pause spawner, launch overlay, resume after dismiss
     this.enemySpawnTimer?.remove();
+    this.scene.pause();   // freeze update loop — enemies stop moving, no collisions fire
     this.scene.launch('MasteryScene', { mode: this.mode });
     this.scene.get('MasteryScene')?.events.once('mastery-dismissed', () => {
+      this.scene.resume();
       if (!this.isDead) this.startEnemySpawner();
     });
   }
@@ -1926,18 +1986,132 @@ export class GameScene extends Phaser.Scene {
     this.scene.start('GameOverScene', { score: this.score, wave: this.wave, mode: this.mode });
   }
 
-  private completeGame(): void {
+  private showMissionCompleteOverlay(): void {
     this.enemySpawnTimer?.remove();
     this.bossRetreatTimer?.remove();
     this.bossBulletTimer?.remove();
     this.weaponTimer?.remove();
-    this.scene.stop('HUDScene');
-    this.scene.start('CompletionScene', {
-      mode: this.mode,
-      score: this.score,
-      wave: this.wave,
-      appearanceCount: Object.fromEntries(this.appearanceCount),
-    });
+
+    // Clear all on-screen objects so nothing can damage the player during the overlay
+    for (const e of this.enemies) e.sprite.destroy();
+    this.enemies = [];
+    for (const b of this.bullets) b.img.destroy();
+    this.bullets = [];
+    for (const t of this.tokens) { t.sprite.destroy(); t.charText.destroy(); }
+    this.tokens = [];
+    if (this.boss) {
+      this.boss.sprite.destroy();
+      this.bossHintLabel?.destroy();
+      this.bossRageLabel?.destroy();
+      this.bossHintLabel = null;
+      this.bossRageLabel = null;
+      this.boss = null;
+    }
+
+    const { width: w, height: h } = this.scale;
+    const isPremium  = !!this.game.registry.get('isPremium');
+    const isAlphabet = this.mode === 'alphabet';
+    const counts     = Object.fromEntries(this.appearanceCount);
+    type OItem = { char: string; display?: string; tier: 1 | 2 | 3 };
+    const allItems  = (isAlphabet ? LETTERS : NUMBERS) as OItem[];
+    const freeItems = isAlphabet
+      ? allItems.slice(0, FREE_LETTER_COUNT)
+      : allItems.filter(n => n.tier === 1);
+    const shownItems = isPremium ? allItems : freeItems;
+    const DEPTH      = 200;
+    const tracked: Phaser.GameObjects.GameObject[] = [];
+    const track = <T extends Phaser.GameObjects.GameObject>(o: T): T => { tracked.push(o); return o; };
+
+    track(this.add.graphics().setDepth(DEPTH)).fillStyle(0x000011, 0.88).fillRect(0, 0, w, h);
+
+    const t1 = isAlphabet ? 'Georgian Alphabet Complete!' : 'Number Master!';
+    const t2 = isAlphabet ? 'ქართული ანბანი — დასრულებულია!' : 'რიცხვების ოსტატი!';
+    track(this.add.text(w / 2, h * 0.04, t1, {
+      fontSize: '26px', color: '#ffdd00', fontStyle: 'bold',
+      stroke: '#000000', strokeThickness: 5,
+      fontFamily: 'Orbitron, Arial Unicode MS, Noto Sans Georgian, Arial',
+      wordWrap: { width: w * 0.92 }, align: 'center',
+    }).setOrigin(0.5, 0).setDepth(DEPTH + 1));
+    track(this.add.text(w / 2, h * 0.04 + 40, t2, {
+      fontSize: '17px', color: '#aaccff',
+      stroke: '#000000', strokeThickness: 3,
+      fontFamily: 'Noto Sans Georgian, Arial Unicode MS, Arial',
+      wordWrap: { width: w * 0.92 }, align: 'center',
+    }).setOrigin(0.5, 0).setDepth(DEPTH + 1));
+    track(this.add.text(w / 2, h * 0.04 + 70, `Score: ${this.score}`, {
+      fontSize: '15px', color: '#88aacc', fontFamily: 'Orbitron, Arial',
+    }).setOrigin(0.5, 0).setDepth(DEPTH + 1));
+
+    const gridTop = h * 0.04 + 104;
+    const cols    = 5;
+    const panelW  = Math.min(w * 0.96, 440);
+    const gx      = (w - panelW) / 2;
+    const cellW   = panelW / cols;
+    const cellH   = 52;
+
+    for (let i = 0; i < shownItems.length; i++) {
+      const item = shownItems[i];
+      const col  = i % cols;
+      const row  = Math.floor(i / cols);
+      const cx   = gx + col * cellW + cellW / 2;
+      const cy   = gridTop + row * cellH + cellH / 2;
+      const seen = counts[item.char] ?? 0;
+      track(this.add.graphics().setDepth(DEPTH + 1))
+        .fillStyle(0x001144, 0.88)
+        .fillRoundedRect(cx - cellW / 2 + 3, cy - cellH / 2 + 3, cellW - 6, cellH - 6, 7)
+        .lineStyle(1, seen > 0 ? 0x4488ff : 0x223355, 0.70)
+        .strokeRoundedRect(cx - cellW / 2 + 3, cy - cellH / 2 + 3, cellW - 6, cellH - 6, 7);
+      const label = isAlphabet ? item.char : (item.display ?? item.char);
+      track(this.add.text(cx, cy - 6, label, {
+        fontSize: isAlphabet ? '20px' : '14px', color: seen > 0 ? '#ffffff' : '#445566',
+        fontFamily: 'Noto Sans Georgian, Arial Unicode MS, Arial',
+        stroke: '#000000', strokeThickness: 2,
+      }).setOrigin(0.5, 0.5).setDepth(DEPTH + 2));
+      if (seen > 0) {
+        track(this.add.text(cx + cellW / 2 - 8, cy - cellH / 2 + 7, `×${seen}`, {
+          fontSize: '9px', color: '#ffdd44', fontFamily: 'Orbitron, Arial',
+        }).setOrigin(0.5, 0.5).setDepth(DEPTH + 2));
+      }
+    }
+
+    const gridRows = Math.ceil(shownItems.length / cols);
+    const buttonsY = gridTop + gridRows * cellH + 18;
+
+    const dismiss = () => {
+      for (const o of tracked) o.destroy();
+      this.missionComplete = true;
+      this.restartEnemySpawner();
+    };
+    const goMenu = () => { this.scene.stop('HUDScene'); this.scene.start('MainMenuScene'); };
+
+    if (!isPremium) {
+      const ctaLabel = isAlphabet ? 'Unlock the full Georgian alphabet' : 'Unlock Numbers 11–20';
+      const cta = track(this.add.text(w / 2, buttonsY, ctaLabel, {
+        fontSize: '15px', color: '#000000', fontStyle: 'bold',
+        backgroundColor: '#ffdd00', padding: { x: 16, y: 10 },
+        fontFamily: 'Orbitron, Arial', wordWrap: { width: w * 0.80 }, align: 'center',
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(DEPTH + 2));
+      cta.on('pointerdown', () => { for (const o of tracked) o.destroy(); this.scene.launch('PaywallScene'); });
+      const row2Y = buttonsY + (cta.height ?? 44) + 14;
+      track(this.add.text(w / 2 - 60, row2Y, 'Continue', {
+        fontSize: '14px', color: '#88ff88', fontFamily: 'Orbitron, Arial', padding: { x: 12, y: 8 },
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(DEPTH + 2))
+        .on('pointerdown', dismiss);
+      track(this.add.text(w / 2 + 60, row2Y, 'Main Menu', {
+        fontSize: '14px', color: '#6688aa', fontFamily: 'Orbitron, Arial', padding: { x: 12, y: 8 },
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(DEPTH + 2))
+        .on('pointerdown', goMenu);
+    } else {
+      track(this.add.text(w / 2 - 70, buttonsY, 'Continue', {
+        fontSize: '15px', color: '#000000', fontStyle: 'bold',
+        backgroundColor: '#ffdd00', padding: { x: 14, y: 10 }, fontFamily: 'Orbitron, Arial',
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(DEPTH + 2))
+        .on('pointerdown', dismiss);
+      track(this.add.text(w / 2 + 70, buttonsY, 'Main Menu', {
+        fontSize: '15px', color: '#aaccff', fontFamily: 'Orbitron, Arial', padding: { x: 14, y: 10 },
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(DEPTH + 2))
+        .on('pointerdown', goMenu);
+    }
   }
 
   // ─── Audio ────────────────────────────────────────────────────────────────

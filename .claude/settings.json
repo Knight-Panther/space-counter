@@ -109,7 +109,11 @@
       "Bash(Select-Object -ExpandProperty Name)",
       "Bash(ffmpeg -version)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\" -Recurse -Directory)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-Content \"C:\\\\Users\\\\VM-Dev\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-VM-Dev-Desktop-Space-counter\\\\1d9ca065-a494-460c-9032-b23ec887047d\\\\tasks\\\\bpvm0ei1x.output\" -Wait -Tail 20)",
+      "Bash(.\\\\gradlew.bat assembleDebug)",
+      "Bash(Select-String -Pattern \"BUILD|error|warning\")",
+      "Bash(Select-Object -Last 10)"
     ],
     "deny": [
       "Bash(git push --force*)",
