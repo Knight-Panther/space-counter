@@ -39,6 +39,13 @@ export class MainMenuScene extends Phaser.Scene {
     this.selectedIdx = 0;
     this.itemTexts = [];
 
+    // Dismiss the HTML loading screen now that Phaser is ready
+    const ls = document.getElementById('loading-screen');
+    if (ls) {
+      ls.classList.add('hidden');
+      setTimeout(() => ls.remove(), 380);
+    }
+
     this.startMenuMusic();
 
     this.drawBackground(w, h);
