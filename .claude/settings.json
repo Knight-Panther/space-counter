@@ -131,7 +131,8 @@
       "Bash(rm MyVeryOwnDeadShip.ogg music-game.ogg)",
       "Bash(ffmpeg -y -i bg-menu.jpg -q:v 5 bg-menu_tmp.jpg)",
       "Bash(mv bg-menu_tmp.jpg bg-menu.jpg)",
-      "Read(//c/c/Users/VM-Dev/Desktop/Space-counter/public/images/**)"
+      "Read(//c/c/Users/VM-Dev/Desktop/Space-counter/public/images/**)",
+      "Bash(Copy-Item \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\preview.png\" \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\preview.png\")"
     ],
     "deny": [
       "Bash(git push --force*)",
