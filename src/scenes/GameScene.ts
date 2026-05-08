@@ -119,7 +119,7 @@ function waveRageFloor(wave: number): number {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LIVES_MAX           = 3;
-const KILL_PER_WAVE       = 15;  // 15 kills × 30 waves = 450 kills for a full run
+const KILL_PER_WAVE       = 25;  // 25 kills × 30 waves = 750 kills for a full run
 const BOSS_EVERY          = 20;   // enemy kills between boss spawns (was 12 — bosses overlapped wave transitions)
 const BOSS_TIMEOUT        = 15000; // ms before boss retreats
 const ARSENAL_H           = 90;
@@ -223,6 +223,7 @@ export class GameScene extends Phaser.Scene {
   private bossHintLabel:  Phaser.GameObjects.Text | Phaser.GameObjects.Container | null = null;
   private bossRageLabel:  Phaser.GameObjects.Text | null = null;
   private bossRage        = 0;   // increments each time boss retreats unkilled; resets on kill
+  private bossRoundsLeft  = 2;   // boss requires 2 letter-clears before dying (learning repetition)
   private bossBulletTimer:  Phaser.Time.TimerEvent | null = null;
   private bossEngineSound:  Phaser.Sound.BaseSound  | null = null;
   private shipEngineSound:  Phaser.Sound.BaseSound  | null = null;
@@ -315,6 +316,7 @@ export class GameScene extends Phaser.Scene {
     this.bossHintLabel   = null;
     this.bossRageLabel   = null;
     this.bossRage        = 0;
+    this.bossRoundsLeft  = 2;
     this.bossBulletTimer = null;
     this.bossEngineSound = null;
     this.bossThrustSound = null;
@@ -603,7 +605,12 @@ export class GameScene extends Phaser.Scene {
       this.flashBossCorrect();
       this.updateBossHintLabel();
       if (this.bossRemaining.length === 0) {
-        this.killBoss();
+        if (this.bossRoundsLeft > 1) {
+          this.bossRoundsLeft--;
+          this.bossHalfKill();
+        } else {
+          this.killBoss();
+        }
       }
     } else {
       // Wrong item — penalise player
@@ -776,6 +783,7 @@ export class GameScene extends Phaser.Scene {
     const bossReq  = Math.min(cfg.bossReq, bossPool.length);
     this.bossRequired  = bossPool.slice(0, bossReq);
     this.bossRemaining = [...this.bossRequired];
+    this.bossRoundsLeft = 2;
     this.bossRetreating = false;
 
     this.boss = {
@@ -870,6 +878,28 @@ export class GameScene extends Phaser.Scene {
     } else {
       doRetreatTween();
     }
+  }
+
+  private bossHalfKill(): void {
+    if (!this.boss) return;
+    this.tweens.killTweensOf(this.boss.sprite);
+    this.cameras.main.shake(300, 0.013);
+    this.boss.sprite.setTint(0xffffff);
+    this.tweens.add({
+      targets: this.boss.sprite, alpha: 0.25, duration: 100,
+      yoyo: true, repeat: 4,
+      onComplete: () => {
+        if (!this.boss) return;
+        this.bossRemaining = [...this.bossRequired];
+        this.applyRageTint();
+        this.boss.sprite.setAlpha(1);
+        this.createBossHintLabel();
+        this.time.delayedCall(500, () => {
+          if (this.boss && !this.bossRetreating) this.playBossHint(false);
+        });
+      },
+    });
+    this.playSound('sfx-explosion', 0.45);
   }
 
   private killBoss(): void {
