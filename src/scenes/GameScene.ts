@@ -120,6 +120,7 @@ function waveRageFloor(wave: number): number {
 
 const LIVES_MAX           = 3;
 const KILL_PER_WAVE       = 25;  // 25 kills × 30 waves = 750 kills for a full run
+const SPAWN_SCALE         = 15 / KILL_PER_WAVE;  // keeps spawn density proportional after wave-length change
 const BOSS_EVERY          = 20;   // enemy kills between boss spawns (was 12 — bosses overlapped wave transitions)
 const BOSS_TIMEOUT        = 15000; // ms before boss retreats
 const ARSENAL_H           = 90;
@@ -651,7 +652,7 @@ export class GameScene extends Phaser.Scene {
     const vulcanM  = this.activeWeapon === 'vulcan' ? VULCAN_SPAWN_MULT : 1.0;
     // Higher adaptiveSpeedMult → harder → shorter interval (divide) and faster enemies
     // waveMercyMult < 1 at wave 15+ → dividing by it lengthens the interval (easier)
-    const delay    = Math.max(650, (cfg.spawnMs / this.adaptiveSpeedMult / this.waveMercyMult) * vulcanM);
+    const delay    = Math.max(650, (cfg.spawnMs * SPAWN_SCALE / this.adaptiveSpeedMult / this.waveMercyMult) * vulcanM);
     this.enemySpawnTimer = this.time.addEvent({
       delay, loop: true, callback: () => this.spawnEnemy(),
     });
@@ -891,8 +892,15 @@ export class GameScene extends Phaser.Scene {
       onComplete: () => {
         if (!this.boss) return;
         this.bossRemaining = [...this.bossRequired];
+        // Restore any required items the player spent — they must be able to shoot round 2
+        for (const item of this.bossRequired) {
+          if (!this.arsenal.some(a => a.char === item.char)) {
+            this.arsenal.push(item);
+          }
+        }
         this.applyRageTint();
         this.boss.sprite.setAlpha(1);
+        this.refreshArsenalUI();
         this.createBossHintLabel();
         this.time.delayedCall(500, () => {
           if (this.boss && !this.bossRetreating) this.playBossHint(false);
