@@ -223,8 +223,8 @@ export class GameScene extends Phaser.Scene {
   private bossRemaining:  ItemData[] = [];  // items still needed to kill boss
   private bossHintLabel:  Phaser.GameObjects.Text | Phaser.GameObjects.Container | null = null;
   private bossRageLabel:  Phaser.GameObjects.Text | null = null;
-  private bossRage        = 0;   // increments each time boss retreats unkilled; resets on kill
-  private bossRoundsLeft  = 2;   // boss requires 2 letter-clears before dying (learning repetition)
+  private bossRage           = 0;   // increments each time boss retreats unkilled; resets on kill
+  private bossEncounterRound = 1;   // 1 = first appearance, 2 = second (different letters, learning repeat)
   private bossBulletTimer:  Phaser.Time.TimerEvent | null = null;
   private bossEngineSound:  Phaser.Sound.BaseSound  | null = null;
   private shipEngineSound:  Phaser.Sound.BaseSound  | null = null;
@@ -316,9 +316,9 @@ export class GameScene extends Phaser.Scene {
     this.bossRemaining   = [];
     this.bossHintLabel   = null;
     this.bossRageLabel   = null;
-    this.bossRage        = 0;
-    this.bossRoundsLeft  = 2;
-    this.bossBulletTimer = null;
+    this.bossRage           = 0;
+    this.bossEncounterRound = 1;
+    this.bossBulletTimer    = null;
     this.bossEngineSound = null;
     this.bossThrustSound = null;
     this.shipEngineSound = null;
@@ -606,12 +606,7 @@ export class GameScene extends Phaser.Scene {
       this.flashBossCorrect();
       this.updateBossHintLabel();
       if (this.bossRemaining.length === 0) {
-        if (this.bossRoundsLeft > 1) {
-          this.bossRoundsLeft--;
-          this.bossHalfKill();
-        } else {
-          this.killBoss();
-        }
+        this.killBoss();
       }
     } else {
       // Wrong item — penalise player
@@ -784,7 +779,6 @@ export class GameScene extends Phaser.Scene {
     const bossReq  = Math.min(cfg.bossReq, bossPool.length);
     this.bossRequired  = bossPool.slice(0, bossReq);
     this.bossRemaining = [...this.bossRequired];
-    this.bossRoundsLeft = 2;
     this.bossRetreating = false;
 
     this.boss = {
@@ -881,56 +875,28 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private bossHalfKill(): void {
-    if (!this.boss) return;
-    this.tweens.killTweensOf(this.boss.sprite);
-    this.cameras.main.shake(300, 0.013);
-    this.boss.sprite.setTint(0xffffff);
-    this.tweens.add({
-      targets: this.boss.sprite, alpha: 0.25, duration: 100,
-      yoyo: true, repeat: 4,
-      onComplete: () => {
-        if (!this.boss) return;
-        this.bossRemaining = [...this.bossRequired];
-        // Restore any required items the player spent — they must be able to shoot round 2
-        for (const item of this.bossRequired) {
-          if (!this.arsenal.some(a => a.char === item.char)) {
-            this.arsenal.push(item);
-          }
-        }
-        this.applyRageTint();
-        this.boss.sprite.setAlpha(1);
-        this.refreshArsenalUI();
-        this.createBossHintLabel();
-        this.time.delayedCall(500, () => {
-          if (this.boss && !this.bossRetreating) this.playBossHint(false);
-        });
-      },
-    });
-    this.playSound('sfx-explosion', 0.45);
-  }
-
   private killBoss(): void {
     if (!this.boss) return;
-    const wasNova = this.pendingNovaKill;
+    const wasNova  = this.pendingNovaKill;
+    const wasRound = this.bossEncounterRound;
     this.pendingNovaKill = false;
     this.bossRetreatTimer?.remove(); this.bossRetreatTimer = null;
     this.bossBulletTimer?.remove();  this.bossBulletTimer = null;
     this.stopBossEngineSound();
-    this.bossRage          = 0;
-    this.bossScheduled     = false;
-    this.lastBossKillTime  = this.time.now;
+    this.bossRage      = 0;
+    this.bossScheduled = false;
+    this.lastBossKillTime = this.time.now;
     this.tweens.killTweensOf(this.boss.sprite);
     this.destroyBossLabels();
     const bx = this.boss.sprite.x;
     const by = this.boss.sprite.y;
     const bt = this.bossType;
     this.boss.sprite.destroy();
-    this.boss         = null;
-    this.bossType     = null;
-    this.bossRetreating  = false;
-    this.bossRequired  = [];
-    this.bossRemaining = [];
+    this.boss        = null;
+    this.bossType    = null;
+    this.bossRetreating = false;
+    this.bossRequired   = [];
+    this.bossRemaining  = [];
 
     this.playBossExplosion(bx, by, bt);
     this.playSound('sfx-explosion-boss', 0.9);
@@ -938,10 +904,29 @@ export class GameScene extends Phaser.Scene {
     this.score += 50 * this.wave;
     this.scene.get('HUDScene')?.events.emit('score-update', this.score);
 
-    // Brief spawn pause — reward moment
     this.enemySpawnTimer?.paused && (this.enemySpawnTimer.paused = false);
     this.enemySpawnTimer?.remove();
-    this.time.delayedCall(2000, () => { if (!this.isDead) this.startEnemySpawner(); });
+
+    if (wasRound === 1) {
+      // Round 1 killed — respawn with a fresh letter set after a short break
+      this.bossEncounterRound = 2;
+      this.time.delayedCall(2000, () => {
+        if (this.isDead) return;
+        this.startEnemySpawner();
+        this.bossScheduled = true; // guard against kill-counter double-scheduling
+        const needed = waveCfg(this.wave).bossReq;
+        if (needed > 0) {
+          this.spawnGuaranteedGreens(needed);
+        } else {
+          this.time.delayedCall(1500, () => { if (!this.isDead) this.spawnBoss(); });
+        }
+      });
+    } else {
+      // Round 2 killed — final, reset encounter counter and resume normally
+      this.bossEncounterRound = 1;
+      this.time.delayedCall(2000, () => { if (!this.isDead) this.startEnemySpawner(); });
+    }
+
     if (wasNova) this.time.delayedCall(600, () => this.novaAoE(bx, by));
   }
 
