@@ -3,6 +3,7 @@ import { LETTERS } from '../data/letters';
 import { NUMBERS } from '../data/numbers';
 import { GameMode, ItemData } from '../data/types';
 import { FREE_LETTER_COUNT } from '../data/freeContent';
+import { ALPHABET_CURRICULUM, NUMBERS_CURRICULUM } from '../data/curriculum';
 
 // ─── Boss type system ─────────────────────────────────────────────────────────
 
@@ -66,6 +67,7 @@ interface WaveCfg {
 }
 
 const WAVES: WaveCfg[] = [
+  // Waves 1–10
   { slots: 3, bossReq: 1, spawnMs: 3800, greenPct: 0.25, bluePct: 0.12, enemySpeed:  75, bossType: 'ship-b',   bossScale: 1.0 },
   { slots: 3, bossReq: 1, spawnMs: 3400, greenPct: 0.28, bluePct: 0.13, enemySpeed:  85, bossType: 'slime',    bossScale: 1.54 },
   { slots: 3, bossReq: 1, spawnMs: 3100, greenPct: 0.30, bluePct: 0.14, enemySpeed:  95, bossType: 'wizard',   bossScale: 1.26 },
@@ -76,6 +78,30 @@ const WAVES: WaveCfg[] = [
   { slots: 5, bossReq: 3, spawnMs: 1800, greenPct: 0.46, bluePct: 0.18, enemySpeed: 155, bossType: 'demon',    bossScale: 0.77 },
   { slots: 6, bossReq: 3, spawnMs: 1600, greenPct: 0.50, bluePct: 0.19, enemySpeed: 170, bossType: 'ship-top', bossScale: 1.8 },
   { slots: 6, bossReq: 3, spawnMs: 1400, greenPct: 0.55, bluePct: 0.20, enemySpeed: 185, bossType: 'demon',    bossScale: 0.91 },
+  // Waves 11–15: 6 slots, 3 boss req, spawnMs 1300→1100, speed 195→215
+  { slots: 6, bossReq: 3, spawnMs: 1300, greenPct: 0.57, bluePct: 0.20, enemySpeed: 195, bossType: 'ship-b',   bossScale: 1.0 },
+  { slots: 6, bossReq: 3, spawnMs: 1250, greenPct: 0.59, bluePct: 0.21, enemySpeed: 200, bossType: 'slime',    bossScale: 1.54 },
+  { slots: 6, bossReq: 3, spawnMs: 1200, greenPct: 0.61, bluePct: 0.21, enemySpeed: 205, bossType: 'wizard',   bossScale: 1.26 },
+  { slots: 6, bossReq: 3, spawnMs: 1150, greenPct: 0.63, bluePct: 0.21, enemySpeed: 210, bossType: 'demon',    bossScale: 0.77 },
+  { slots: 6, bossReq: 3, spawnMs: 1100, greenPct: 0.65, bluePct: 0.22, enemySpeed: 215, bossType: 'ship-top', bossScale: 1.8 },
+  // Waves 16–20: 6 slots, 4 boss req, spawnMs 1050→900, speed 225→245
+  { slots: 6, bossReq: 4, spawnMs: 1050, greenPct: 0.67, bluePct: 0.22, enemySpeed: 225, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 4, spawnMs: 1013, greenPct: 0.68, bluePct: 0.22, enemySpeed: 230, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 4, spawnMs:  975, greenPct: 0.70, bluePct: 0.23, enemySpeed: 235, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 4, spawnMs:  938, greenPct: 0.71, bluePct: 0.23, enemySpeed: 240, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 4, spawnMs:  900, greenPct: 0.72, bluePct: 0.23, enemySpeed: 245, bossType: 'ship-top', bossScale: 1.4 },
+  // Waves 21–25: 6 slots, 4 boss req, spawnMs 880→800, speed 255→270
+  { slots: 6, bossReq: 4, spawnMs:  880, greenPct: 0.73, bluePct: 0.24, enemySpeed: 255, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 4, spawnMs:  860, greenPct: 0.74, bluePct: 0.24, enemySpeed: 259, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 4, spawnMs:  840, greenPct: 0.75, bluePct: 0.24, enemySpeed: 263, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 4, spawnMs:  820, greenPct: 0.76, bluePct: 0.24, enemySpeed: 266, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 4, spawnMs:  800, greenPct: 0.77, bluePct: 0.25, enemySpeed: 270, bossType: 'ship-top', bossScale: 1.8 },
+  // Waves 26–30: 6 slots, 5 boss req, spawnMs 780→700, speed 280→300
+  { slots: 6, bossReq: 5, spawnMs:  780, greenPct: 0.78, bluePct: 0.25, enemySpeed: 280, bossType: 'ship-b',   bossScale: 1.2 },
+  { slots: 6, bossReq: 5, spawnMs:  760, greenPct: 0.79, bluePct: 0.25, enemySpeed: 285, bossType: 'slime',    bossScale: 1.82 },
+  { slots: 6, bossReq: 5, spawnMs:  740, greenPct: 0.80, bluePct: 0.25, enemySpeed: 290, bossType: 'wizard',   bossScale: 1.54 },
+  { slots: 6, bossReq: 5, spawnMs:  720, greenPct: 0.81, bluePct: 0.25, enemySpeed: 295, bossType: 'demon',    bossScale: 0.91 },
+  { slots: 6, bossReq: 5, spawnMs:  700, greenPct: 0.82, bluePct: 0.25, enemySpeed: 300, bossType: 'ship-top', bossScale: 1.8 },
 ];
 
 function waveCfg(wave: number): WaveCfg {
@@ -91,7 +117,7 @@ function waveRageFloor(wave: number): number {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LIVES_MAX           = 3;
-const KILL_PER_WAVE       = 15;
+const KILL_PER_WAVE       = 15;  // 15 kills × 30 waves = 450 kills for a full run
 const BOSS_EVERY          = 12;    // enemy kills between boss spawns
 const BOSS_TIMEOUT        = 15000; // ms before boss retreats
 const ARSENAL_H           = 90;
@@ -198,6 +224,13 @@ export class GameScene extends Phaser.Scene {
   private shipEngineSound:  Phaser.Sound.BaseSound  | null = null;
   private bossThrustSound:  Phaser.Sound.BaseSound  | null = null;
 
+  // Adaptive difficulty
+  private recentShots:          boolean[] = [];   // ring buffer, capacity 20
+  private adaptiveSpeedMult     = 1.0;
+  private prevWaveAccuracy      = -1;             // -1 = not yet recorded
+  private consecutiveHighCount  = 0;
+  private consecutiveLowCount   = 0;
+
   // Timers
   private lastFireTime      = 0;
   private enemySpawnTimer:  Phaser.Time.TimerEvent | null = null;
@@ -218,8 +251,14 @@ export class GameScene extends Phaser.Scene {
   private killsSinceBoss  = 0;
   private greensSinceBoss = 0;  // greens killed by player since last boss trigger
   private bossScheduled   = false; // prevents double-scheduling while greens are being forced
-  private mistakeWeights = new Map<string, number>();
+  private mistakeWeights      = new Map<string, number>();
+  private appearanceCount     = new Map<string, number>();
+  private introducedByWave    = new Set<string>();
+  private newItemGracePeriod  = new Set<string>();
+  private letterIntroWave     = new Map<string, number>();
+  private gracePresentCount   = new Map<string, number>(); // times a grace-period char was target
   private isDead              = false;
+  private masteryShown        = false;
   private lastBossContactTime = 0;  // cooldown to prevent per-frame damage on boss overlap
   private lastBossKillTime    = 0;
   private lastBossWave        = 0;  // wave in which the last boss spawned — ensures one boss per wave
@@ -242,6 +281,7 @@ export class GameScene extends Phaser.Scene {
     this.greensSinceBoss = 0;
     this.bossScheduled   = false;
     this.isDead              = false;
+    this.masteryShown        = false;
     this.lastBossContactTime = 0;
     this.lastBossKillTime    = 0;
     this.lastBossWave        = 0;
@@ -272,6 +312,16 @@ export class GameScene extends Phaser.Scene {
     this.bossThrustSound = null;
     this.shipEngineSound = null;
     this.mistakeWeights.clear();
+    this.appearanceCount.clear();
+    this.recentShots          = [];
+    this.adaptiveSpeedMult    = 1.0;
+    this.prevWaveAccuracy     = -1;
+    this.consecutiveHighCount = 0;
+    this.consecutiveLowCount  = 0;
+    this.introducedByWave.clear();
+    this.newItemGracePeriod.clear();
+    this.letterIntroWave.clear();
+    this.gracePresentCount.clear();
     this.arsenalAccentColor = this.mode === 'alphabet' ? 0x3355aa : 0x884400;
   }
 
@@ -285,6 +335,7 @@ export class GameScene extends Phaser.Scene {
     this.scene.launch('HUDScene', { mode: this.mode });
     this.time.delayedCall(120, () => this.syncHUD());
     this.setupInput(width, height);
+    this.processCurriculumWave(1); // introduce wave-1 items immediately (no delay card on first wave)
     this.startEnemySpawner();
     this.playWave1Instruction();
   }
@@ -530,6 +581,7 @@ export class GameScene extends Phaser.Scene {
       // Correct item — cross it off
       this.bossRemaining.splice(hitIdx, 1);
       this.mistakeWeights.set(item.char, Math.max(0, (this.mistakeWeights.get(item.char) ?? 0) - 1));
+      this.pushRecentShot(true);
       this.flashBossCorrect();
       this.updateBossHintLabel();
       if (this.bossRemaining.length === 0) {
@@ -541,6 +593,7 @@ export class GameScene extends Phaser.Scene {
     } else {
       // Wrong item — penalise player
       this.mistakeWeights.set(item.char, (this.mistakeWeights.get(item.char) ?? 0) + 1);
+      this.pushRecentShot(false);
       this.flashBossImmune();
       this.takeDamage();
       this.playSound('sfx-wrong');
@@ -570,9 +623,10 @@ export class GameScene extends Phaser.Scene {
   // ─── Enemy spawner ────────────────────────────────────────────────────────
 
   private startEnemySpawner(): void {
-    const cfg   = waveCfg(this.wave);
-    const mult  = this.activeWeapon === 'vulcan' ? VULCAN_SPAWN_MULT : 1.0;
-    const delay = Math.max(400, cfg.spawnMs * mult);
+    const cfg      = waveCfg(this.wave);
+    const vulcanM  = this.activeWeapon === 'vulcan' ? VULCAN_SPAWN_MULT : 1.0;
+    // Higher adaptiveSpeedMult → harder → shorter interval (divide) and faster enemies
+    const delay    = Math.max(400, (cfg.spawnMs / this.adaptiveSpeedMult) * vulcanM);
     this.enemySpawnTimer = this.time.addEvent({
       delay, loop: true, callback: () => this.spawnEnemy(),
     });
@@ -631,6 +685,7 @@ export class GameScene extends Phaser.Scene {
     this.playSound('sfx-alien-appear', 0.3);
 
     const item = (type === 'green' || type === 'blue' || type === 'purple') ? this.pickRandomItem() : undefined;
+    if ((type === 'green' || type === 'purple') && item) this.onItemPickedAsTarget(item);
 
     // Show carried item label on token-carrying enemies
     if ((type === 'green' || type === 'purple') && item) {
@@ -644,7 +699,7 @@ export class GameScene extends Phaser.Scene {
 
     this.enemies.push({
       sprite, type, item, scale,
-      velY: cfg.enemySpeed * (type === 'ship' ? 1.4 : 1.0),
+      velY: cfg.enemySpeed * this.adaptiveSpeedMult * (type === 'ship' ? 1.4 : 1.0),
       wobblePhase: Math.random() * Math.PI * 2,
       wobbleAmp:   type === 'green' ? 38 : type === 'blue' ? 22 : type === 'purple' ? 28 : 0,
       baseX: x,
@@ -692,7 +747,15 @@ export class GameScene extends Phaser.Scene {
       arr.findIndex(a => a.char === item.char) === idx
     );
     Phaser.Utils.Array.Shuffle(uniqueArsenal);
-    this.bossRequired  = uniqueArsenal.slice(0, Math.min(cfg.bossReq, uniqueArsenal.length));
+
+    // Phase 5: exclude letters introduced this wave or the previous wave
+    const eligibleArsenal = uniqueArsenal.filter(item => {
+      const introWave = this.letterIntroWave.get(item.char) ?? 0;
+      return introWave < this.wave - 1;
+    });
+    const bossPool = eligibleArsenal.length > 0 ? eligibleArsenal : uniqueArsenal; // fallback
+    const bossReq  = Math.min(cfg.bossReq, bossPool.length);
+    this.bossRequired  = bossPool.slice(0, bossReq);
     this.bossRemaining = [...this.bossRequired];
     this.bossRetreating = false;
 
@@ -1403,29 +1466,85 @@ export class GameScene extends Phaser.Scene {
   // ─── Dataset helpers ──────────────────────────────────────────────────────
 
   private availableItems(): ItemData[] {
-    const maxTier     = this.wave < 4 ? 1 : this.wave < 7 ? 2 : 3;
-    const tierFiltered = this.dataset.filter(l => l.tier <= maxTier);
+    const isPremium = !!this.game.registry.get('isPremium');
+    const freeAlphabetChars = new Set(LETTERS.slice(0, FREE_LETTER_COUNT).map(l => l.char));
 
-    if (this.game.registry.get('isPremium')) return tierFiltered;
+    const introduced = this.dataset.filter(item => this.introducedByWave.has(item.char));
 
-    // Free tier: letters → first 12 by position; numbers → tier 1 (1-10) only
+    // Fall back to wave-1 curriculum if nothing introduced yet (first spawn before intro card fires)
+    const pool = introduced.length > 0 ? introduced : this.dataset.slice(0, 1);
+
+    if (isPremium) return pool;
+
+    // Free tier: alphabet → only first FREE_LETTER_COUNT letters; numbers → tier-1 only
     if (this.mode === 'alphabet') {
-      const freeChars = new Set(LETTERS.slice(0, FREE_LETTER_COUNT).map(l => l.char));
-      const result    = tierFiltered.filter(l => freeChars.has(l.char));
-      return result.length > 0 ? result : LETTERS.slice(0, FREE_LETTER_COUNT);
+      const free = pool.filter(l => freeAlphabetChars.has(l.char));
+      return free.length > 0 ? free : this.dataset.filter(l => freeAlphabetChars.has(l.char)).slice(0, 1);
     } else {
-      const result = tierFiltered.filter(l => l.tier === 1);
-      return result.length > 0 ? result : NUMBERS.filter(l => l.tier === 1);
+      const free = pool.filter(l => l.tier === 1);
+      return free.length > 0 ? free : this.dataset.filter(l => l.tier === 1).slice(0, 1);
     }
   }
 
   private pickRandomItem(): ItemData {
-    const pool    = this.availableItems();
-    const weights = pool.map(l => 1 + (this.mistakeWeights.get(l.char) ?? 0) * 2);
-    const total   = weights.reduce((a, b) => a + b, 0);
+    const pool = this.availableItems();
+    const weights = pool.map(l => {
+      let w = 1 + Math.min(this.mistakeWeights.get(l.char) ?? 0, 3) * 1.5;
+      const seen = this.appearanceCount.get(l.char) ?? 0;
+      if (this.wave >= 22 && seen < 5) w += 5;
+      else if (this.wave >= 15 && seen < 3) w += 3;
+      return w;
+    });
+    const total = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * total;
     for (let i = 0; i < pool.length; i++) { r -= weights[i]; if (r <= 0) return pool[i]; }
     return pool[pool.length - 1];
+  }
+
+  private onItemPickedAsTarget(item: ItemData): void {
+    this.appearanceCount.set(item.char, (this.appearanceCount.get(item.char) ?? 0) + 1);
+    if (this.newItemGracePeriod.has(item.char)) {
+      const count = (this.gracePresentCount.get(item.char) ?? 0) + 1;
+      this.gracePresentCount.set(item.char, count);
+      if (count >= 3) this.newItemGracePeriod.delete(item.char);
+    }
+  }
+
+  // ─── Adaptive difficulty ─────────────────────────────────────────────────
+
+  private currentAccuracy(): number {
+    if (this.recentShots.length === 0) return 0.5;
+    return this.recentShots.filter(Boolean).length / this.recentShots.length;
+  }
+
+  private pushRecentShot(correct: boolean): void {
+    this.recentShots.push(correct);
+    if (this.recentShots.length > 20) this.recentShots.shift();
+  }
+
+  private recalcAdaptiveDifficulty(): void {
+    // Freeze recalculation while new items are in their grace period
+    if (this.newItemGracePeriod.size > 0) return;
+
+    const acc = this.currentAccuracy();
+    if (this.prevWaveAccuracy >= 0) {
+      if (acc > 0.75 && this.prevWaveAccuracy > 0.75) {
+        this.consecutiveHighCount++;
+        this.consecutiveLowCount = 0;
+        if (this.consecutiveHighCount >= 2)
+          this.adaptiveSpeedMult = Math.min(1.20, this.adaptiveSpeedMult * 1.10);
+      } else if (acc < 0.45 && this.prevWaveAccuracy < 0.45) {
+        this.consecutiveLowCount++;
+        this.consecutiveHighCount = 0;
+        if (this.consecutiveLowCount >= 2)
+          this.adaptiveSpeedMult = Math.max(0.80, this.adaptiveSpeedMult * 0.92);
+      } else {
+        this.consecutiveHighCount = 0;
+        this.consecutiveLowCount  = 0;
+        this.adaptiveSpeedMult    = this.adaptiveSpeedMult + (1.0 - this.adaptiveSpeedMult) * 0.05;
+      }
+    }
+    this.prevWaveAccuracy = acc;
   }
 
   // ─── Parallax / background ────────────────────────────────────────────────
@@ -1629,12 +1748,16 @@ export class GameScene extends Phaser.Scene {
     // Wave advance
     if (this.killCount % KILL_PER_WAVE === 0) {
       this.wave++;
+      if (this.wave > 30) { this.completeGame(); return; }
       this.scene.get('HUDScene')?.events.emit('wave-update', this.wave);
       this.showWaveBanner();
       if (this.wave === 4 || this.wave === 7) this.swapParallaxLayers();
       if (this.wave === 7) this.crossfadeMusic('music-orbital');
       this.refreshArsenalUI();
-      this.restartEnemySpawner(); // apply new spawnMs
+      this.recalcAdaptiveDifficulty();
+      this.checkMasteryCondition();
+      this.processCurriculumWave(this.wave);
+      this.restartEnemySpawner(); // apply new spawnMs + adaptiveSpeedMult
     }
 
     // Boss trigger — one boss per wave; short kill-cooldown prevents instant re-trigger
@@ -1723,6 +1846,66 @@ export class GameScene extends Phaser.Scene {
 
   // ─── Wave banner ─────────────────────────────────────────────────────────
 
+  // ─── Mastery gate ────────────────────────────────────────────────────────
+
+  private checkMasteryCondition(): void {
+    if (this.masteryShown) return;
+    if (!!this.game.registry.get('isPremium')) return;
+
+    const THRESHOLD = 5;
+    let contentChars: string[];
+    if (this.mode === 'alphabet') {
+      contentChars = LETTERS.slice(0, FREE_LETTER_COUNT).map(l => l.char);
+    } else {
+      contentChars = NUMBERS.filter(n => n.tier === 1).map(n => n.char);
+    }
+
+    const mastered = contentChars.every(ch => (this.appearanceCount.get(ch) ?? 0) >= THRESHOLD);
+    if (!mastered) return;
+
+    this.masteryShown = true;
+    this.game.registry.set('masteryShown', true);
+    // Pause spawner, launch overlay, resume after dismiss
+    this.enemySpawnTimer?.remove();
+    this.scene.launch('MasteryScene', { mode: this.mode });
+    this.scene.get('MasteryScene')?.events.once('mastery-dismissed', () => {
+      if (!this.isDead) this.startEnemySpawner();
+    });
+  }
+
+  // ─── Curriculum ──────────────────────────────────────────────────────────
+
+  private processCurriculumWave(wave: number): void {
+    const schedule = this.mode === 'alphabet' ? ALPHABET_CURRICULUM : NUMBERS_CURRICULUM;
+    const chars    = schedule.get(wave);
+    if (!chars || chars.length === 0) return;
+
+    const isPremium       = !!this.game.registry.get('isPremium');
+    const freeAlphaChars  = new Set(LETTERS.slice(0, FREE_LETTER_COUNT).map(l => l.char));
+
+    const toIntroduce: string[] = [];
+    for (const ch of chars) {
+      // Free-tier gate
+      if (!isPremium) {
+        if (this.mode === 'alphabet' && !freeAlphaChars.has(ch)) continue;
+        if (this.mode === 'numbers') {
+          const item = this.dataset.find(d => d.char === ch);
+          if (item && item.tier !== 1) continue;
+        }
+      }
+      if (!this.introducedByWave.has(ch)) {
+        toIntroduce.push(ch);
+      }
+    }
+
+    for (const ch of toIntroduce) {
+      this.introducedByWave.add(ch);
+      this.letterIntroWave.set(ch, wave);
+      this.newItemGracePeriod.add(ch);
+      this.gracePresentCount.set(ch, 0);
+    }
+  }
+
   private showWaveBanner(): void {
     const { width, height } = this.scale;
     const txt = this.add.text(width / 2, height / 2 - 60, `ტალღა ${this.wave}!`, {
@@ -1743,6 +1926,20 @@ export class GameScene extends Phaser.Scene {
     this.weaponTimer?.remove();
     this.scene.stop('HUDScene');
     this.scene.start('GameOverScene', { score: this.score, wave: this.wave, mode: this.mode });
+  }
+
+  private completeGame(): void {
+    this.enemySpawnTimer?.remove();
+    this.bossRetreatTimer?.remove();
+    this.bossBulletTimer?.remove();
+    this.weaponTimer?.remove();
+    this.scene.stop('HUDScene');
+    this.scene.start('CompletionScene', {
+      mode: this.mode,
+      score: this.score,
+      wave: this.wave,
+      appearanceCount: Object.fromEntries(this.appearanceCount),
+    });
   }
 
   // ─── Audio ────────────────────────────────────────────────────────────────
