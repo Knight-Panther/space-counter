@@ -109,6 +109,13 @@ function waveCfg(wave: number): WaveCfg {
   return { ...base, spawnMs: Math.max(450, base.spawnMs - over * 17), enemySpeed: base.enemySpeed + over * 3 };
 }
 
+// Letters the boss demands: 1 for waves 1-10, 2 for 11-24, 3 for 25+
+function bossLetterCount(wave: number): number {
+  if (wave <= 10) return 1;
+  if (wave <= 24) return 2;
+  return 3;
+}
+
 // Base rage the boss always starts with, regardless of player performance.
 // Increments every 5 waves: wave 1-4=0, 5-9=1, 10-14=2, 15-19=3, 20-24=4, 25+=5
 // (every-4 reached rage 5 at wave 20 — 3-bullet boss too early for kids)
@@ -776,7 +783,7 @@ export class GameScene extends Phaser.Scene {
       return introWave < this.wave - 1;
     });
     const bossPool = eligibleArsenal.length > 0 ? eligibleArsenal : uniqueArsenal; // fallback
-    const bossReq  = Math.min(cfg.bossReq, bossPool.length);
+    const bossReq  = Math.min(bossLetterCount(this.wave), bossPool.length);
     this.bossRequired  = bossPool.slice(0, bossReq);
     this.bossRemaining = [...this.bossRequired];
     this.bossRetreating = false;
@@ -914,7 +921,7 @@ export class GameScene extends Phaser.Scene {
         if (this.isDead) return;
         this.startEnemySpawner();
         this.bossScheduled = true; // guard against kill-counter double-scheduling
-        const needed = waveCfg(this.wave).bossReq;
+        const needed = bossLetterCount(this.wave);
         if (needed > 0) {
           this.spawnGuaranteedGreens(needed);
         } else {
@@ -1898,7 +1905,7 @@ export class GameScene extends Phaser.Scene {
     if (bossReady) {
       this.killsSinceBoss = 0;
       this.bossScheduled  = true;
-      const needed = Math.max(0, waveCfg(this.wave).bossReq - this.greensSinceBoss);
+      const needed = Math.max(0, bossLetterCount(this.wave) - this.greensSinceBoss);
       if (needed > 0) {
         this.spawnGuaranteedGreens(needed);
       } else {
