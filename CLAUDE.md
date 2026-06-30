@@ -1,90 +1,170 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Space-Counter — Georgian Alphabet Learning Game
 
 ## Project Overview
 A 2D educational mobile game for kids learning the Georgian alphabet (ქართული ანბანი). A spaceship controlled by the player must shoot falling objects by correctly identifying Georgian letters. Three letter options appear at the bottom — tap the correct one to fire and destroy the falling object. Wrong answer = damage/collapse.
 
+## Commands
+```bash
+npm run dev          # Vite dev server with hot reload — test in Chrome DevTools (Pixel 5 viewport)
+npm run build        # Production build to dist/
+npm run typecheck    # tsc --noEmit — catches type errors without building
+npm run preview      # Serve the dist/ build locally
+
+# Android
+npx cap sync android && npx cap open android   # Build + open in Android Studio
+```
+
+## CI / CD — GitHub Actions
+
+Live URL: **https://knight-panther.github.io/space-counter/**
+
+Two workflow files in `.github/workflows/`:
+
+### `deploy.yml` — runs on every push to `main`
+```
+typecheck (tsc --noEmit)
+    ↓ passes
+build-and-deploy (npm run build → GitHub Pages)
+```
+- Typecheck gates the deploy — a type error blocks the push from going live
+- Build artifact uploaded to GitHub Pages automatically
+
+### `claude-auto-fix.yml` — runs when CI fails on a PR
+```
+CI fails on a PR branch
+    ↓
+Claude reads the error logs
+    ↓
+Claude creates branch  claude-auto-fix-ci-<branch>-<run-id>
+    ↓
+Claude opens a PR with the fix — you review and merge
+```
+- Only triggers on PR branches, never on direct pushes to `main`
+- Requires `ANTHROPIC_API_KEY` secret set in repo Settings → Secrets → Actions
+- Does NOT auto-merge — always produces a PR for human review
+
+**Required GitHub repo settings:**
+- Settings → Pages → Source = **GitHub Actions**
+- Settings → Secrets → Actions → `ANTHROPIC_API_KEY` (Anthropic console key)
+
 ## Tech Stack
 - **Engine**: Phaser 4.0.0 (latest stable)
-- **Language**: TypeScript ^6.0.0 (strict mode)
-- **Bundler**: Vite ^8.0.0
+- **Language**: TypeScript ^6.0.0 (strict mode — `noUnusedLocals` and `noUnusedParameters` enforced)
+- **Bundler**: Vite ^8.0.0 (Phaser split into its own chunk via `manualChunks`)
 - **Mobile**: Capacitor ^8.3.1 (Android target)
 - **IAP**: @revenuecat/purchases-capacitor ^13.0.1
 - **Storage**: @capacitor/preferences ^8.0.1
 - **Ads**: @capacitor-community/admob ^8.0.0 — planned, not yet installed
 - **No framework** (no React, no Vue — vanilla Phaser + TS)
 
+## Scene Flow
+Scenes start sequentially; `HUDScene` launches in **parallel** (additive) alongside `GameScene`:
+
+```
+BootScene → PreloaderScene → MainMenuScene → StoryScene → GameScene
+                                                ↕                ↕ (parallel)
+                                           PaywallScene      HUDScene
+                                                         → GameOverScene
+                                                         → MasteryScene
+                                                         → CompletionScene
+```
+
+- **BootScene** — initializes `PremiumManager`, registers Capacitor `appStateChange` listener, starts `PreloaderScene`
+- **PreloaderScene** — loads all assets (images, spritesheets, audio) — the only place assets are loaded
+- **MainMenuScene** — mode select (alphabet / numbers); can launch `PaywallScene` as overlay
+- **StoryScene** — intro cutscene before gameplay
+- **GameScene** — core gameplay loop; starts `HUDScene` as a parallel scene via `this.scene.launch('HUDScene', { mode })`
+- **HUDScene** — runs alongside GameScene; communicates via `this.scene.get('GameScene').events`
+- **GameOverScene / MasteryScene / CompletionScene** — end-state screens
+
 ## Architecture Rules
 - One scene per file in `src/scenes/`
 - Scene naming: PascalCase ending in "Scene" (e.g., `GameScene.ts`, `MenuScene.ts`)
-- All game state lives in the active scene or a shared singleton `GameState` class
+- All game state lives in the active scene — no shared mutable `GameState` singleton (premium state is the only cross-scene singleton)
 - Never use deprecated Phaser 3 APIs — this is Phaser 4
-- Use Phaser's built-in asset loader in BootScene — never load assets mid-gameplay
-- All audio files go in `public/audio/`, all images in `public/images/`
+- All assets loaded in `PreloaderScene` — never load mid-gameplay
+- All audio files in `public/audio/`, all images in `public/images/`
 - Use Phaser's Scene lifecycle: `init()`, `preload()`, `create()`, `update()`
+
+## Game Modes & Data Flow
+`GameMode = 'alphabet' | 'numbers'` (defined in `src/data/types.ts`) flows from `MainMenuScene` → `StoryScene` → `GameScene` → `HUDScene` via scene `init(data)`.
+
+- **Alphabet mode**: 33 Georgian letters from `src/data/letters.ts`, introduced per `ALPHABET_CURRICULUM` map (wave → new chars)
+- **Numbers mode**: 20 Georgian number words from `src/data/numbers.ts`, introduced per `NUMBERS_CURRICULUM` map
+
+Both curricula live in `src/data/curriculum.ts`. Free/premium content is filtered at runtime in `GameScene` using `FREE_LETTER_COUNT = 12` (from `src/data/freeContent.ts`) and the `tier` field on `ItemData`.
+
+## Wave & Boss System
+Waves are configured in `GameScene.ts` via `WAVES: WaveCfg[]` (30 waves defined). Each `WaveCfg` has:
+- `bossReq` — correct kills required to trigger the wave boss
+- `spawnMs` — milliseconds between enemy spawns
+- `greenPct` / `bluePct` — probability of green/blue enemy variants
+- `enemySpeed` — falling speed in px/s
+- `bossType` — one of `'ship-b' | 'slime' | 'wizard' | 'demon' | 'ship-top'`
+- `slots` — derived as `Math.min(6, bossReq + 2)`, ties pool size to boss complexity
+
+Each boss type is defined in `BOSS_DEFS` with spawn texture, idle/enter/shoot/retreat animations, bullet config, and death style.
 
 ## Georgian Alphabet Data
 33 letters: ა ბ გ დ ე ვ ზ თ ი კ ლ მ ნ ო პ ჟ რ ს ტ უ ფ ქ ღ ყ შ ჩ ც ძ წ ჭ ხ ჯ ჰ
-Each letter has:
-- Character (Unicode)
-- Latin transliteration
-- Audio file (pre-recorded MP3 in public/audio/)
-- Difficulty tier (1=common, 2=medium, 3=rare/confusing)
 
-Store letter data as a typed array in `src/data/letters.ts`:
+`ItemData` (the shared type used for both letters and numbers, `src/data/types.ts`):
 ```typescript
-export interface LetterData {
-  char: string;        // Georgian character
-  latin: string;       // Transliteration
-  audioKey: string;    // Phaser audio key
-  tier: 1 | 2 | 3;    // Difficulty
+export interface ItemData {
+  char: string;      // Georgian character or number word (shown on answer buttons)
+  latin: string;     // Latin transliteration shown as hint
+  audioKey: string;  // Phaser audio key
+  display: string;   // Text on the falling alien (char for letters, Arabic numeral for numbers)
+  tier: 1 | 2 | 3;  // Difficulty — also used for free/premium gating
 }
 ```
 
-## Game Mechanics
-- Falling objects descend from top of screen at increasing speed
-- Each object is tied to a target letter
-- Three answer buttons at bottom show Georgian letters (1 correct, 2 wrong)
-- Correct tap: spaceship fires laser, object explodes, score increases
-- Wrong tap: player takes damage (lives decrease), screen shakes
-- Object reaches bottom without answer: automatic life loss
-- Adaptive difficulty: letters the player gets wrong appear more frequently
-- Wave system: every 10 correct answers = new wave with faster objects
+`LetterData` in `src/data/letters.ts` is the letter-specific shape (same fields minus `display`).
+
+## PremiumManager
+Singleton stored on `game.registry` under `'_premiumManager'`. Premium boolean is mirrored to `game.registry.get('isPremium')` for quick reads from any scene.
+
+```typescript
+// Read premium anywhere
+const isPremium = this.game.registry.get('isPremium') as boolean;
+
+// Call purchase/restore from PaywallScene
+const mgr = PremiumManager.get(this.game);
+await mgr.purchasePremium();
+```
+
+`PremiumManager.init()` is called once in `BootScene`. It immediately restores the cached `Preferences` state (no flicker), then re-validates with RevenueCat async (falls back gracefully if offline).
+
+## Imports
+Phaser 4 has no default export — always use the namespace import:
+```typescript
+import * as Phaser from 'phaser';   // correct
+import Phaser from 'phaser';        // WRONG — build error
+```
 
 ## Input
 - Touch-first design (target is mobile)
 - Three large tap zones at bottom for letter selection
-- Ship position can follow finger or stay centered
 - All touch targets minimum 48x48dp for accessibility
 
 ## Audio
-- Georgian letter pronunciation: pre-generated MP3 files embedded in public/audio/
-- Sound effects: synthesized using Phaser's Web Audio (laser, explosion, wrong-answer buzz)
-- Background music: optional ambient space theme
+- Georgian letter/number pronunciation: pre-recorded MP3 files in `public/audio/`
+- Sound effects: synthesized via Phaser's Web Audio
 - Respect device mute switch via Capacitor
-
-## Visual Style
-- Space theme: starfield background, spaceship, alien creatures / Georgian landmarks as falling objects
-- Bright, sci-fi-friendly colors
-- Georgian letters displayed large and clear (minimum 48px font size)
-- Use a Georgian-supporting font (Noto Sans Georgian or BPG fonts)
-- Sprite animations: wobble, rotate, pulse on falling objects
-- Particle effects on explosions
-- Screen shake on damage
 
 ## Monetization
 
 ### IAP — implemented
-- Free tier: first 12 letters (ა–მ) + numbers 1–10
+- Free tier: first 12 letters (ა–მ, `FREE_LETTER_COUNT = 12`) + numbers 1–10 (tier 1)
 - Premium: ₾3.00 one-time purchase unlocks all 33 letters + numbers 11–20 + disables ads
 - Purchase flow: Google Play Billing via RevenueCat (`PremiumManager` singleton in `src/iap/`)
-- Premium state: `game.registry.get('isPremium')` — set in BootScene, persisted via Preferences
-- Paywall UI: `PaywallScene` launched as overlay from MainMenu, GameOver, or any scene
-- Free/premium boundary: `src/data/freeContent.ts` → `FREE_LETTER_COUNT = 12`
+- Paywall UI: `PaywallScene` launched as overlay from `MainMenuScene`, `GameOverScene`, or any scene
 
 ### Ads — not yet implemented
-- Banner ad at bottom between rounds (not during gameplay)
-- Interstitial ad every 5 rounds
-- Rewarded video: watch ad for extra life
 - Gate every ad call: `if (this.game.registry.get('isPremium')) return`
 
 ## Performance Guidelines
@@ -100,17 +180,10 @@ export interface LetterData {
 - Assets: kebab-case (`alien-creature.png`, `letter-a.mp3`)
 - Constants: UPPER_SNAKE_CASE
 
-## Testing
-- `npm run dev` — Vite dev server with hot reload
-- Test in Chrome DevTools mobile emulator (Pixel 5 viewport)
-- `npm run build && npx cap sync && npx cap open android` — test on Android
-
-## Imports
-Phaser 4 has no default export — always use the namespace import:
-```typescript
-import * as Phaser from 'phaser';   // correct
-import Phaser from 'phaser';        // WRONG — build error
-```
+## Asset Index
+- Master inventory lives in `assetIndex.json` at the project root
+- **Update rule:** whenever a new asset is dropped into `public/` AND wired up in `src/scenes/PreloaderScene.ts`, update `assetIndex.json`: flip `"status"` to `"present"`, fill in `"size"`, and add the scene name to `"usedIn"`
+- `"Legacy Collection"` folder in `public/` is excluded from the index — study separately before promoting any asset
 
 ## Pending / Follow-up
 
@@ -128,13 +201,8 @@ import Phaser from 'phaser';        // WRONG — build error
 - [ ] Install AdMob (`@capacitor-community/admob`) and gate all ad calls behind `isPremium`
 - [ ] Compress large PNGs: `Space.png` (2.4 MB), `Space_1.png` (1.8 MB) — see todoList.md
 
-## Asset Index
-- Master inventory lives in `assetIndex.json` at the project root
-- **Update rule:** whenever a new asset is dropped into `public/` AND wired up in `src/scenes/PreloaderScene.ts`, update `assetIndex.json`: flip `"status"` to `"present"`, fill in `"size"`, and add the scene name to `"usedIn"`
-- `"Legacy Collection"` folder in `public/` is excluded from the index — study separately before promoting any asset
-
 ## Do NOT
-- Do not use localStorage (use Phaser's registry or a state manager)
+- Do not use localStorage — use Phaser's registry or `@capacitor/preferences`
 - Do not use Phaser 3 APIs (no Pipeline → use RenderNode, no BitmapMask → use Mask filter, no Geom.Point → use Vector2)
 - Do not create separate CSS files — Phaser handles all rendering on canvas
 - Do not use DOM elements for game UI — use Phaser's built-in text/button objects
