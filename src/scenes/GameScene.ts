@@ -282,6 +282,7 @@ export class GameScene extends Phaser.Scene {
   private isDead              = false;
   private missionComplete     = false;
   private masteryShown        = false;
+  private overlayActive       = false;  // freezes gameplay while the mission-complete overlay is up
   private lastBossContactTime = 0;  // cooldown to prevent per-frame damage on boss overlap
   private lastBossKillTime    = 0;
   private lastBossWave        = 0;  // wave in which the last boss spawned — ensures one boss per wave
@@ -1977,6 +1978,12 @@ export class GameScene extends Phaser.Scene {
 
     const doomed = [...this.enemies];
     this.enemies = [];
+    // Destroy carried letter labels up front — the staggered explosion below can
+    // early-return, so clearing here guarantees no label is orphaned on screen.
+    for (const e of doomed) {
+      const lbl = e.sprite.getData('label') as Phaser.GameObjects.Text | undefined;
+      lbl?.destroy();
+    }
     for (let i = 0; i < doomed.length; i++) {
       const e = doomed[i];
       this.time.delayedCall(i * 65, () => {
@@ -2131,13 +2138,18 @@ export class GameScene extends Phaser.Scene {
   }
 
   private showMissionCompleteOverlay(): void {
+    this.overlayActive = true;   // freeze the gameplay update loop behind the overlay
     this.enemySpawnTimer?.remove();
     this.bossRetreatTimer?.remove();
     this.bossBulletTimer?.remove();
     this.weaponTimer?.remove();
 
     // Clear all on-screen objects so nothing can damage the player during the overlay
-    for (const e of this.enemies) e.sprite.destroy();
+    for (const e of this.enemies) {
+      const lbl = e.sprite.getData('label') as Phaser.GameObjects.Text | undefined;
+      lbl?.destroy();
+      e.sprite.destroy();
+    }
     this.enemies = [];
     for (const b of this.bullets) b.img.destroy();
     this.bullets = [];
@@ -2224,6 +2236,7 @@ export class GameScene extends Phaser.Scene {
     const dismiss = () => {
       for (const o of tracked) o.destroy();
       this.missionComplete = true;
+      this.overlayActive   = false;   // un-freeze the update loop
       this.restartEnemySpawner();
     };
     const goMenu = () => { this.scene.stop('HUDScene'); this.scene.start('MainMenuScene'); };
@@ -2295,6 +2308,9 @@ export class GameScene extends Phaser.Scene {
 
   update(_time: number, delta: number): void {
     if (this.isDead) return;
+    // Mission-complete overlay is up — freeze gameplay (ship, firing, parallax,
+    // movement, collisions) but keep the scene active so its buttons stay tappable.
+    if (this.overlayActive) return;
     const factor = delta / 16.67;
 
     // Hold to fire
