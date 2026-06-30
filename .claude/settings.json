@@ -1,4 +1,19 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -File \"c:/Users/VM-Dev/Desktop/Space-counter/.claude/hooks/typecheck.ps1\"",
+            "timeout": 30,
+            "statusMessage": "Running TypeScript check..."
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "WebSearch",
@@ -132,7 +147,10 @@
       "Bash(ffmpeg -y -i bg-menu.jpg -q:v 5 bg-menu_tmp.jpg)",
       "Bash(mv bg-menu_tmp.jpg bg-menu.jpg)",
       "Read(//c/c/Users/VM-Dev/Desktop/Space-counter/public/images/**)",
-      "Bash(Copy-Item \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\preview.png\" \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\preview.png\")"
+      "Bash(Copy-Item \"C:\\\\Users\\\\VM-Dev\\\\Downloads\\\\preview.png\" \"C:\\\\Users\\\\VM-Dev\\\\Desktop\\\\Space-counter\\\\public\\\\preview.png\")",
+      "Bash(wrangler --version)",
+      "Bash(wrangler login *)",
+      "Bash(wrangler pages *)"
     ],
     "deny": [
       "Bash(git push --force*)",
