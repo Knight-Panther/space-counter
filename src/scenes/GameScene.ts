@@ -1607,7 +1607,15 @@ export class GameScene extends Phaser.Scene {
 
   private pickRandomItem(): ItemData {
     const pool = this.availableItems();
-    const weights = pool.map(l => {
+
+    // Coverage guarantee: every introduced letter/number must appear at least once.
+    // If any available item has never been shown, restrict this pick to the unseen
+    // set — so a newly introduced char surfaces on its next green/purple spawn and
+    // nothing is left at 0 by chance (which previously stranded late letters like ღ/წ).
+    const unseen  = pool.filter(l => (this.appearanceCount.get(l.char) ?? 0) === 0);
+    const choices = unseen.length > 0 ? unseen : pool;
+
+    const weights = choices.map(l => {
       let w = 1 + Math.min(this.mistakeWeights.get(l.char) ?? 0, 3) * 1.5;
       const seen = this.appearanceCount.get(l.char) ?? 0;
       if (this.wave >= 22 && seen < 5) w += 5;
@@ -1616,8 +1624,8 @@ export class GameScene extends Phaser.Scene {
     });
     const total = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * total;
-    for (let i = 0; i < pool.length; i++) { r -= weights[i]; if (r <= 0) return pool[i]; }
-    return pool[pool.length - 1];
+    for (let i = 0; i < choices.length; i++) { r -= weights[i]; if (r <= 0) return choices[i]; }
+    return choices[choices.length - 1];
   }
 
   private onItemPickedAsTarget(item: ItemData): void {
