@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.telo.spacecounter',
-  appName: 'Space Counter',
+  appName: 'Planet Tvale',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

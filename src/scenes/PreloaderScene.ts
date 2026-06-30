@@ -117,9 +117,9 @@ export class PreloaderScene extends Phaser.Scene {
       this.load.image(`planet-${i}`, `images/Planet${i}.png`);
     }
 
-    // Space nebula overlay layers (original)
-    this.load.image('space-nebula',   'images/Space.png');
-    this.load.image('space-nebula-2', 'images/Space_1.png');
+    // Space nebula backgrounds (StoryScene) — WebP 1024², ~98% smaller than the original PNGs
+    this.load.image('space-nebula',   'images/Space.webp');
+    this.load.image('space-nebula-2', 'images/Space_1.webp');
 
     // SBS seamless nebula layers — used for parallax scrolling
     this.load.image('nebula-purple-01', 'images/nebula-purple-01.png');

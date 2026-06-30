@@ -1,12 +1,12 @@
 {
   "_meta": {
     "description": "Master asset index for Space-Counter. Update this file every time an asset is added and wired up. Excludes Legacy Collection folder.",
-    "lastUpdated": "2026-05-08",
+    "lastUpdated": "2026-06-30",
     "loaderScene": "src/scenes/PreloaderScene.ts",
     "totals": {
       "images": { "present": 144, "missing": 0 },
-      "audio": { "present": 76, "missing": 4 },
-      "fonts": { "present": 0, "missing": 1 },
+      "audio": { "present": 80, "missing": 0 },
+      "fonts": { "present": 2, "missing": 0 },
       "proceduralAssets": 8
     }
   },
@@ -14,8 +14,8 @@
   "images": {
     "backgrounds": [
       { "key": "bg-menu",        "file": "public/images/bg-menu.jpg",   "size": "361K",  "status": "present", "usedIn": ["MenuScene"] },
-      { "key": "space-nebula",   "file": "public/images/Space.png",     "size": "2.4M",  "status": "present", "usedIn": ["GameScene"] },
-      { "key": "space-nebula-2", "file": "public/images/Space_1.png",   "size": "1.8M",  "status": "present", "usedIn": ["GameScene"] },
+      { "key": "space-nebula",   "file": "public/images/Space.webp",    "size": "37 KB", "status": "present", "usedIn": ["StoryScene"] },
+      { "key": "space-nebula-2", "file": "public/images/Space_1.webp",  "size": "18 KB", "status": "present", "usedIn": ["StoryScene"] },
       { "key": "tina",           "file": "public/images/tina.png",      "size": "322K",  "status": "present", "usedIn": ["StoryScene"], "note": "compressed 4096x4096→512x512" }
     ],
     "starfields": [
@@ -235,10 +235,10 @@
       { "key": "sfx-laser-vulcan",   "file": "public/audio/sfx-laser-vulcan.mp3",   "size": "55K",   "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-ship-engine",    "file": "public/audio/sfx-ship-engine.mp3",    "size": "810K",  "status": "present", "usedIn": ["GameScene"] },
       { "key": "sfx-wave-up",        "file": "public/audio/sfx-wave-up.mp3",        "size": "18K",   "status": "present", "note": "weapon powerup pickup and health token collect", "usedIn": ["GameScene"] },
-      { "key": "sfx-laser",          "file": "public/audio/sfx-laser.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
-      { "key": "sfx-wrong",          "file": "public/audio/sfx-wrong.mp3",          "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
-      { "key": "sfx-alien-appear",   "file": "public/audio/sfx-alien-appear.mp3",   "size": null,    "status": "MISSING", "usedIn": ["GameScene"] },
-      { "key": "sfx-button",         "file": "public/audio/sfx-button.mp3",         "size": null,    "status": "MISSING", "usedIn": ["MenuScene"] }
+      { "key": "sfx-laser",          "file": "public/audio/sfx-laser.mp3",          "size": "3.4 KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-wrong",          "file": "public/audio/sfx-wrong.mp3",          "size": "5.2 KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-alien-appear",   "file": "public/audio/sfx-alien-appear.mp3",   "size": "4.0 KB", "status": "present", "usedIn": ["GameScene"] },
+      { "key": "sfx-button",         "file": "public/audio/sfx-button.mp3",         "size": "2.2 KB", "status": "present", "usedIn": ["MainMenuScene"] }
     ],
     "letters": [
       { "key": "letter-a",   "char": "ა", "latin": "a",   "file": "public/audio/letter-a.mp3",   "status": "present" },
@@ -302,10 +302,19 @@
   "fonts": [
     {
       "key": "georgian",
-      "file": "public/fonts/NotoSansGeorgian-Regular.ttf",
-      "status": "MISSING",
-      "note": "public/fonts/ directory exists but is empty",
+      "file": "public/fonts/NotoSansGeorgian.ttf",
+      "size": "226 KB",
+      "status": "present",
+      "note": "Variable TTF (Thin–Black). @font-face 'Noto Sans Georgian' in index.html; bundled offline, awaited in main.ts before game start.",
       "usedIn": ["all scenes with Georgian text"]
+    },
+    {
+      "key": "orbitron",
+      "file": "public/fonts/Orbitron.ttf",
+      "size": "38 KB",
+      "status": "present",
+      "note": "Variable TTF. @font-face 'Orbitron' in index.html; replaced the Google Fonts CDN link.",
+      "usedIn": ["all scenes (Latin display font)"]
     }
   ],
 
@@ -327,9 +336,9 @@
     "note": "Phaser logs a 404 warning but does NOT crash — game runs without these, just silently. sfx keys are guarded with cache.audio.has() in GameScene.",
     "audio_letter_clips": 0,
     "audio_number_clips": 0,
-    "audio_sfx": 4,
+    "audio_sfx": 0,
     "audio_music": 0,
-    "fonts": 1,
-    "total_missing": 5
+    "fonts": 0,
+    "total_missing": 0
   }
 }

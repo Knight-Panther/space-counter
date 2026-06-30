@@ -158,7 +158,15 @@ import Phaser from 'phaser';        // WRONG — build error
 
 ## Monetization
 
-### IAP — implemented
+### v1 ships FREE — IAP dormant
+- **`FREE_BUILD = true`** in `src/iap/PremiumManager.ts` forces `isPremium = true` at boot, so ALL
+  content unlocks and every Unlock/Restore/Paywall element is hidden (each is gated on the
+  `isPremium` registry flag). RevenueCat is skipped entirely. Nothing is deleted.
+- Reason: a Georgian payments profile cannot be a Google Play **merchant**, so Play Billing IAP
+  can't pay out. Re-enable in v2 (set `FREE_BUILD = false` + a real RevenueCat key) once a foreign
+  entity (Estonia OÜ / US LLC) provides a supported merchant payments profile.
+
+### IAP — implemented but dormant (returns in v2)
 - Free tier: first 12 letters (ა–მ, `FREE_LETTER_COUNT = 12`) + numbers 1–10 (tier 1)
 - Premium: ₾3.00 one-time purchase unlocks all 33 letters + numbers 11–20 + disables ads
 - Purchase flow: Google Play Billing via RevenueCat (`PremiumManager` singleton in `src/iap/`)
@@ -187,16 +195,22 @@ import Phaser from 'phaser';        // WRONG — build error
 
 ## Pending / Follow-up
 
-### Before shipping to Play Store
-- [ ] Replace `'goog_REPLACE_WITH_YOUR_KEY'` in `src/iap/PremiumManager.ts:12` with real RevenueCat Android key
-- [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full` at ₾3.00, set Active
-- [ ] RevenueCat dashboard: entitlement `premium` linked to product, copy API key
-- [ ] Run `npx cap sync android` after above steps
+### Before shipping to Play Store (v1 — FREE)
+- [ ] Release signing: generate upload keystore (Android Studio wizard), enable Play App Signing
+- [ ] `npm run build && npx cap sync android` to push web assets into the native project
+- [ ] Compress `public/preview.png` (2.8 MB web social card — ships dead-weight in the AAB)
 - [x] All 33 letter MP3s present in `public/audio/`
 - [x] All 20 number MP3s present in `public/audio/`
-- [ ] Compress `tina.png` (currently ~322 KB, was compressed from 8.8 MB)
-- [x] All instruction/voice WAVs converted to MP3
-- [ ] Source 4 missing SFX: `sfx-laser.mp3`, `sfx-wrong.mp3`, `sfx-alien-appear.mp3`, `sfx-button.mp3`
+- [x] 4 SFX added: `sfx-laser`, `sfx-wrong`, `sfx-alien-appear`, `sfx-button` (synth, 2026-06-30)
+- [x] Georgian + Orbitron fonts bundled offline (`public/fonts/`, `@font-face` in index.html)
+- [x] Privacy policy page (`public/privacy.html`)
+- [ ] Compress `tina.png` (~322 KB) — optional
+
+### Deferred to v2 (monetization — needs foreign merchant entity first)
+- [ ] Set `FREE_BUILD = false` and replace `'goog_REPLACE_WITH_YOUR_KEY'` in `PremiumManager.ts` with real RevenueCat key
+- [ ] Play Console: create in-app product `com.telo.spacecounter.premium_full`, set Active
+- [ ] RevenueCat dashboard: entitlement `premium` linked to product, copy API key
+- [ ] `npx cap sync android` after the above
 - [ ] Add `NotoSansGeorgian-Regular.ttf` to `public/fonts/` (see todoList.md for subset instructions)
 - [ ] Install AdMob (`@capacitor-community/admob`) and gate all ad calls behind `isPremium`
 - [ ] Compress large PNGs: `Space.png` (2.4 MB), `Space_1.png` (1.8 MB) — see todoList.md

@@ -11,6 +11,18 @@ const PREF_KEY               = 'premium_unlocked';
 const ENTITLEMENT_ID         = 'premium';
 const REVENUECAT_KEY_ANDROID = 'goog_REPLACE_WITH_YOUR_KEY';
 
+// ─── FREE BUILD ──────────────────────────────────────────────────────────────
+// v1 ships 100% free: every letter and number is unlocked, there are no in-app
+// purchases, and no paywall/Unlock/Restore UI is ever shown. The entire IAP
+// architecture below stays intact but DORMANT — nothing is deleted.
+//
+// To re-enable the premium/paywall flow in a future version:
+//   1. set FREE_BUILD = false
+//   2. replace REVENUECAT_KEY_ANDROID with a real RevenueCat key
+//      (requires a Google Play merchant account — NOT available from a Georgian
+//       payments profile; needs a foreign entity e.g. Estonia OÜ / US LLC).
+const FREE_BUILD = true;
+
 export class PremiumManager {
   private game: Phaser.Game;
   private _isPremium   = false;
@@ -27,6 +39,15 @@ export class PremiumManager {
 
     const mgr = new PremiumManager(game);
     game.registry.set(REGISTRY_KEY, mgr);
+
+    // Free build: unlock everything, skip RevenueCat/Preferences entirely.
+    if (FREE_BUILD) {
+      mgr._isPremium = true;
+      game.registry.set('isPremium', true);
+      mgr._initialized = true;
+      return mgr;
+    }
+
     game.registry.set('isPremium', false);
 
     // 1. Restore persisted state immediately so the UI never flickers

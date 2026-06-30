@@ -25,4 +25,21 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [BootScene, PreloaderScene, MainMenuScene, StoryScene, GameScene, HUDScene, GameOverScene, PaywallScene, MasteryScene, CompletionScene],
 };
 
-new Phaser.Game(config);
+// Ensure bundled fonts are rasterized before Phaser paints any text to the
+// canvas — otherwise Georgian glyphs fall back to a system font (or tofu
+// boxes on devices without Noto Georgian) on first render. The HTML loading
+// screen covers this brief wait.
+async function boot(): Promise<void> {
+  if (document.fonts) {
+    try {
+      await Promise.all([
+        document.fonts.load('700 16px Orbitron'),
+        document.fonts.load('400 16px "Noto Sans Georgian"'),
+        document.fonts.load('700 16px "Noto Sans Georgian"'),
+      ]);
+    } catch { /* fall back to system fonts */ }
+  }
+  new Phaser.Game(config);
+}
+
+void boot();
