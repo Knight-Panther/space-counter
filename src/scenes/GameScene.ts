@@ -71,61 +71,64 @@ function makeWave(bossReq: number, spawnMs: number, greenPct: number, bluePct: n
   return { bossReq, spawnMs, greenPct, bluePct, enemySpeed, bossType, bossScale, slots: Math.min(6, bossReq + 2) };
 }
 
+// LEARNING-FIRST CURVE: speed and spawn density are held nearly flat across all
+// 30 waves so a 3–6 yo plays at a calm, constant pace. A new wave means new
+// LETTERS (see curriculum.ts) + a fresh-looking boss — NOT more difficulty.
+// Only `spawnMs` (calm ~3.6s→3.0s) and `enemySpeed` (gentle 75→100 px/s) vary;
+// boss variety (bossType/bossScale) and slot growth (bossReq) are preserved.
 const WAVES: WaveCfg[] = [
   // Waves 1–10
-  makeWave(1, 3800, 0.25, 0.12,  75, 'ship-b',   1.0),
-  makeWave(1, 3400, 0.28, 0.13,  85, 'slime',    1.54),
-  makeWave(1, 3100, 0.30, 0.14,  95, 'wizard',   1.26),
-  makeWave(2, 2800, 0.32, 0.15, 105, 'demon',    0.63),
-  makeWave(2, 2600, 0.35, 0.15, 115, 'ship-top', 1.4),
-  makeWave(2, 2300, 0.38, 0.16, 125, 'slime',    1.82),
-  makeWave(3, 2000, 0.42, 0.17, 140, 'wizard',   1.54),
-  makeWave(3, 1800, 0.46, 0.18, 155, 'demon',    0.77),
-  makeWave(3, 1600, 0.50, 0.19, 170, 'ship-top', 1.8),
-  makeWave(3, 1400, 0.55, 0.20, 185, 'demon',    0.91),
+  makeWave(1, 3600, 0.25, 0.12,  75, 'ship-b',   1.0),
+  makeWave(1, 3550, 0.28, 0.13,  77, 'slime',    1.54),
+  makeWave(1, 3500, 0.30, 0.14,  79, 'wizard',   1.26),
+  makeWave(2, 3450, 0.32, 0.15,  81, 'demon',    0.63),
+  makeWave(2, 3400, 0.35, 0.15,  83, 'ship-top', 1.4),
+  makeWave(2, 3380, 0.38, 0.16,  85, 'slime',    1.82),
+  makeWave(3, 3360, 0.42, 0.17,  86, 'wizard',   1.54),
+  makeWave(3, 3340, 0.46, 0.18,  87, 'demon',    0.77),
+  makeWave(3, 3320, 0.50, 0.19,  88, 'ship-top', 1.8),
+  makeWave(3, 3300, 0.55, 0.20,  89, 'demon',    0.91),
   // Waves 11–15: bossReq 3 → slots 5
-  makeWave(3, 1300, 0.57, 0.20, 195, 'ship-b',   1.0),
-  makeWave(3, 1250, 0.59, 0.21, 200, 'slime',    1.54),
-  makeWave(3, 1200, 0.61, 0.21, 205, 'wizard',   1.26),
-  makeWave(3, 1150, 0.63, 0.21, 210, 'demon',    0.77),
-  makeWave(3, 1100, 0.65, 0.22, 215, 'ship-top', 1.8),
+  makeWave(3, 3280, 0.57, 0.20,  90, 'ship-b',   1.0),
+  makeWave(3, 3260, 0.59, 0.21,  91, 'slime',    1.54),
+  makeWave(3, 3240, 0.61, 0.21,  92, 'wizard',   1.26),
+  makeWave(3, 3220, 0.63, 0.21,  93, 'demon',    0.77),
+  makeWave(3, 3200, 0.65, 0.22,  94, 'ship-top', 1.8),
   // Waves 16–30: bossReq 4–5 → slots 6
-  makeWave(4, 1083, 0.67, 0.22, 218, 'ship-b',   1.2),
-  makeWave(4, 1066, 0.68, 0.22, 221, 'slime',    1.82),
-  makeWave(4, 1049, 0.70, 0.23, 224, 'wizard',   1.54),
-  makeWave(4, 1032, 0.71, 0.23, 227, 'demon',    0.91),
-  makeWave(4, 1015, 0.72, 0.23, 230, 'ship-top', 1.4),
-  makeWave(4,  998, 0.73, 0.24, 233, 'ship-b',   1.2),
-  makeWave(4,  981, 0.74, 0.24, 236, 'slime',    1.82),
-  makeWave(4,  964, 0.75, 0.24, 239, 'wizard',   1.54),
-  makeWave(4,  947, 0.76, 0.24, 242, 'demon',    0.91),
-  makeWave(4,  930, 0.77, 0.25, 245, 'ship-top', 1.8),
-  makeWave(5,  913, 0.78, 0.25, 248, 'ship-b',   1.2),
-  makeWave(5,  896, 0.79, 0.25, 251, 'slime',    1.82),
-  makeWave(5,  879, 0.80, 0.25, 254, 'wizard',   1.54),
-  makeWave(5,  862, 0.81, 0.25, 257, 'demon',    0.91),
-  makeWave(5,  845, 0.82, 0.25, 260, 'ship-top', 1.8),
+  makeWave(4, 3180, 0.67, 0.22,  95, 'ship-b',   1.2),
+  makeWave(4, 3160, 0.68, 0.22,  95, 'slime',    1.82),
+  makeWave(4, 3140, 0.70, 0.23,  96, 'wizard',   1.54),
+  makeWave(4, 3120, 0.71, 0.23,  96, 'demon',    0.91),
+  makeWave(4, 3100, 0.72, 0.23,  97, 'ship-top', 1.4),
+  makeWave(4, 3090, 0.73, 0.24,  97, 'ship-b',   1.2),
+  makeWave(4, 3080, 0.74, 0.24,  98, 'slime',    1.82),
+  makeWave(4, 3070, 0.75, 0.24,  98, 'wizard',   1.54),
+  makeWave(4, 3060, 0.76, 0.24,  99, 'demon',    0.91),
+  makeWave(4, 3050, 0.77, 0.25,  99, 'ship-top', 1.8),
+  makeWave(5, 3040, 0.78, 0.25, 100, 'ship-b',   1.2),
+  makeWave(5, 3030, 0.79, 0.25, 100, 'slime',    1.82),
+  makeWave(5, 3020, 0.80, 0.25, 100, 'wizard',   1.54),
+  makeWave(5, 3010, 0.81, 0.25, 100, 'demon',    0.91),
+  makeWave(5, 3000, 0.82, 0.25, 100, 'ship-top', 1.8),
 ];
 
 function waveCfg(wave: number): WaveCfg {
   if (wave <= WAVES.length) return WAVES[wave - 1];
-  const base = WAVES[WAVES.length - 1];
-  const over = wave - WAVES.length;
-  return { ...base, spawnMs: Math.max(450, base.spawnMs - over * 17), enemySpeed: base.enemySpeed + over * 3 };
+  // Learning-first: past wave 30 the curve stays flat — no further escalation.
+  return { ...WAVES[WAVES.length - 1] };
 }
 
-// Letters the boss demands: 1 for waves 1-10, 2 for 11-24, 3 for 25+
-function bossLetterCount(wave: number): number {
-  if (wave <= 10) return 1;
-  if (wave <= 24) return 2;
-  return 3;
+// Letters the boss demands: always 1 — a single-letter recall, never a memory
+// chain. Keeps the boss a study checkpoint rather than a difficulty spike.
+function bossLetterCount(_wave: number): number {
+  return 1;
 }
 
-// Base rage the boss always starts with, regardless of player performance.
-// Increments every 5 waves: wave 1-4=0, 5-9=1, 10-14=2, 15-19=3, 20-24=4, 25+=5
-// (every-4 reached rage 5 at wave 20 — 3-bullet boss too early for kids)
-function waveRageFloor(wave: number): number {
-  return Math.floor(wave / 5);
+// Base rage a boss starts with. 0 everywhere → fresh bosses never auto-fire
+// bullets. A boss only becomes "angry" (gains rage, starts shooting) if the
+// player lets it RETREAT unkilled (see retreatBoss) — a gentle hurry nudge.
+function waveRageFloor(_wave: number): number {
+  return 0;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -690,8 +693,11 @@ export class GameScene extends Phaser.Scene {
       const emptyRatioSq = emptyRatio * emptyRatio;
       const effectiveGreenPct = cfg.greenPct * emptyRatioSq;
       const effectiveBluePct = this.activeWeapon !== 'plasma' ? 0 : cfg.bluePct;
-      const purplePct = this.wave >= 3 ? 0.12 * emptyRatioSq : 0;
-      const shipPct   = this.wave >= 5 ? 0.10 : 0;
+      // Learning-first: harder variants disabled. Purple wobblers and fast
+      // (1.4×) ships added screen tension without aiding study — only the
+      // calm red / green-carrier / blue-powerup set spawns now.
+      const purplePct = 0;
+      const shipPct   = 0;
       const roll = Math.random();
       if      (roll < effectiveBluePct)                                        type = 'blue';
       else if (roll < effectiveBluePct + effectiveGreenPct)                    type = 'green';
