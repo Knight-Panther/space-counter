@@ -57,7 +57,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        # npm install (not `npm ci`) tolerates platform-specific optional deps.
+        # The lock file is generated on Windows and lacks Linux-only @emnapi
+        # (Vite/rolldown wasm) entries that a strict `npm ci` on Linux requires.
+        run: npm install --no-audit --no-fund
 
       # --- Preparatory audit: fail the build before anything ships ---
       - name: Typecheck
