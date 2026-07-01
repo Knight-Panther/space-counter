@@ -4,6 +4,9 @@ import { NUMBERS } from '../data/numbers';
 import { GameMode, ItemData } from '../data/types';
 import { FREE_LETTER_COUNT } from '../data/freeContent';
 import { ALPHABET_CURRICULUM, NUMBERS_CURRICULUM } from '../data/curriculum';
+import {
+  createPulsarBullet, updatePulsar, destroyPulsar, pulsarBlast, type PulsarBullet,
+} from '../effects/pulsar';
 
 // ─── Boss type system ─────────────────────────────────────────────────────────
 
@@ -152,6 +155,10 @@ const HEALTH_DROP_CHANCE = 0.20; // probability of a heart drop on kill when at 
 const BEAM_SECS      = 12;    // seconds beam lasts
 const BEAM_WIDTH     = 22;    // px half-width of beam collision column
 const BEAM_COOLDOWN_MS = 300;  // ms between beam firings
+const PULSAR_SECS    = 12;    // seconds pulsar lasts
+const PULSAR_SPEED   = 360;   // px/s upward — slower than plasma so the orb "rolls" up
+const PULSAR_COOLDOWN = 340;  // ms between pulsar shots (slower than plasma — each orb pierces)
+const PULSAR_HIT_DIST = 36;   // px — pulsar vs enemy collision radius
 const CLAMP_X        = 26;    // min px from screen edge for ship center
 const BOSS_KILL_COOLDOWN = 6000;  // ms minimum between killing a boss and triggering the next one
 
@@ -170,9 +177,10 @@ interface EnemyObj {
 }
 
 interface BulletObj {
-  img:        Phaser.GameObjects.Image | Phaser.GameObjects.Sprite;
-  type:       'plasma' | 'proton' | 'boss';
+  img:        Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Container;
+  type:       'plasma' | 'proton' | 'boss' | 'pulsar';
   tweenDriven: boolean;
+  pulsar?:    PulsarBullet;   // set when type === 'pulsar' (img is pulsar.container)
 }
 
 interface TokenObj {
@@ -182,7 +190,7 @@ interface TokenObj {
   isWeapon:    boolean;
   isHealth:    boolean;
   isNova?:     boolean;
-  weaponType?: 'vulcan' | 'beam';
+  weaponType?: 'vulcan' | 'beam' | 'pulsar';
 }
 
 interface SlotUI {
@@ -218,11 +226,12 @@ export class GameScene extends Phaser.Scene {
   private shipTargetY = 0;
 
   // Weapon state
-  private activeWeapon: 'plasma' | 'vulcan' | 'beam' = 'plasma';
+  private activeWeapon: 'plasma' | 'vulcan' | 'beam' | 'pulsar' = 'plasma';
   private weaponTimer: Phaser.Time.TimerEvent | null = null;
   private weaponEndTime    = 0;
   private weaponDuration   = POWERUP_SECS; // total seconds of current weapon, for HUD bar scale
   private lastBeamTime     = 0;
+  private lastPulsarTime   = 0;
 
   // Game objects
   private bullets:  BulletObj[] = [];
@@ -436,7 +445,8 @@ export class GameScene extends Phaser.Scene {
 
   private fireBullet(): void {
     if (this.isDead) return;
-    if (this.activeWeapon === 'beam') { this.fireBeam(); return; }
+    if (this.activeWeapon === 'beam')   { this.fireBeam();   return; }
+    if (this.activeWeapon === 'pulsar') { this.firePulsar(); return; }
     const now = this.time.now;
     if (now - this.lastFireTime < FIRE_COOLDOWN) return;
     this.lastFireTime = now;
@@ -500,6 +510,16 @@ export class GameScene extends Phaser.Scene {
 
     this.playSound(this.cache.audio.has('sfx-laser-plasma') ? 'sfx-laser-plasma' : 'sfx-laser', 0.5);
     this.tweens.add({ targets: gfx, alpha: 0, duration: 280, onComplete: () => gfx.destroy() });
+  }
+
+  // Pulsar — a slow "rolling circles" orb that pierces straight up through enemies.
+  private firePulsar(): void {
+    const now = this.time.now;
+    if (now - this.lastPulsarTime < PULSAR_COOLDOWN) return;
+    this.lastPulsarTime = now;
+    const p = createPulsarBullet(this, this.ship.x, this.ship.y - 28, 1);
+    this.bullets.push({ img: p.container, type: 'pulsar', tweenDriven: false, pulsar: p });
+    this.playSound(this.cache.audio.has('sfx-laser-plasma') ? 'sfx-laser-plasma' : 'sfx-laser', 0.3);
   }
 
   // ─── Arsenal tap → proton shot at boss ────────────────────────────────────
@@ -666,7 +686,7 @@ export class GameScene extends Phaser.Scene {
 
   private startEnemySpawner(): void {
     const cfg      = waveCfg(this.wave);
-    const vulcanM  = this.activeWeapon === 'vulcan' ? VULCAN_SPAWN_MULT : 1.0;
+    const vulcanM  = (this.activeWeapon === 'vulcan' || this.activeWeapon === 'pulsar') ? VULCAN_SPAWN_MULT : 1.0;
     // Higher adaptiveSpeedMult → harder → shorter interval (divide) and faster enemies
     // waveMercyMult < 1 at wave 15+ → dividing by it lengthens the interval (easier)
     const delay    = Math.max(650, (cfg.spawnMs * SPAWN_SCALE / this.adaptiveSpeedMult / this.waveMercyMult) * vulcanM);
@@ -1232,17 +1252,19 @@ export class GameScene extends Phaser.Scene {
 
   // ─── Token drop ───────────────────────────────────────────────────────────
 
-  private spawnToken(x: number, y: number, item: ItemData, isWeapon: boolean, weaponType: 'vulcan' | 'beam' = 'vulcan'): void {
+  private spawnToken(x: number, y: number, item: ItemData, isWeapon: boolean, weaponType: 'vulcan' | 'beam' | 'pulsar' = 'vulcan'): void {
     const animKey  = isWeapon ? 'mine-11-spin' : 'mine-spin';
     const frameKey = isWeapon ? 'mine-11-1'    : 'mine-1';
     const key = this.textures.exists(frameKey) ? frameKey : 'particle';
     const sprite = this.add.sprite(x, y, key).setDepth(5).setScale(0.9);
-    if (isWeapon && weaponType === 'beam') sprite.setTint(0x00eeff);
+    if (isWeapon && weaponType === 'beam')   sprite.setTint(0x00eeff);
+    if (isWeapon && weaponType === 'pulsar') sprite.setTint(0xff66ff);
     if (this.anims.exists(animKey)) sprite.play(animKey);
 
-    const isBeam = isWeapon && weaponType === 'beam';
-    const label  = isBeam ? '☄' : isWeapon ? '⚡' : item.display;
-    const color  = isBeam ? '#00ffff' : isWeapon ? '#ffdd00' : '#ffff00';
+    const isBeam   = isWeapon && weaponType === 'beam';
+    const isPulsar = isWeapon && weaponType === 'pulsar';
+    const label  = isPulsar ? '◎' : isBeam ? '☄' : isWeapon ? '⚡' : item.display;
+    const color  = isPulsar ? '#ff9cff' : isBeam ? '#00ffff' : isWeapon ? '#ffdd00' : '#ffff00';
     const charText = this.add.text(x, y + 28, label, {
       fontSize: '17px', color,
       stroke: '#000000', strokeThickness: 3,
@@ -1308,6 +1330,8 @@ export class GameScene extends Phaser.Scene {
     if (tok.isWeapon) {
       if (tok.weaponType === 'beam') {
         this.activateBeamPowerup();
+      } else if (tok.weaponType === 'pulsar') {
+        this.activatePulsarPowerup();
       } else {
         this.activateWeaponPowerup();
       }
@@ -1374,6 +1398,41 @@ export class GameScene extends Phaser.Scene {
       const exp = this.add.sprite(this.ship.x, this.ship.y, 'explosion-2-01').setDepth(8);
       exp.play('explosion-2');
       exp.once('animationcomplete', () => exp.destroy());
+    }
+  }
+
+  private activatePulsarPowerup(): void {
+    this.activeWeapon    = 'pulsar';
+    this.lastPulsarTime  = 0; // allow immediate first shot
+    this.weaponDuration  = PULSAR_SECS;
+    this.weaponEndTime   = this.time.now + PULSAR_SECS * 1000;
+    this.weaponTimer?.remove();
+    this.weaponTimer = this.time.delayedCall(PULSAR_SECS * 1000, () => {
+      this.activeWeapon    = 'plasma';
+      this.weaponBarActive = false;
+      this.scene.get('HUDScene')?.events.emit('weapon-end');
+      this.restartEnemySpawner();
+    });
+    this.weaponBarActive = true;
+    this.scene.get('HUDScene')?.events.emit('weapon-start', '◎ PULSAR');
+    this.playSound('sfx-wave-up', 0.7);
+
+    // Burst of enemies so the piercing orb has a column to tear through
+    this.spawnPulsarBurst();
+    this.restartEnemySpawner(); // faster spawn rate while pulsar is active
+
+    if (this.anims.exists('explosion-2') && this.textures.exists('explosion-2-01')) {
+      const exp = this.add.sprite(this.ship.x, this.ship.y, 'explosion-2-01').setDepth(8);
+      exp.play('explosion-2');
+      exp.once('animationcomplete', () => exp.destroy());
+    }
+  }
+
+  private spawnPulsarBurst(): void {
+    for (let i = 0; i < VULCAN_BURST; i++) {
+      this.time.delayedCall(i * 380, () => {
+        if (!this.isDead && this.activeWeapon === 'pulsar') this.spawnEnemy();
+      });
     }
   }
 
@@ -1807,6 +1866,22 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Pulsar pierces: it kills every enemy it touches and keeps going (not destroyed
+  // on hit). Killed enemies leave the array, so each is hit only once.
+  private checkPulsarEnemyCollisions(): void {
+    for (let bi = this.bullets.length - 1; bi >= 0; bi--) {
+      const b = this.bullets[bi];
+      if (b.type !== 'pulsar') continue;
+      for (let ei = this.enemies.length - 1; ei >= 0; ei--) {
+        const e = this.enemies[ei];
+        if (Phaser.Math.Distance.Between(b.img.x, b.img.y, e.sprite.x, e.sprite.y) < PULSAR_HIT_DIST) {
+          pulsarBlast(this, e.sprite.x, e.sprite.y, 0.9);
+          this.killEnemy(ei);
+        }
+      }
+    }
+  }
+
   private checkShipEnemyCollisions(): void {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
@@ -1820,7 +1895,7 @@ export class GameScene extends Phaser.Scene {
         if (e.type === 'green'  && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
         if (e.type === 'purple' && e.item) this.spawnToken(e.sprite.x, e.sprite.y, e.item, false);
         if (e.type === 'blue'   && e.item) {
-          const wt: 'vulcan' | 'beam' = Math.random() < 0.5 ? 'beam' : 'vulcan';
+          const wt = this.pickWeaponDrop();
           this.spawnToken(e.sprite.x, e.sprite.y, e.item, true, wt);
         }
         e.sprite.destroy();
@@ -1874,6 +1949,12 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // Weighted pick for what a blue enemy drops. Three weapons now share the slot.
+  private pickWeaponDrop(): 'vulcan' | 'beam' | 'pulsar' {
+    const r = Math.random();
+    return r < 0.34 ? 'pulsar' : r < 0.67 ? 'beam' : 'vulcan';
+  }
+
   private killEnemy(idx: number): void {
     const e = this.enemies[idx];
     const ex = e.sprite.x, ey = e.sprite.y;
@@ -1885,7 +1966,7 @@ export class GameScene extends Phaser.Scene {
     if (e.type === 'green'  && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
     if (e.type === 'purple' && e.item) { this.spawnToken(ex, ey, e.item, false); this.greensSinceBoss++; }
     if (e.type === 'blue'   && e.item) {
-      const wt: 'vulcan' | 'beam' = Math.random() < 0.5 ? 'beam' : 'vulcan';
+      const wt = this.pickWeaponDrop();
       this.spawnToken(ex, ey, e.item, true, wt);
     }
     if (this.wave >= 11 && !this.arsenalCharged && Math.random() < 0.06) {
@@ -2352,6 +2433,10 @@ export class GameScene extends Phaser.Scene {
         if (b.img.y > this.scale.height + 40 || b.img.x < -40 || b.img.x > this.scale.width + 40) {
           b.img.destroy(); this.bullets.splice(i, 1);
         }
+      } else if (b.type === 'pulsar' && b.pulsar) {
+        updatePulsar(this, b.pulsar, delta);
+        b.img.y -= PULSAR_SPEED * (delta / 1000);
+        if (b.img.y < -40) { destroyPulsar(b.pulsar); this.bullets.splice(i, 1); }
       }
     }
 
@@ -2398,6 +2483,7 @@ export class GameScene extends Phaser.Scene {
 
     // Collision passes
     this.checkBulletEnemyCollisions();
+    this.checkPulsarEnemyCollisions();
     this.checkShipEnemyCollisions();
     this.checkShipBossCollision();
     this.checkBossBulletCollisions();

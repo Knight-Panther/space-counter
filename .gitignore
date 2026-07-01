@@ -38,3 +38,12 @@ Thumbs.db
 # Claude Code — commit settings.json (project permissions), exclude ephemeral dirs
 .claude/plans/
 .claude/memory/
+
+# Dev-only, never shipped or committed (kept locally for reference/iteration)
+# DEPLOY_NOTES.md — Play Store deploy walkthrough (see CLAUDE.md pointer)
+DEPLOY_NOTES.md
+# weapontest.html + src/weapontest.ts — PULSAR weapon visual harness
+weapontest.html
+src/weapontest.ts
+# .playwright-mcp/ — Playwright screenshot/console artifacts
+.playwright-mcp/

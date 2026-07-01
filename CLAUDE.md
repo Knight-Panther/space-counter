@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **📄 Separate doc — [DEPLOY_NOTES.md](DEPLOY_NOTES.md):** the full Play Store deploy
+> walkthrough (signed AAB → Console setup → closed testing → production) lives there.
+> That file is **`.gitignore`d** — local dev reference only, not committed, never shipped.
+> When a deploy/Play-Store question comes up, read `DEPLOY_NOTES.md` (present locally even
+> though it's absent from a fresh clone).
+
 # Space-Counter — Georgian Alphabet Learning Game
 
 ## Project Overview
