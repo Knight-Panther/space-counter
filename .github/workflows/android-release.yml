@@ -1,0 +1,108 @@
+# Builds a SIGNED Android App Bundle (.aab) for Planet Tvale and (optionally)
+# uploads it to Google Play.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# WHY IT DOESN'T RUN ON EVERY PUSH:
+#   Every upload to Play burns a unique versionCode and creates a new testing
+#   release. You don't want that on each commit. So this runs on:
+#     • a version tag  (git tag v1.0.1 && git push --tags), or
+#     • the "Run workflow" button (Actions tab → this workflow → Run workflow)
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# REQUIRED GITHUB SECRETS (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64     base64 of planet-tvale-keystore.jks
+#                               (generate:  base64 -w0 planet-tvale-keystore.jks )
+#   ANDROID_KEYSTORE_PASSWORD   the store password
+#   ANDROID_KEY_ALIAS           upload
+#   ANDROID_KEY_PASSWORD        the key password
+#
+#   Only needed to auto-UPLOAD to Play (leave the toggle off until these exist):
+#   PLAY_SERVICE_ACCOUNT_JSON   full JSON of a Google Play service account key
+#                               (Play Console → Users and permissions → API access
+#                                → create service account in Google Cloud, grant it
+#                                "Release to testing tracks" access here)
+#
+# ⚠️ Google requires the FIRST .aab to be uploaded MANUALLY in the Play Console
+#    before the API will accept uploads. So: do the first Closed-testing upload by
+#    hand, THEN this workflow's upload step will work for updates.
+
+name: Android Release (AAB)
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_to_play:
+        description: "Also upload the AAB to Google Play?"
+        type: boolean
+        default: false
+      play_track:
+        description: "Play track to upload to (e.g. internal, alpha, production)"
+        type: string
+        default: "internal"
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # --- Preparatory audit: fail the build before anything ships ---
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build web (Vite)
+        run: npm run build
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Sync web build into Android
+        run: npx cap sync android
+
+      - name: Decode signing keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+
+      - name: Build signed AAB
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        # versionCode must always increase for the Play API. We offset the run
+        # number so it stays above the manually-uploaded first build (v1 = code 1).
+        run: ./gradlew bundleRelease --no-daemon -PversionCode=$((100 + ${{ github.run_number }}))
+
+      - name: Upload AAB as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: planet-tvale-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      # --- Optional: push to Google Play (only when toggled on AND secrets exist) ---
+      - name: Upload to Google Play
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_play }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.telo.spacecounter
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: ${{ inputs.play_track }}
+          status: draft
