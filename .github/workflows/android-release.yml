@@ -66,8 +66,12 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # Root-relative base (not the GH-Pages "/space-counter/" prefix): the
+      # Capacitor WebView serves dist/ from https://localhost/, so a
+      # subpath-prefixed base 404s every JS/font asset and the game never
+      # boots past the static HTML loading screen.
       - name: Build web (Vite)
-        run: npm run build
+        run: npm run build:android
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -89,10 +93,12 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         # versionCode must always increase for the Play API. We offset the run
-        # number so it stays above the manually-uploaded first build (v1 = code 1).
+        # number so it stays above manually-built local versions too — versionCode
+        # 105 (1.0.1) was hand-built and uploaded outside this workflow, so the old
+        # 100-offset (which would repeat 105 at run #5) was bumped to 200.
         run: |
           chmod +x ./gradlew
-          ./gradlew bundleRelease --no-daemon -PversionCode=$((100 + ${{ github.run_number }}))
+          ./gradlew bundleRelease --no-daemon -PversionCode=$((200 + ${{ github.run_number }})) -PversionName="1.0.2"
 
       - name: Upload AAB as build artifact
         uses: actions/upload-artifact@v4
